@@ -9,7 +9,7 @@ namespace ProjectZ.Web.Models
     {
         public Project()
         {
-            Admins = new List<string>();
+            Admins = new List<TeamMember>();
         }
 
         public string Id { get; set; }
@@ -17,7 +17,6 @@ namespace ProjectZ.Web.Models
         public DateTime Created { get; set; }
         public string Description { get; set; }
         public string DisplayName { get; set; }
-        public string UserId { get; set; }
-        public List<string> Admins { get; set; }
+        public List<TeamMember> Admins { get; set; }
     }
 }

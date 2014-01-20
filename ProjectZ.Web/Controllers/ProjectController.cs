@@ -31,14 +31,19 @@ namespace ProjectZ.Web.Controllers
 
             if (CurrentUser == null)
                 return Redirect("/user/login");
+            
+
+            var project = RavenSession.Query<Project>().FirstOrDefault();
 
 
-            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.UserId == CurrentUser.Id || x.Admins.Contains(CurrentUser.Id));
             if (project == null)
+                throw new HttpException(404, "No project whit this name");
+
+            if (project.Admins.FirstOrDefault(x => x.Id == CurrentUser.Id) == null)
                 throw new HttpException(403, "You are not admin of this project");
 
 
-            return View();
+            return View(project);
         }
 
         public ActionResult Create()
@@ -52,12 +57,12 @@ namespace ProjectZ.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Project project)
+        public ActionResult Create(Project project, Role role, bool isPageAdmin)
         {
 
             project.Created = DateTime.Now;
             project.DisplayName = project.Name.GenerateSlug();
-            project.UserId = CurrentUser.Id;
+            project.Admins.Add(new TeamMember(CurrentUser, role, true));
 
             RavenSession.Store(project);
 

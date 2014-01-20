@@ -386,15 +386,20 @@ nav.top-nav ul li a img {
   display: block;
   clear: both;
 }
-.wrapper .content {
+.content {
   width: 65%;
   margin-right: 2.5%;
   float: left;
 }
-.wrapper .sidebar {
+.sidebar {
   width: 30%;
   margin-left: 2.5%;
   float: left;
+}
+.sidebar:after {
+  content: '';
+  display: block;
+  clear: both;
 }
 .box {
   background: #eeeeee;

@@ -170,7 +170,7 @@ nav.top-nav {
             a {
                 color: #fff;
 
-                &.hover{
+                &.hover {
                     color: @primary;
                 }
             }
@@ -305,17 +305,21 @@ nav.top-nav {
             .clearfix();
         }
     }
+}
 
-    .content {
-        width: 65%;
-        margin-right: 2.5%;
-        float: left;
-    }
+.content {
+    width: 65%;
+    margin-right: 2.5%;
+    float: left;
+}
 
-    .sidebar {
-        width: 30%;
-        margin-left: 2.5%;
-        float: left;
+.sidebar {
+    width: 30%;
+    margin-left: 2.5%;
+    float: left;
+
+    &:after{
+        .clearfix;
     }
 }
 

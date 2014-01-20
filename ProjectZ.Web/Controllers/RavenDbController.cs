@@ -24,11 +24,12 @@ namespace ProjectZ.Web.Controllers
                 }.Initialize();
             }
         }
-
+         
         public IDocumentSession RavenSession { get; protected set; }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
             RavenSession = DocumentStore.OpenSession();
 
             var userFromAuthCookie = User;
