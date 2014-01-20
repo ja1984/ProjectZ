@@ -22,6 +22,7 @@ namespace ProjectZ.Web.Models
             UserName = user.UserName;
             DisplayName = user.DisplayName;
             IsPageAdmin = isPageAdmin;
+            Id = user.Id;
         }
 
 

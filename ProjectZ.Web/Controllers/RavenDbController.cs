@@ -12,6 +12,11 @@ namespace ProjectZ.Web.Controllers
 {
     public abstract class RavenController : Controller
     {
+        protected RavenController()
+        {
+            DocumentStore.Conventions.SaveEnumsAsIntegers = true;            
+        }
+
         public User CurrentUser { get; set; }
         public static IDocumentStore DocumentStore
         {
@@ -29,9 +34,8 @@ namespace ProjectZ.Web.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
             RavenSession = DocumentStore.OpenSession();
-
+            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
             var userFromAuthCookie = User;
 
             if (userFromAuthCookie != null && userFromAuthCookie.Identity.IsAuthenticated)

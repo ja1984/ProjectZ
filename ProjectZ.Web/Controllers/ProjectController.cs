@@ -57,13 +57,13 @@ namespace ProjectZ.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Project project, Role role, bool isPageAdmin)
+        public ActionResult Create(Project project, Role role)
         {
 
             project.Created = DateTime.Now;
             project.DisplayName = project.Name.GenerateSlug();
             project.Admins.Add(new TeamMember(CurrentUser, role, true));
-
+            RavenSession.Advanced.DocumentStore.Conventions.SaveEnumsAsIntegers = true;
             RavenSession.Store(project);
 
             return Redirect("/project/details/" + project.DisplayName);
