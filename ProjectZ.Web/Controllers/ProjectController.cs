@@ -16,13 +16,14 @@ namespace ProjectZ.Web.Controllers
 
         public ActionResult Index()
         {
-
-            return View();
+            var projects = RavenSession.Query<Project>().ToList();
+            return View(projects);
         }
 
         public ActionResult Details()
         {
-            return View();
+            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+            return View(project);
         }
 
         public ActionResult Manage()

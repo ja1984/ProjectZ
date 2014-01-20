@@ -13,12 +13,14 @@ namespace ProjectZ.Web.Controllers
         // GET: /Release/
         public ActionResult Index()
         {
-            return View();
+            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).ToList();
+            return View(releases);
         }
 
         //
         // GET: /Release/Details/5
-        public ActionResult Details(string projectName, int id)
+        public ActionResult Details(int id)
         {
             return View();
         }
@@ -33,12 +35,16 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Release/Create
         [HttpPost]
-        public ActionResult Create(string projectName, Release release)
+        public ActionResult Create(Release release)
         {
             try
             {
-                // TODO: Add insert logic here
+                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+                if (project == null)
+                    return View();
 
+                release.ProjectId = project.Id;
+                RavenSession.Store(release);
                 return RedirectToAction("Index");
             }
             catch
@@ -49,7 +55,7 @@ namespace ProjectZ.Web.Controllers
 
         //
         // GET: /Release/Edit/5
-        public ActionResult Edit(string projectName, int id)
+        public ActionResult Edit(int id)
         {
             return View();
         }
@@ -57,7 +63,7 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Release/Edit/5
         [HttpPost]
-        public ActionResult Edit(string projectName, int id, Release release)
+        public ActionResult Edit(int id, Release release)
         {
             try
             {
@@ -81,11 +87,23 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Release/Delete/5
         [HttpPost]
-        public ActionResult Delete(string projectName, int id, Release release)
+        public ActionResult Delete(string id)
         {
             try
             {
-                // TODO: Add delete logic here
+
+                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+
+                if (project == null)
+                    return View();
+
+
+                if (project.Admins.Any(x => x.Id == CurrentUser.Id))
+                {
+                    var release = RavenSession.Load<Release>(id);
+                    RavenSession.Delete(release);
+                }
+                    
 
                 return RedirectToAction("Index");
             }

@@ -98,7 +98,10 @@ namespace ProjectZ.Web.Controllers
 
 
                 if (project.Admins.Any(x => x.Id == CurrentUser.Id))
-                    RavenSession.Delete(id);
+                {
+                    var issue = RavenSession.Load<Issue>(id);
+                    RavenSession.Delete(issue);
+                }
                 // TODO: Add delete logic here
 
                 return RedirectToAction("Index");

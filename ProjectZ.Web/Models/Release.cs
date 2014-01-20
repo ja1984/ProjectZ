@@ -8,6 +8,7 @@ namespace ProjectZ.Web.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Version { get; set; }
+        public string ProjectId { get; set; }
         public IList<Change> Changes { get; set; }
         public IList<Issue> Issues { get; set; }
 

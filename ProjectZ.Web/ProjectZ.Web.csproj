@@ -315,6 +315,7 @@
     <Content Include="Views\Release\Edit.cshtml" />
     <Content Include="Views\Release\index.cshtml" />
     <Content Include="Views\Project\Details.cshtml" />
+    <Content Include="Views\Project\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
