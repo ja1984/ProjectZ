@@ -1,0 +1,24 @@
+﻿@model ProjectZ.Web.Models.Project
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+<div class="box">
+    <form action="/user/login" id="register" method="POST" parsley-validate novalidate>
+    
+    <section>
+        <label>Username / Email</label>
+        <input type="text" id="username" name="username" required />
+    </section>
+    <section>
+        <label>Password</label>
+        <input type="password" id="password" name="password" required />
+    </section>
+    <p>
+        <input type="submit" value="Login" class="btn btn-success btn-fill" />
+    </p>
+</form>
+</div>

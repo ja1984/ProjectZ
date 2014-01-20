@@ -1,0 +1,121 @@
+﻿@model ProjectZ.Web.Models.User
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="inner">
+    <h2>Register</h2>
+    <form action="/user/register" id="register" method="POST" parsley-validate novalidate>
+        <div class="box">
+            <section>
+                <label>Username</label>
+                <input type="text" name="username" id="username" parsley-remote="/user/CheckUsernameAvailability" required />
+            </section>
+            <section>
+                <label>Email</label>
+                <div>
+                    <input type="email" name="email" id="email" required parsley-email="email" />
+                    <img src="" class="gravatar">
+                    <a href="javascript:void(0);" style="display: none;" class="showgravatar">Change gravatar email</a>
+                </div>
+
+
+                <div id="gravatar" style="display: none;">
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.GravatarEmail)
+                    </div>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.GravatarEmail)
+                    </div>
+                </div>
+            </section>
+            <section>
+                <label>Password</label>
+                <div>
+                    @Html.PasswordFor(model => model.Password, new{@required="required"})
+                <div class="password-strength">
+                    <div class="bar">
+                    </div>
+                    <div class="separator" style="left: 25%">
+                    </div>
+                    <div class="separator" style="left: 50%">
+                    </div>
+                    <div class="separator" style="left: 75%">
+                    </div>
+                </div>
+                </div>
+            </section>
+            <section>
+                <label>First name</label>
+                @Html.TextBoxFor(x=>x.FirstName, new{@required="required"})
+            </section>
+            <section>
+                <label>Last name</label>
+                @Html.TextBoxFor(x=>x.LastName, new{@required="required"})
+            </section>
+            <p>
+                <input type="submit" value="Sign up" class="btn btn-success btn-fill" />
+            </p>
+        </div>
+    </form>
+</div>
+@section scripts {
+    <script src="/Scripts/jquery.password_strength.js" type="text/javascript"></script>
+<script src="/Scripts/md5.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function () {
+
+        var forms = {
+            form: $("#register"),
+            password: $('#Password'),
+            email: $("#email"),
+            gravatarEmail: $("#GravatarEmail")
+        };
+
+
+        forms.form.submit(function () {
+            return forms.form.parsley('validate');
+        });
+
+        forms.password.password_strength();
+
+        forms.email.blur(function () {
+            if ($(".gravatar").is(":visible"))
+                return;
+
+            var me = $(this);
+
+            if (me.val().length > 0) {
+                setGravatar(me.val());
+                $(".gravatar, .showgravatar").fadeIn();
+            }
+        });
+
+        forms.gravatarEmail.keyup(function () {
+            var me = $(this);
+            setGravatar(me.val());
+            if (me.val().length > 12) {
+            }
+        });
+
+        $(".showgravatar").click(function () {
+            $(this).hide();
+            var gravatar = $("#gravatar");
+            forms.gravatarEmail.val(forms.email.val());
+
+            gravatar.slideDown();
+        });
+
+
+        var displayGravatar = function (name) {
+            return "http://www.gravatar.com/avatar/" + hex_md5(name) + "?s=40&d=mm";
+        };
+
+        var setGravatar = function (name) {
+            $(".gravatar").attr("src", displayGravatar(name));
+        };
+
+    });
+</script>
+}

@@ -1,0 +1,7 @@
+﻿@model ProjectZ.Web.Models.User
+<li class="user">
+    <a href="/user/deatils/@Model.DisplayName"><img src="@Model.GetImage()"/> @Model.UserName</a>
+</li>
+<li>
+    <a href="/user/logout">Sign out</a>
+</li>
