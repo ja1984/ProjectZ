@@ -14,23 +14,25 @@ namespace ProjectZ.Web
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 
-            routes.Add("projectsubdomain", new SubdomainRoute("{action}")
-            {
-                Defaults = new RouteValueDictionary(new { controller = "Project", action = "Details"}),
-                DataTokens = new RouteValueDictionary()
-            });
+
 
 
             routes.Add("subdomain", new SubdomainRoute("{controller}/{action}/{*id}")
             {
-                Defaults = new RouteValueDictionary(new { controller = "Home", action = "Index", id = UrlParameter.Optional }),
+                Defaults = new RouteValueDictionary(new { action = "Index", id = UrlParameter.Optional }),
+                DataTokens = new RouteValueDictionary()
+            });
+
+            routes.Add("projectsubdomain", new SubdomainRoute("{action}")
+            {
+                Defaults = new RouteValueDictionary(new { controller = "Project", action = "Details" }),
                 DataTokens = new RouteValueDictionary()
             });
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Project", action = "Index", id = UrlParameter.Optional }
             );
 
 
@@ -58,6 +60,7 @@ namespace ProjectZ.Web
             }
             if (subdomain != null)
                 routeData.Values["subdomain"] = subdomain;
+
             return routeData;
         }
 

@@ -67,7 +67,7 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Issue/Edit/5
         [HttpPost]
-        public ActionResult Edit(string projectName, int id, FormCollection collection)
+        public ActionResult Edit(int id, FormCollection collection)
         {
             try
             {

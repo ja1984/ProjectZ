@@ -23,6 +23,10 @@ namespace ProjectZ.Web.Controllers
         public ActionResult Details()
         {
             var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+
+            if (project == null)
+                return RedirectToAction("Index");
+
             return View(project);
         }
 
@@ -31,7 +35,7 @@ namespace ProjectZ.Web.Controllers
 
             if (CurrentUser == null)
                 return Redirect("/user/login");
-            
+
 
             var project = RavenSession.Query<Project>().FirstOrDefault();
 

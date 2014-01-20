@@ -42,9 +42,9 @@
             @Html.DisplayFor(modelItem => item.DisplayName)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            @Html.ActionLink("Edit", "Edit", new { subdomain = item.Name }) |
+            @Html.ActionLink("Details", "Details", new { subdomain = item.Name }) |
+            @Html.ActionLink("Delete", "Delete", new { subdomain = item.Name })
         </td>
     </tr>
 }
