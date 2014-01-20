@@ -16,17 +16,16 @@ namespace ProjectZ.Web.Controllers
 
         public ActionResult Index()
         {
+
             return View();
         }
 
-        [GET("Details/{projectName}")]
-        public ActionResult Details(string projectName)
+        public ActionResult Details()
         {
             return View();
         }
 
-        [GET("Manage/{projectName}")]
-        public ActionResult Manage(string projectName)
+        public ActionResult Manage()
         {
 
             if (CurrentUser == null)
@@ -63,7 +62,6 @@ namespace ProjectZ.Web.Controllers
             project.Created = DateTime.Now;
             project.DisplayName = project.Name.GenerateSlug();
             project.Admins.Add(new TeamMember(CurrentUser, role, true));
-            RavenSession.Advanced.DocumentStore.Conventions.SaveEnumsAsIntegers = true;
             RavenSession.Store(project);
 
             return Redirect("/project/details/" + project.DisplayName);

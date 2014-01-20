@@ -12,6 +12,10 @@ namespace ProjectZ.Web.Controllers
 {
     public abstract class RavenController : Controller
     {
+        protected string Subdomain
+        {
+            get { return (string)Request.RequestContext.RouteData.Values["subdomain"]; }
+        }
         protected RavenController()
         {
             DocumentStore.Conventions.SaveEnumsAsIntegers = true;            

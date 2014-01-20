@@ -33,8 +33,8 @@ namespace ProjectZ.Web.Models
 
     public enum Role
     {
-        Developer,
-        Designer,
-        Administrative
+        Developer = 0,
+        Designer = 1,
+        Administrative = 2
     }
 }
