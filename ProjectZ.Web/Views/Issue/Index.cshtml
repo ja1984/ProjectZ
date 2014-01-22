@@ -1,46 +1,64 @@
-﻿@model IEnumerable<ProjectZ.Web.Models.Issue>
+﻿@model ProjectZ.Web.ViewModels.IssueViewModel
 
 @{
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>List</h2>
+<div class="jumbo">
+    <img src="/Content/images/dexter.jpg" class="header-image">
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserId)
-        </th>
-        <th></th>
-    </tr>
+<div class="wrapper">
+    <nav class="nav">
+        <ul>
+            <li><a href="@Url.Action("Details","Project")">Overview</a></li>
+            <li><a href="@Url.Action("Index","Release")">Releases</a></li>
+            <li><a href="#">Polls</a></li>
+            <li class="active"><a href="@Url.Action("Index", "Issue")">Issues</a></li>
+        </ul>
+    </nav>
+    <div class="inner">
+        <div class="content">
+            <h1>Issues</h1>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserId)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+            <ul class="unstyled">
+                @foreach (var issue in Model.Issues)
+                {
+                    <li>
+                        <div class="issues">
+                            <div class="votes">
+                                <h3 class="count">
+                                    @(issue.Votes == null ? 0 : issue.Votes.Count)
+                                </h3>
+                                <p class="vote">
+                                    <i class="fa fa-thumbs-o-up"></i>
+                                </p>
 
-</table>
+                            </div>
+                            <div class="issue">
+                                <h3 class="title">@Html.ActionLink(issue.Title, "Details", new { id = issue.Id })</h3>
+                                <p class="description">@issue.Description</p>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+
+            <!-- please do not remove this line -->
+
+            <div style="display: none;">
+                <a href="http://slipsum.com">lorem ipsum</a>
+            </div>
+
+            <!-- end slipsum code -->
+
+        </div>
+        <div class="sidebar">
+            <h1>New issue</h1>
+            <div class="box">
+                <input type="text" placeholder="Name" />
+            </div>
+        </div>
+    </div>
+</div>

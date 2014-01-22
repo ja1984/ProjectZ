@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ProjectZ.Web.Models;
+using ProjectZ.Web.ViewModels;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -11,11 +12,12 @@ namespace ProjectZ.Web.Controllers
     {
         //
         // GET: /Issue/
+
         public ActionResult Index()
         {
             var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
             var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
-            return View(issues);
+            return View(new IssueViewModel { Project = project, Issues = issues });
         }
 
         //

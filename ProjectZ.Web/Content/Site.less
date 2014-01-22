@@ -36,7 +36,7 @@ body {
     font: 17px/26px 'RobotoRegular', Arial, sans-serif;
 }
 
-ul.unstyled{
+ul.unstyled {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -480,26 +480,62 @@ nav.top-nav {
 
 
 
-.team-member{
-
+.team-member {
     border-bottom: 1px solid #eee;
 
-    &:last-child{
+    &:last-child {
         border-bottom: none;
     }
 
-    img{
+    img {
         float: left;
         margin-right: 10px;
         margin-top: 5px;
     }
 
-    div{
-        &:after{
-           .clearfix;
+    div {
+        &:after {
+            .clearfix;
         }
 
-        p{
+        p {
+            margin: 0;
+        }
+    }
+}
+
+.issues {
+    .votes {
+        background: #eee;
+        float: left;
+        width: 80px;
+        margin-right: 10px;
+
+        .count {
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        .vote {
+            text-align: center;
+            cursor: pointer;
+            margin: 0;
+            background: #dedede;
+
+            &:hover {
+                background: @success;
+                color: #fff;
+            }
+        }
+    }
+
+    .issue {
+
+        h3 {
+            margin: 5px 0;
+        }
+
+        .description {
             margin: 0;
         }
     }
