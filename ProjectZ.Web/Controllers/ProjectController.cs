@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using AttributeRouting.Web.Mvc;
 using ProjectZ.Web.Helpers;
 using ProjectZ.Web.Models;
+using ProjectZ.Web.ViewModels;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -27,7 +28,9 @@ namespace ProjectZ.Web.Controllers
             if (project == null)
                 return RedirectToAction("Index");
 
-            return View(project);
+            var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
+
+            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.Id).Contains(CurrentUser.Id) });
         }
 
         public ActionResult Manage()
@@ -50,6 +53,23 @@ namespace ProjectZ.Web.Controllers
             return View(project);
         }
 
+        public JsonResult AddTeamMember(TeamMember teamMember, string projectId)
+        {
+
+            var project = RavenSession.Load<Project>(projectId);
+
+            if(project == null)
+                return Json("Error!");
+
+
+            project.Admins.Add(teamMember);
+
+            RavenSession.SaveChanges();
+
+
+            return Json("");
+        }
+
         public ActionResult Create()
         {
 
@@ -65,11 +85,11 @@ namespace ProjectZ.Web.Controllers
         {
 
             project.Created = DateTime.Now;
-            project.DisplayName = project.Name.GenerateSlug();
+            project.Slug = project.Name.GenerateSlug();
             project.Admins.Add(new TeamMember(CurrentUser, role, true));
             RavenSession.Store(project);
 
-            return Redirect("/project/details/" + project.DisplayName);
+            return Redirect("/project/details/" + project.Slug);
 
             return View();
         }

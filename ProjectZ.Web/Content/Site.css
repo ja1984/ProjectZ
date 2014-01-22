@@ -120,6 +120,11 @@ body {
   color: #333333;
   font: 17px/26px 'RobotoRegular', Arial, sans-serif;
 }
+ul.unstyled {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
 h1 {
   font-family: 'RobotoLight', Arial, sans-serif;
   margin: 5px 0 10px 0;
@@ -437,6 +442,10 @@ nav.top-nav ul li a img {
 .btn:active {
   background: #737373;
 }
+.btn:disabled {
+  background: #d9d9d9;
+  cursor: default;
+}
 .btn.btn-success {
   background: #468847;
   color: #fff;
@@ -462,6 +471,10 @@ nav.top-nav ul li a img {
 }
 .btn.btn-success:active {
   background: #3d773e;
+}
+.btn.btn-success:disabled {
+  background: #acd4ad;
+  cursor: default;
 }
 .btn.btn-error {
   background: #b94a48;
@@ -489,6 +502,10 @@ nav.top-nav ul li a img {
 .btn.btn-error:active {
   background: #a74240;
 }
+.btn.btn-error:disabled {
+  background: #eacac9;
+  cursor: default;
+}
 .btn.btn-warning {
   background: #f89406;
   color: #fff;
@@ -514,6 +531,10 @@ nav.top-nav ul li a img {
 }
 .btn.btn-warning:active {
   background: #df8505;
+}
+.btn.btn-warning:disabled {
+  background: #fddfb3;
+  cursor: default;
 }
 .btn.btn-primary {
   background: #467888;
@@ -541,6 +562,10 @@ nav.top-nav ul li a img {
 .btn.btn-primary:active {
   background: #3d6977;
 }
+.btn.btn-primary:disabled {
+  background: #accbd4;
+  cursor: default;
+}
 .gravatar {
   vertical-align: top;
   width: 40px;
@@ -565,4 +590,54 @@ nav.top-nav ul li a img {
   width: 2px;
   background: #fff;
   height: 4px;
+}
+/*TYPEHEAD*/
+#autocompleteUser-footer {
+  display: none;
+}
+.tt-dropdown-menu {
+  width: 100%;
+  background: #fff;
+}
+.tt-dropdown-menu #autocompleteUser-footer {
+  display: block;
+}
+.tt-dropdown-menu #autocompleteUser-footer p {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 15px;
+}
+.tt-dropdown-menu .tt-suggestions .tt-suggestion {
+  padding: 5px;
+}
+.tt-dropdown-menu .tt-suggestions .tt-suggestion.tt-is-under-cursor {
+  background: #eee;
+}
+.tt-dropdown-menu .tt-suggestions .tt-suggestion img.userImage {
+  vertical-align: middle;
+  margin-right: 7px;
+}
+.tt-dropdown-menu .tt-suggestions .tt-suggestion p.userName {
+  display: inline-block;
+  margin: 0;
+}
+.team-member {
+  border-bottom: 1px solid #eee;
+}
+.team-member:last-child {
+  border-bottom: none;
+}
+.team-member img {
+  float: left;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+.team-member div:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.team-member div p {
+  margin: 0;
 }

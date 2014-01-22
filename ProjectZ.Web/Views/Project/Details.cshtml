@@ -1,4 +1,4 @@
-﻿@model ProjectZ.Web.Models.Project
+﻿@model ProjectZ.Web.ViewModels.ProjectViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -12,7 +12,7 @@
 <div class="wrapper">
     <nav class="nav">
         <ul>
-            <li><a href="#">Overview <span class="badge">2</span></a></li>
+            <li class="active"><a href="#">Overview</a></li>
             <li><a href="@Url.Action("Index","Release")">Releases</a></li>
             <li><a href="#">Polls</a></li>
             <li><a href="@Url.Action("Index", "Issue")">Issues</a></li>
@@ -20,7 +20,7 @@
     </nav>
     <div class="inner">
         <div class="content">
-            <h1>@Model.DisplayName</h1>
+            <h1>@Model.Project.Name</h1>
 
             <p>You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man.</p>
 
@@ -38,6 +38,43 @@
 
         </div>
         <div class="sidebar">
+<h1>Team</h1>
+            <ul class="unstyled">
+                @foreach(var admin in Model.Project.Admins)
+                {
+                    <li class="team-member">        
+                        <img src="@admin.GetImage(40)" />
+                        <div>
+                            <p><a href="/user/details/@(admin.Slug)" style="display: block;">@admin.UserName</a></p>
+                            <p>@admin.Role</p>
+                        </div>
+                    </li>
+                }
+            </ul>
+            @if(Model.IsPageAdmin)
+            {
+
+                <section class="box">
+                    <input type="text" id="autocompleteUser" />
+
+                    <div class="user-manual" style="display: none;">
+                        <input type="text" id="username" name="username" placeholder="Username" />
+                        <input type="text" id="firstname" name="firstname" placeholder="First name" />
+                        <input type="text" id="lastname" name="lastname" placeholder="Last name" />
+
+                    </div>
+
+                </section>
+
+            <div id="autocompleteUser-footer">
+                <p>Can't find who you're looking for?</p>
+                <p><a href="javascript:void(0);">Add him/her manually</a></p>
+            </div>
+
+            <button class="btn btn-success" disabled="disabled">Add project members</button>
+            }
+            
+
             <h1>Test</h1>
             <h2>Test</h2>
             <h3>Test</h3>
@@ -51,3 +88,45 @@
     @*@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")*@
 </p>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        var config = {
+            searchBox: $("#autocompleteUser"),
+            footer: $("#autocompleteUser-footer"),
+            projectId: '@Model.Project.Id'
+        };
+
+        var addTeamMember = function (teamMember) {
+            $.ajax({
+                method: 'post',
+                url: '/project/addTeamMember?projectID=' + config.projectId,
+                data: teamMember,
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response);
+                }
+
+            });
+            console.log(teamMember);
+        };
+
+        $(function () {
+            config.searchBox.typeahead({
+                name: 'users',
+                valueKey: 'UserName',
+                remote: "/user/search?q=%QUERY",
+                template: [
+                            '<img src="{{Image}}" class="userImage"/>',
+                            '<p class="userName">{{UserName}}</p>'
+                ].join(''),
+                footer: config.footer,
+                engine: Hogan
+            }).on('typeahead:selected', function (obj, datum) {
+                addTeamMember(datum);
+            });
+        });
+    </script>
+}

@@ -24,7 +24,7 @@ namespace ProjectZ.Web.Controllers
         public ActionResult Details(string userName)
         {
 
-            var user = RavenSession.Query<User>().FirstOrDefault(x => x.DisplayName == userName);
+            var user = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == userName);
 
             if (user == null)
                 throw new HttpException(404, "Post not found");
@@ -47,13 +47,18 @@ namespace ProjectZ.Web.Controllers
 
 
             if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-              return View();
+                return View();
 
 
             LoginUser(user.Id);
 
 
             return View();
+        }
+
+        public JsonResult Search(string q)
+        {
+            return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(q) || x.Email.StartsWith(q)).ToList().Select(x => new TeamMember(x, Role.Developer, false)), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Manage()
@@ -63,7 +68,7 @@ namespace ProjectZ.Web.Controllers
 
             return View();
         }
-        
+
         [HttpPost]
         public ActionResult Manage(User user)
         {
@@ -96,21 +101,21 @@ namespace ProjectZ.Web.Controllers
 
             user.Created = DateTime.Now;
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            user.DisplayName = user.UserName.GenerateSlug();
+            user.Slug = user.UserName.GenerateSlug();
 
             if (string.IsNullOrEmpty(user.GravatarEmail))
                 user.GravatarEmail = user.Email;
 
             RavenSession.Store(user);
 
-            return Redirect("/user/" + user.DisplayName);
+            return Redirect("/user/" + user.Slug);
 
             return View();
         }
 
         public JsonResult CheckUsernameAvailability(string username)
         {
-            return Json(new { success = RavenSession.Query<User>().FirstOrDefault(x => x.DisplayName == username.GenerateSlug()) == null, message = "This username is taken" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == username.GenerateSlug()) == null, message = "This username is taken" }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult CheckEmailAvailability(string email)
