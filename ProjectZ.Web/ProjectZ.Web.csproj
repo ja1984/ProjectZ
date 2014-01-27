@@ -271,6 +271,7 @@
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="LICENSE.txt" />
     <Content Include="Scripts\hogan-2.0.0.js" />
+    <Content Include="Scripts\issues.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />

@@ -1,4 +1,5 @@
-﻿@model ProjectZ.Web.ViewModels.IssueViewModel
+﻿@using System.Web.Script.Serialization
+@model ProjectZ.Web.ViewModels.IssueViewModel
 
 @{
     ViewBag.Title = "List";
@@ -15,34 +16,29 @@
             <li><a href="@Url.Action("Details","Project")">Overview</a></li>
             <li><a href="@Url.Action("Index","Release")">Releases</a></li>
             <li><a href="#">Polls</a></li>
-            <li class="active"><a href="@Url.Action("Index", "Issue")">Issues</a></li>
+            <li class="active"><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.Project.Issues.Any() ? string.Format("<span class='badge'>{0}</span>",Model.Project.Issues.Count) : "")</a></li>
         </ul>
     </nav>
     <div class="inner">
         <div class="content">
             <h1>Issues</h1>
 
-            <ul class="unstyled">
-                @foreach (var issue in Model.Issues)
-                {
+            <ul class="unstyled" data-bind="foreach: issues">
                     <li>
                         <div class="issues">
                             <div class="votes">
-                                <h3 class="count">
-                                    @(issue.Votes == null ? 0 : issue.Votes.Count)
-                                </h3>
-                                <p class="vote">
+                                <h3 class="count" data-bind="text: votes().length"></h3>
+                                <p class="vote" data-bind="click: upVote">
                                     <i class="fa fa-thumbs-o-up"></i>
                                 </p>
 
                             </div>
                             <div class="issue">
-                                <h3 class="title">@Html.ActionLink(issue.Title, "Details", new { id = issue.Id })</h3>
-                                <p class="description">@issue.Description</p>
+                                <h3 class="title"><a href="#" data-bind="text: title, attr: {href: '/issue/details/' + id}"></a></h3>
+                                <p class="description" data-bind="text: description"></p>
                             </div>
                         </div>
                     </li>
-                }
             </ul>
 
             <!-- please do not remove this line -->
@@ -62,3 +58,20 @@
         </div>
     </div>
 </div>
+
+@section scripts
+{
+<script src="~/Scripts/issues.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var config = {
+                data: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project.Issues)),
+                userId: '@Model.UserId'
+            };
+
+            var issuesModel1 = new issuesModel.init(config);
+            ko.applyBindings(issuesModel1);
+        });
+
+    </script>
+}

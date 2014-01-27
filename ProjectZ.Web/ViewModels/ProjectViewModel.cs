@@ -9,6 +9,7 @@ namespace ProjectZ.Web.ViewModels
     public class ProjectViewModel
     {
         public Project Project { get; set; }
+        public List<Issue> Issues { get; set; }
         public bool IsPageAdmin { get; set; }
     }
 }

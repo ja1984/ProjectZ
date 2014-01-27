@@ -10,6 +10,7 @@ namespace ProjectZ.Web.Models
         public Project()
         {
             Admins = new List<TeamMember>();
+            Issues = new List<Issue>();
         }
 
         public string Id { get; set; }
@@ -18,5 +19,6 @@ namespace ProjectZ.Web.Models
         public string Description { get; set; }
         public string Slug { get; set; }
         public List<TeamMember> Admins { get; set; }
+        public List<Issue> Issues { get; set; }
     }
 }

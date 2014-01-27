@@ -27,10 +27,10 @@ namespace ProjectZ.Web.Controllers
 
             if (project == null)
                 return RedirectToAction("Index");
-
+            var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
             var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
 
-            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.Id).Contains(CurrentUser.Id) });
+            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.Id).Contains(CurrentUser.Id), Issues = issues});
         }
 
         public ActionResult Manage()
@@ -58,16 +58,22 @@ namespace ProjectZ.Web.Controllers
 
             var project = RavenSession.Load<Project>(projectId);
 
-            if(project == null)
-                return Json("Error!");
+            if (project == null)
+                return Json(new { success = false, message = "Couldn´t find project" });
+
+            if (CurrentUser == null)
+                return Json(new { success = false, message = "You are not admin of this project" });
+
+            if (!project.Admins.Select(x => x.Id).Contains(CurrentUser.Id))
+                return Json(new { success = false, message = "You are not admin of this project" });
 
 
             project.Admins.Add(teamMember);
-
             RavenSession.SaveChanges();
 
 
-            return Json("");
+            return Json(new { success = true, message = "User added" });
+
         }
 
         public ActionResult Create()

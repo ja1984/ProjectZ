@@ -16,8 +16,8 @@ namespace ProjectZ.Web.Controllers
         public ActionResult Index()
         {
             var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-            var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
-            return View(new IssueViewModel { Project = project, Issues = issues });
+            project.Issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
+            return View(new IssueViewModel { Project = project, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id });
         }
 
         //
@@ -48,6 +48,7 @@ namespace ProjectZ.Web.Controllers
 
                 issue.ProjectId = project.Id;
                 issue.UserId = CurrentUser.Id;
+                issue.Votes.Add(new Vote { UserId = CurrentUser.Id });
                 RavenSession.Store(issue);
                 return RedirectToAction("Index");
             }
@@ -55,6 +56,25 @@ namespace ProjectZ.Web.Controllers
             {
                 return View();
             }
+        }
+
+        public JsonResult Upvote(string issueId)
+        {
+            if (CurrentUser == null)
+                return Json(new { success = false, message = "You are not logged in" });
+
+            var issue = RavenSession.Load<Issue>(issueId);
+
+            if (issue == null)
+                return Json(new { success = false, message = "You are not admin of this project" });
+
+            if (issue.Votes != null && issue.Votes.Any() && issue.Votes.Select(x => x.UserId).Contains(CurrentUser.Id))
+                return Json(new { success = false, message = "You have already voted for this" });
+
+            issue.Votes.Add(new Vote { UserId = CurrentUser.Id });
+            RavenSession.SaveChanges();
+
+            return Json(new { success = true, message = string.Empty });
         }
 
         //

@@ -7,6 +7,12 @@ namespace ProjectZ.Web.Models
 {
     public class Issue
     {
+
+        public Issue()
+        {
+            Votes = new List<Vote>();
+        }
+
         public string Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
