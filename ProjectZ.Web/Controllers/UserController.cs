@@ -58,7 +58,7 @@ namespace ProjectZ.Web.Controllers
 
         public JsonResult Search(string q)
         {
-            return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(q) || x.Email.StartsWith(q)).ToList().Select(x => new TeamMember(x, Role.Developer, false)), JsonRequestBehavior.AllowGet);
+            return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(q) || x.Email.StartsWith(q)).ToList().Select(x => new TeamMember(x, Role.Developer, true).SmallInfo()), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Manage()

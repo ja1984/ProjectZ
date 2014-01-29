@@ -265,9 +265,16 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="Content\Timeline.css">
+      <DependentUpon>Timeline.less</DependentUpon>
+    </Content>
+    <Content Include="Content\Timeline.min.css">
+      <DependentUpon>Timeline.less</DependentUpon>
+    </Content>
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
     <Content Include="Content\fonts.less" />
+    <Content Include="Content\Timeline.less" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="LICENSE.txt" />
     <Content Include="Scripts\hogan-2.0.0.js" />
@@ -290,6 +297,7 @@
     <Content Include="Scripts\md5.js" />
     <Content Include="Scripts\modernizr-2.7.1.js" />
     <Content Include="Scripts\parsley.js" />
+    <Content Include="Scripts\team.js" />
     <Content Include="Scripts\typeahead.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">

@@ -28,6 +28,19 @@ namespace ProjectZ.Web.Models
             Image = GetImage();
         }
 
+        public object SmallInfo()
+        {
+            return new
+                       {
+                           Image = GetImage(40),
+                           Slug = Slug,
+                           Role = Role.ToString(),
+                           UserName = UserName,
+                           FirstName = FirstName,
+                           LastName = LastName,
+                           GravatarEmail = GravatarEmail
+                       };
+        }
 
 
         public Role Role { get; set; }

@@ -3,8 +3,9 @@
     var pub = {};
 
 
-    priv.Vote = function () {
+    priv.Vote = function (data) {
         var inner = {};
+        inner.userId = data.UserId;
         return inner;
     };
 
@@ -13,9 +14,22 @@
         inner.id = data.Id;
         inner.title = data.Title;
         inner.description = data.Description;
-        inner.votes = ko.observableArray(data.Votes || []);
-        
+        inner.hasVoted = ko.observable(false);
+        inner.votes = ko.observableArray([]);
+
+        $.each(data.Votes, function () {
+            
+            if (!inner.hasVoted() && this.UserId === priv.options.userId)
+                inner.hasVoted(true);
+
+            inner.votes.push(new priv.Vote(this));
+        });
+
+        inner.allowedToVote = ko.observable(priv.options.userId !== "" && !inner.hasVoted());
+
         inner.upVote = function () {
+            if (!inner.allowedToVote()) return;
+
             var vote = new priv.Vote();
             inner.votes.push(vote);
             console.log(inner);

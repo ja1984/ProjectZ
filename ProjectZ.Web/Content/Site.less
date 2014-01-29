@@ -357,12 +357,17 @@ nav.top-nav {
     -webkit-transition: all .3s ease;
     transition: all .3s ease;
 
+    i{
+        margin-right:5px;
+    }
+
     &.btn-inline {
         display: inline;
     }
 
     &.btn-fill {
         display: block;
+        width: 100%;
     }
 
     &:hover {
@@ -526,6 +531,12 @@ nav.top-nav {
                 background: @success;
                 color: #fff;
             }
+
+            &.disabled {
+                background: #dedede;
+                color: darken(#eee,15%);
+                cursor: default;
+            }
         }
     }
 
@@ -540,3 +551,14 @@ nav.top-nav {
         }
     }
 }
+
+.follow-wrapper {
+    margin-top: 10px;
+
+    p{
+        margin: 0;
+        text-align: center;
+    }
+}
+
+@import "Timeline.less";

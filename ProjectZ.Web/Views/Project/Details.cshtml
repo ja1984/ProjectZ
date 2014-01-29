@@ -1,4 +1,5 @@
-﻿@model ProjectZ.Web.ViewModels.ProjectViewModel
+﻿@using System.Web.Script.Serialization
+@model ProjectZ.Web.ViewModels.ProjectViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -39,26 +40,23 @@
 
         </div>
         <div class="sidebar">
-<h1>Team</h1>
-            <ul class="unstyled">
-                @foreach(var admin in Model.Project.Admins)
-                {
+    <h1>Team</h1>
+            <ul class="unstyled" data-bind="foreach: teamMembers">
                     <li class="team-member">        
-                        <img src="@admin.GetImage(40)" />
+                        <img src="" data-bind="attr: {src: image}" />
                         <div>
-                            <p><a href="/user/details/@(admin.Slug)" style="display: block;">@admin.UserName</a></p>
-                            <p>@admin.Role</p>
+                            <p><a href="#" style="display: block;" data-bind="html: firstName + ' <strong>' + userName + '</strong> ' + lastName, attr: {href: '/user/details/' + slug}"></a></p>
+                            <p data-bind="text: role"></p>
                         </div>
                     </li>
-                }
             </ul>
             @if(Model.IsPageAdmin)
             {
 
                 <section class="box">
-                    <input type="text" id="autocompleteUser" />
+                    <input type="text" data-bind="value: userName" id="autocompleteUser" />
 
-                    <div class="user-manual" style="display: none;">
+                    <div class="user-manual" data-bind="visible: addTeamMemberManually">
                         <input type="text" id="username" name="username" placeholder="Username" />
                         <input type="text" id="firstname" name="firstname" placeholder="First name" />
                         <input type="text" id="lastname" name="lastname" placeholder="Last name" />
@@ -69,17 +67,15 @@
 
             <div id="autocompleteUser-footer">
                 <p>Can't find who you're looking for?</p>
-                <p><a href="javascript:void(0);">Add him/her manually</a></p>
+                <p><a href="javascript:void(0);" data-bind="click: setManualAddTeamMember">Add him/her manually</a></p>
             </div>
 
-            <button class="btn btn-success" disabled="disabled">Add project members</button>
-            }
-            
-
-            <h1>Test</h1>
-            <h2>Test</h2>
-            <h3>Test</h3>
-            <h4>Test</h4>
+            <button class="btn btn-success" disabled="disabled" data-bind="enable: selectedTeamMember() != null, click: addTeamMember">Add project members</button>
+            }            
+            <div class="follow-wrapper">
+                <button class="btn btn-primary btn-fill"><i class="fa fa-heart"></i>Follow this project</button>
+                <p>0 people are following this project</p> 
+            </div>
         </div>
     </div>
 </div>
@@ -92,42 +88,19 @@
 
 @section scripts
 {
+<script src="~/Scripts/team.js"></script>
     <script type="text/javascript">
 
+        var teamMembers = @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project.Admins.Select(x=>new{UserName = x.UserName, Role = x.Role.ToString(), Image = x.GetImage(40), Slug = x.Slug, FirstName = x.FirstName, LastName = x.LastName})));
         var config = {
             searchBox: $("#autocompleteUser"),
             footer: $("#autocompleteUser-footer"),
             projectId: '@Model.Project.Id'
         };
 
-        var addTeamMember = function (teamMember) {
-            $.ajax({
-                method: 'post',
-                url: '/project/addTeamMember?projectID=' + config.projectId,
-                data: teamMember,
-                dataType: 'json',
-                success: function (response) {
-                    console.log(response);
-                }
-
-            });
-            console.log(teamMember);
-        };
-
         $(function () {
-            config.searchBox.typeahead({
-                name: 'users',
-                valueKey: 'UserName',
-                remote: "/user/search?q=%QUERY",
-                template: [
-                            '<img src="{{Image}}" class="userImage"/>',
-                            '<p class="userName">{{UserName}}</p>'
-                ].join(''),
-                footer: config.footer,
-                engine: Hogan
-            }).on('typeahead:selected', function (obj, datum) {
-                addTeamMember(datum);
-            });
+            var teamModel1 = new teamModel.init(config, teamMembers);
+            ko.applyBindings(teamModel1);
         });
     </script>
 }
