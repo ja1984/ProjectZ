@@ -10,6 +10,7 @@ namespace ProjectZ.Web.ViewModels
     {
         public Project Project { get; set; }
         public List<Issue> Issues { get; set; }
+        public int NumberOfReleases { get; set; }
         public string UserId { get; set; }
     }
 }

@@ -14,9 +14,9 @@
     <nav class="nav">
         <ul>
             <li class="active"><a href="#">Overview</a></li>
-            <li><a href="@Url.Action("Index","Release")">Releases</a></li>
+            <li><a href="@Url.Action("Index", "Releases")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
             <li><a href="#">Polls</a></li>
-            <li><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.Issues.Any() ? string.Format("<span class='badge'>{0}</span>",Model.Issues.Count) : "")</a></li>
+            <li><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.NumberOfIssues > 0 ? string.Format("<span class='badge'>{0}</span>",Model.NumberOfIssues) : "")</a></li>
 
         </ul>
     </nav>

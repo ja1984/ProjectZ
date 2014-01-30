@@ -14,9 +14,9 @@
     <nav class="nav">
         <ul>
             <li><a href="@Url.Action("Details","Project")">Overview</a></li>
-            <li><a href="@Url.Action("Index","Release")">Releases</a></li>
+            <li><a href="@Url.Action("Index", "Releases")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
             <li><a href="#">Polls</a></li>
-            <li class="active"><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.Project.Issues.Any() ? string.Format("<span class='badge'>{0}</span>",Model.Project.Issues.Count) : "")</a></li>
+            <li class="active"><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.Issues.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</a></li>
         </ul>
     </nav>
     <div class="inner">
@@ -24,21 +24,21 @@
             <h1>Issues</h1>
 
             <ul class="unstyled" data-bind="foreach: issues">
-                    <li>
-                        <div class="issues">
-                            <div class="votes">
-                                <h3 class="count" data-bind="text: votes().length"></h3>
-                                <p class="vote" data-bind="click: upVote, css: {disabled: !allowedToVote()}">
-                                    <i class="fa fa-thumbs-o-up"></i>
-                                </p>
+                <li>
+                    <div class="issues">
+                        <div class="votes">
+                            <h3 class="count" data-bind="text: votes().length"></h3>
+                            <p class="vote" data-bind="click: upVote, css: {disabled: !allowedToVote()}">
+                                <i class="fa fa-thumbs-o-up"></i>
+                            </p>
 
-                            </div>
-                            <div class="issue">
-                                <h3 class="title"><a href="#" data-bind="text: title, attr: {href: '/issue/details/' + id}"></a></h3>
-                                <p class="description" data-bind="text: description"></p>
-                            </div>
                         </div>
-                    </li>
+                        <div class="issue">
+                            <h3 class="title"><a href="#" data-bind="text: title, attr: {href: '/issue/details/' + id}"></a></h3>
+                            <p class="description" data-bind="text: description"></p>
+                        </div>
+                    </div>
+                </li>
             </ul>
 
             <!-- please do not remove this line -->
@@ -54,48 +54,51 @@
 
 
 
-<ul class="timeline">
-                                <li>
-                                    <div class="timeline-badge"><i class="fa fa-check"></i>
-                                    </div>
-                                    <div class="timeline-panel">
-                                        <div class="timeline-heading">
-                                            <h4 class="timeline-title">Timeline Event</h4>
-                                            <p>
-                                                <small class="text-muted"><i class="fa fa-time"></i> 11 hours ago via Twitter</small>
-                                            </p>
-                                        </div>
-                                        <div class="timeline-body">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="timeline-inverted">
-                                    <div class="timeline-badge success"><i class="fa fa-lightbulb-o"></i>
-                                    </div>
-                                    <div class="timeline-panel">
-                                        <div class="timeline-heading">
-                                            <h4 class="timeline-title">Timeline Event</h4>
-                                        </div>
-                                        <div class="timeline-body">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="timeline-badge danger"><i class="fa fa-bug"></i>
-                                    </div>
-                                    <div class="timeline-panel">
-                                        <div class="timeline-heading">
-                                            <h4 class="timeline-title">Timeline Event</h4>
-                                        </div>
-                                        <div class="timeline-body">
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+            <ul class="timeline">
+                <li>
+                    <div class="timeline-badge">
+                        <i class="fa fa-check"></i>
+                    </div>
+                    <div class="timeline-panel">
+                        <div class="timeline-heading">
+                            <h4 class="timeline-title">Timeline Event</h4>
+                            <p>
+                                <small class="text-muted"><i class="fa fa-time"></i> 11 hours ago via Twitter</small>
+                            </p>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
+                        </div>
+                    </div>
+                </li>
+                <li class="timeline-inverted">
+                    <div class="timeline-badge success">
+                        <i class="fa fa-lightbulb-o"></i>
+                    </div>
+                    <div class="timeline-panel">
+                        <div class="timeline-heading">
+                            <h4 class="timeline-title">Timeline Event</h4>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="timeline-badge danger">
+                        <i class="fa fa-bug"></i>
+                    </div>
+                    <div class="timeline-panel">
+                        <div class="timeline-heading">
+                            <h4 class="timeline-title">Timeline Event</h4>
+                        </div>
+                        <div class="timeline-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
 
 
 
@@ -120,7 +123,7 @@
 
 @section scripts
 {
-<script src="~/Scripts/issues.js"></script>
+    <script src="~/Scripts/issues.js"></script>
     <script type="text/javascript">
         $(function () {
             var config = {

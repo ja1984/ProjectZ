@@ -27,10 +27,14 @@ namespace ProjectZ.Web.Controllers
 
             if (project == null)
                 return RedirectToAction("Index");
-            var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
+
+
+            var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
+            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+
             var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
 
-            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.Id).Contains(CurrentUser.Id), Issues = issues});
+            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), NumberOfIssues = issues, NumberOfReleases = releases});
         }
 
         public ActionResult Manage()

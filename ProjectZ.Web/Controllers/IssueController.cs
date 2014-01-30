@@ -17,7 +17,9 @@ namespace ProjectZ.Web.Controllers
         {
             var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
             var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
-            return View(new IssueViewModel { Project = project, Issues = issues, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id });
+            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+
+            return View(new IssueViewModel { Project = project, Issues = issues, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id, NumberOfReleases = releases});
         }
 
         //
