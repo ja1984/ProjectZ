@@ -880,7 +880,8 @@ nav.top-nav ul li a img {
   border-bottom: 14px solid transparent;
   border-left: 14px solid #fff;
 }
-.timeline > li > .timeline-badge {
+.timeline > li > .timeline-badge,
+.explanation div.timeline-badge {
   z-index: 100;
   position: absolute;
   top: 16px;
@@ -894,6 +895,26 @@ nav.top-nav ul li a img {
   line-height: 50px;
   color: #fff;
   background-color: #999999;
+}
+.timeline > li > .timeline-badge.beta,
+.explanation div.timeline-badge.beta {
+  background: #b94a48;
+}
+.timeline > li > .timeline-badge.major,
+.explanation div.timeline-badge.major {
+  background: #467888;
+}
+.timeline > li > .timeline-badge.minor,
+.explanation div.timeline-badge.minor {
+  background: #f89406;
+}
+.explanation div.timeline-badge {
+  position: static;
+  left: auto;
+  top: auto;
+  margin-left: 0;
+  margin-right: 10px;
+  cursor: pointer;
 }
 .timeline > li.timeline-inverted > .timeline-panel {
   float: right;

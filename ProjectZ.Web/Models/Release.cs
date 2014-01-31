@@ -13,7 +13,17 @@ namespace ProjectZ.Web.Models
         public DateTime Created { get; set; }
         public IList<Change> Changes { get; set; }
         public IList<Issue> Issues { get; set; }
+        public ReleaseType Type { get; set; }
 
+
+        public enum ReleaseType
+        {
+            Beta = 0,
+            Minor = 1,
+            Major = 2,
+
+
+        }
 
     }
 }

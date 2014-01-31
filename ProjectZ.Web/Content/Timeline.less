@@ -1,4 +1,8 @@
-﻿.timeline {
+﻿@warning: #F89406;
+@error: #B94A48;
+@primary: #467888;
+
+.timeline {
     position: relative;
     padding: 20px 0 20px;
     list-style: none;
@@ -83,7 +87,7 @@
                 border-left: 14px solid #fff;
             }
 
-        .timeline > li > .timeline-badge {
+        .timeline > li > .timeline-badge, .explanation div.timeline-badge {
             z-index: 100;
             position: absolute;
             top: 16px;
@@ -97,6 +101,27 @@
             line-height: 50px;
             color: #fff;
             background-color: #999999;
+
+            &.beta {
+                background: @error;
+            }
+
+            &.major {
+                background: @primary;
+            }
+
+            &.minor {
+                background: @warning;
+            }
+        }
+
+        .explanation div.timeline-badge{
+            position: static;
+            left: auto;
+            top: auto;
+            margin-left: 0;
+            margin-right: 10px;
+            cursor: pointer;
         }
 
         .timeline > li.timeline-inverted > .timeline-panel {
