@@ -14,15 +14,13 @@
     <nav class="nav">
         <ul>
             <li><a href="@Url.Action("Details","Project")">Overview</a></li>
-            <li><a href="@Url.Action("Index", "Releases")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
+            <li><a href="@Url.Action("Index", "Release")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
             <li><a href="#">Polls</a></li>
             <li class="active"><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.Issues.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</a></li>
         </ul>
     </nav>
     <div class="inner">
         <div class="content">
-            <h1>Issues</h1>
-
             <ul class="unstyled" data-bind="foreach: issues">
                 <li>
                     <div class="issues">
@@ -31,91 +29,40 @@
                             <p class="vote" data-bind="click: upVote, css: {disabled: !allowedToVote()}">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </p>
-
                         </div>
                         <div class="issue">
                             <h3 class="title"><a href="#" data-bind="text: title, attr: {href: '/issue/details/' + id}"></a></h3>
                             <p class="description" data-bind="text: description"></p>
+                            <i class="fa badge" data-bind="css: issueType"></i>
                         </div>
                     </div>
                 </li>
             </ul>
 
-            <!-- please do not remove this line -->
-
-            <div style="display: none;">
-                <a href="http://slipsum.com">lorem ipsum</a>
+            <div class="new-issue" data-bind="css: {open: newIssue}">
+                <input type="text" class="fill" placeholder="Issue title" data-bind="value: issueTitle, valueUpdate: 'keyup'" />
+                <textarea class="fill" rows="7" draggable="false" placeholder="Issue description" data-bind="value: issueDescription, valueUpdate: 'keyup'"></textarea>
+                <select class="fill" data-bind="options: availableIssueTypes, optionsText: 'text', value: selectedIssueType"></select>
+                <p class="toolbar">
+                    <button class="btn btn-success" data-bind="disable: submitIssueButton, click: submitIssue">Submit new issue</button>
+                </p>
             </div>
-
-            <!-- end slipsum code -->
-
-
-
-
-
-
-            <ul class="timeline">
-                <li>
-                    <div class="timeline-badge">
-                        <i class="fa fa-check"></i>
-                    </div>
-                    <div class="timeline-panel">
-                        <div class="timeline-heading">
-                            <h4 class="timeline-title">Timeline Event</h4>
-                            <p>
-                                <small class="text-muted"><i class="fa fa-time"></i> 11 hours ago via Twitter</small>
-                            </p>
-                        </div>
-                        <div class="timeline-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="timeline-inverted">
-                    <div class="timeline-badge success">
-                        <i class="fa fa-lightbulb-o"></i>
-                    </div>
-                    <div class="timeline-panel">
-                        <div class="timeline-heading">
-                            <h4 class="timeline-title">Timeline Event</h4>
-                        </div>
-                        <div class="timeline-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="timeline-badge danger">
-                        <i class="fa fa-bug"></i>
-                    </div>
-                    <div class="timeline-panel">
-                        <div class="timeline-heading">
-                            <h4 class="timeline-title">Timeline Event</h4>
-                        </div>
-                        <div class="timeline-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vel justo eu mi scelerisque vulputate. Aliquam in metus eu lectus aliquet egestas.</p>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-
-
-
-
-
-
-
-
-
-
-
 
         </div>
         <div class="sidebar">
-            <h1>New issue</h1>
-            <div class="box">
-                <input type="text" placeholder="Name" />
+            <button class="btn btn-success btn-fill" data-bind="click: toggleNewIssue">New issue</button>
+            <div class="menu">
+                <ul class="unstyled">
+                    <li>
+                        <p>All issues</p>
+                    </li>
+                    <li>
+                        <p>Enhancment</p>
+                    </li>
+                    <li>
+                        <p>Bug</p>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -124,16 +71,17 @@
 @section scripts
 {
     <script src="~/Scripts/issues.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            var config = {
-                data: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Issues)),
-                userId: '@Model.UserId'
-            };
+<script type="text/javascript">
+    $(function () {
+        var config = {
+            data: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Issues)),
+            projectId: '@Model.Project.Id',
+            userId: '@Model.UserId'
+        };
 
-            var issuesModel1 = new issuesModel.init(config);
-            ko.applyBindings(issuesModel1);
-        });
+        var issuesModel1 = new issuesModel.init(config);
+        ko.applyBindings(issuesModel1);
+    });
 
-    </script>
+</script>
 }

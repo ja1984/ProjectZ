@@ -17,6 +17,8 @@ namespace ProjectZ.Web.Models
         public DateTime Created { get; set; }
         public string Description { get; set; }
         public string Slug { get; set; }
+        public string Logo { get; set; }
+        public string Header { get; set; }
         public List<TeamMember> Admins { get; set; }
     }
 }

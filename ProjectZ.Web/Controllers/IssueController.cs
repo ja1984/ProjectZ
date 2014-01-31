@@ -40,23 +40,24 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Issue/Create
         [HttpPost]
-        public ActionResult Create(Issue issue)
+        public JsonResult Create(Issue issue)
         {
             try
             {
-                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+                var project = RavenSession.Load<Project>(issue.ProjectId);
                 if (project == null)
-                    return View();
+                    return Json(new {success = false, message = "No project found"});
 
                 issue.ProjectId = project.Id;
                 issue.UserId = CurrentUser.Id;
                 issue.Votes.Add(new Vote { UserId = CurrentUser.Id });
                 RavenSession.Store(issue);
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = issue.Id });
             }
             catch
             {
-                return View();
+                return Json(new { success = false, message = "Error" });
+
             }
         }
 

@@ -28,7 +28,6 @@
 
     priv.TeamMember = function (data) {
         var inner = {};
-        console.log(data);
         inner.image = data.Image;
         inner.slug = data.Slug;
         inner.userName = data.UserName;

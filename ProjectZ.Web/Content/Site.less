@@ -36,10 +36,28 @@ body {
     font: 17px/26px 'RobotoRegular', Arial, sans-serif;
 }
 
-ul.unstyled {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+.background {
+    &.error {
+        background: @error;
+    }
+
+    &.warning {
+        background: @warning;
+    }
+}
+
+ul {
+    &.unstyled {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        &.inline {
+            li {
+                display: inline-block;
+            }
+        }
+    }
 }
 
 h1 {
@@ -66,11 +84,12 @@ h6 {
     .header(30px)
 }
 
-input, textarea {
+input, textarea, select {
     background: @containerBackground;
     border: 0;
     padding: 10px;
     width: 320px;
+    resize:none;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -81,6 +100,11 @@ input, textarea {
 
     &:focus {
         outline: none;
+    }
+
+    &.fill {
+        display: block;
+        width: 100%;
     }
 
     &.parsley-error {
@@ -132,7 +156,7 @@ footer {
 }
 
 .container {
-    max-width: 1300px;
+    max-width: 1100px;
     margin: 0 auto;
     position: relative;
 
@@ -142,6 +166,7 @@ footer {
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
+        position: relative;
     }
 }
 
@@ -317,12 +342,24 @@ nav.top-nav {
     width: 65%;
     margin-right: 2.5%;
     float: left;
+    position: relative;
+    min-height: 312px;
+
+    &.full {
+        width: 100%;
+        margin-right: 0;
+        float: none;
+    }
 }
 
 .sidebar {
     width: 30%;
     margin-left: 2.5%;
     float: left;
+
+    .menu {
+        margin-top: 15px;
+    }
 
     &:after {
         .clearfix;
@@ -357,8 +394,8 @@ nav.top-nav {
     -webkit-transition: all .3s ease;
     transition: all .3s ease;
 
-    i{
-        margin-right:5px;
+    i {
+        margin-right: 5px;
     }
 
     &.btn-inline {
@@ -509,7 +546,31 @@ nav.top-nav {
     }
 }
 
+.new-issue {
+    background: #efefef;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+
+    &.open {
+        display: block;
+    }
+
+    .toolbar {
+        margin-top: 10px;
+        margin-bottom: 0;
+        text-align: right;
+    }
+}
+
+
 .issues {
+    margin-bottom: 20px;
+
     .votes {
         background: #eee;
         float: left;
@@ -541,6 +602,7 @@ nav.top-nav {
     }
 
     .issue {
+        position: relative;
 
         h3 {
             margin: 5px 0;
@@ -549,31 +611,83 @@ nav.top-nav {
         .description {
             margin: 0;
         }
+
+        .badge {
+            position: absolute;
+            top: 11px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50% 50% 50% 50%;
+            text-align: center;
+            font-size: 1.4em;
+            line-height: 50px;
+            color: #fff;
+            background-color: #999999;
+
+            &.bug {
+                background: @error;
+            }
+
+            &.feature {
+                background: @warning;
+            }
+        }
     }
 }
 
 .follow-wrapper {
     margin-top: 10px;
 
-    p{
+    p {
         margin: 0;
         text-align: center;
     }
 }
 
-.projects{
-    .project{
+.projects {
+    .project {
         background: #fff;
         border: 1px solid #ccc;
         float: left;
-        margin: 0 30px 30px 0;
         padding: 15px;
-        width: 350px;
+        width: 32%;
+        margin: 0 .5% 1% .5%;
+        box-sizing: border-box;
 
-        &:last-child:after{
+        &:first-child, &:nth-child(3n+1) {
+            margin-left: 0;
+        }
+
+        &:last-child:after {
             .clearfix;
         }
     }
 }
+
+.issue-type {
+    li {
+        .badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50% 50% 50% 50%;
+            text-align: center;
+            font-size: 1.2em;
+            line-height: 40px;
+            color: #fff;
+            background-color: #999999;
+            cursor: pointer;
+
+            &.selected.bug {
+                background: @error;
+            }
+
+            &.selected.feature {
+                background: @warning;
+            }
+        }
+    }
+}
+
 
 @import "Timeline.less";

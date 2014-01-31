@@ -14,10 +14,9 @@
     <nav class="nav">
         <ul>
             <li class="active"><a href="#">Overview</a></li>
-            <li><a href="@Url.Action("Index", "Releases")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
+            <li><a href="@Url.Action("Index", "Release")">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
             <li><a href="#">Polls</a></li>
             <li><a href="@Url.Action("Index", "Issue")">Issues @Html.Raw(Model.NumberOfIssues > 0 ? string.Format("<span class='badge'>{0}</span>",Model.NumberOfIssues) : "")</a></li>
-
         </ul>
     </nav>
     <div class="inner">
@@ -40,16 +39,6 @@
 
         </div>
         <div class="sidebar">
-    <h1>Team</h1>
-            <ul class="unstyled" data-bind="foreach: teamMembers">
-                    <li class="team-member">        
-                        <img src="" data-bind="attr: {src: image}" />
-                        <div>
-                            <p><a href="#" style="display: block;" data-bind="html: firstName + ' <strong>' + userName + '</strong> ' + lastName, attr: {href: '/user/details/' + slug}"></a></p>
-                            <p data-bind="text: role"></p>
-                        </div>
-                    </li>
-            </ul>
             @if(Model.IsPageAdmin)
             {
 
@@ -70,11 +59,23 @@
                 <p><a href="javascript:void(0);" data-bind="click: setManualAddTeamMember">Add him/her manually</a></p>
             </div>
 
-            <button class="btn btn-success" disabled="disabled" data-bind="enable: selectedTeamMember() != null, click: addTeamMember">Add project members</button>
+            <button class="btn btn-success btn-fill" data-bind=" click: addTeamMember">Add project members</button>
             }            
             <div class="follow-wrapper">
                 <button class="btn btn-primary btn-fill"><i class="fa fa-heart"></i>Follow this project</button>
-                <p>0 people are following this project</p> 
+                <p>0 people are following this project</p>
+            </div>
+
+            <div class="menu">
+                <ul class="unstyled" data-bind="foreach: teamMembers">
+                    <li class="team-member">
+                        <img src="" data-bind="attr: {src: image}" />
+                        <div>
+                            <p><a href="#" style="display: block;" data-bind="html: firstName + ' <strong>' + userName + '</strong> ' + lastName, attr: {href: '/user/details/' + slug}"></a></p>
+                            <p data-bind="text: role"></p>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -89,18 +90,18 @@
 @section scripts
 {
 <script src="~/Scripts/team.js"></script>
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        var teamMembers = @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project.Admins.Select(x=>new{UserName = x.UserName, Role = x.Role.ToString(), Image = x.GetImage(40), Slug = x.Slug, FirstName = x.FirstName, LastName = x.LastName})));
-        var config = {
-            searchBox: $("#autocompleteUser"),
-            footer: $("#autocompleteUser-footer"),
-            projectId: '@Model.Project.Id'
-        };
+    var teamMembers = @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project.Admins.Select(x=>new{UserName = x.UserName, Role = x.Role.ToString(), Image = x.GetImage(40), Slug = x.Slug, FirstName = x.FirstName, LastName = x.LastName})));
+    var config = {
+        searchBox: $("#autocompleteUser"),
+        footer: $("#autocompleteUser-footer"),
+        projectId: '@Model.Project.Id'
+    };
 
-        $(function () {
-            var teamModel1 = new teamModel.init(config, teamMembers);
-            ko.applyBindings(teamModel1);
-        });
-    </script>
+    $(function () {
+        var teamModel1 = new teamModel.init(config, teamMembers);
+        ko.applyBindings(teamModel1);
+    });
+</script>
 }

@@ -28,7 +28,6 @@ namespace ProjectZ.Web.Controllers
             if (project == null)
                 return RedirectToAction("Index");
 
-
             var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
             var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
 

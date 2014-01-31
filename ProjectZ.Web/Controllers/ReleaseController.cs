@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ProjectZ.Web.Models;
+using ProjectZ.Web.ViewModels;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -14,8 +15,9 @@ namespace ProjectZ.Web.Controllers
         public ActionResult Index()
         {
             var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).ToList();
-            return View(releases);
+            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).OrderByDescending(x => x.Created).ToList();
+            var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
+            return View(new ReleaseViewModel { NumberOfIssues = issues, Project = project, Releases = releases });
         }
 
         //
@@ -44,6 +46,7 @@ namespace ProjectZ.Web.Controllers
                     return View();
 
                 release.ProjectId = project.Id;
+                release.Created = DateTime.Now;
                 RavenSession.Store(release);
                 return RedirectToAction("Index");
             }
@@ -103,7 +106,7 @@ namespace ProjectZ.Web.Controllers
                     var release = RavenSession.Load<Release>(id);
                     RavenSession.Delete(release);
                 }
-                    
+
 
                 return RedirectToAction("Index");
             }
