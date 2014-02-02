@@ -254,7 +254,7 @@ footer.container .wrapper h6 {
   text-shadow: 0 1px 0 #fff;
 }
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
 }
@@ -417,7 +417,7 @@ nav.top-nav ul li a img {
   margin-right: 2.5%;
   float: left;
   position: relative;
-  min-height: 312px;
+  min-height: 470px;
 }
 .content.full {
   width: 100%;

@@ -41,7 +41,7 @@
 
             <div class="new-issue" data-bind="css: {open: newIssue}">
                 <input type="text" class="fill" placeholder="Issue title" data-bind="value: issueTitle, valueUpdate: 'keyup'" />
-                <textarea class="fill" rows="7" draggable="false" placeholder="Issue description" data-bind="value: issueDescription, valueUpdate: 'keyup'"></textarea>
+                <textarea class="fill" rows="15" draggable="false" placeholder="Issue description" data-bind="value: issueDescription, valueUpdate: 'keyup'"></textarea>
                 <select class="fill" data-bind="options: availableIssueTypes, optionsText: 'text', value: selectedIssueType"></select>
                 <p class="toolbar">
                     <button class="btn btn-success" data-bind="disable: submitIssueButton, click: submitIssue">Submit new issue</button>
