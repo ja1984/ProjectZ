@@ -56,12 +56,13 @@
     <Reference Include="BCrypt.Net">
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+    <Reference Include="Elmah, Version=1.2.14706.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.6.1.0-alpha1\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.0-alpha1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="Elmah.Io, Version=1.0.0.38, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\elmah.io.core.1.0.0.38\lib\net40\Elmah.Io.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -73,9 +74,6 @@
     </Reference>
     <Reference Include="Raven.Client.Lightweight">
       <HintPath>..\packages\RavenDB.Client.2.5.2791-Unstable\lib\net45\Raven.Client.Lightweight.dll</HintPath>
-    </Reference>
-    <Reference Include="RouteDebugger">
-      <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -110,10 +108,6 @@
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.2\lib\net40\System.Web.Optimization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Providers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Providers.Core.2.0.0\lib\net40\System.Web.Providers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -181,19 +175,27 @@
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserBase.cs" />
+    <Compile Include="Models\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Models\ViewModels\PollViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserViewModel.cs" />
     <Compile Include="Models\Vote.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\IssueViewModel.cs" />
-    <Compile Include="ViewModels\ProjectViewModel.cs" />
-    <Compile Include="ViewModels\ReleaseViewModel.cs" />
+    <Compile Include="Models\ViewModels\IssueViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProjectViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReleaseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\fonts.css">
       <DependentUpon>fonts.less</DependentUpon>
     </Content>
     <Content Include="Content\fonts.min.css">
       <DependentUpon>fonts.less</DependentUpon>
     </Content>
+    <Content Include="Content\images\ajax-loader.gif" />
     <Content Include="Content\images\dexter.jpg" />
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\twee.jpg" />
@@ -272,13 +274,22 @@
     <Content Include="Content\Timeline.min.css">
       <DependentUpon>Timeline.less</DependentUpon>
     </Content>
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.less" />
     <Content Include="Content\fonts.less" />
     <Content Include="Content\Timeline.less" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
     <None Include="Properties\PublishProfiles\ProjectZ.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="LICENSE.txt" />
+    <Content Include="logo.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\hogan-2.0.0.js" />
     <Content Include="Scripts\issues.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
@@ -298,19 +309,11 @@
     <Content Include="Scripts\knockout-3.0.0.js" />
     <Content Include="Scripts\md5.js" />
     <Content Include="Scripts\modernizr-2.7.1.js" />
+    <Content Include="Scripts\pager.js" />
     <Content Include="Scripts\parsley.js" />
     <Content Include="Scripts\team.js" />
     <Content Include="Scripts\typeahead.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -324,15 +327,28 @@
     <Content Include="Views\Project\Manage.cshtml" />
     <Content Include="Views\Issue\Create.cshtml" />
     <Content Include="Views\Issue\Edit.cshtml" />
-    <Content Include="Views\Issue\Index.cshtml" />
+    <Content Include="Views\Project\Issues.cshtml" />
     <Content Include="Views\Issue\Details.cshtml" />
-    <Content Include="Views\Release\index.cshtml" />
+    <Content Include="Views\Project\releases.cshtml" />
     <Content Include="Views\Project\Details.cshtml" />
     <Content Include="Views\Project\Index.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Web.config" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\Project\Polls.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Shared\Partials\Menu.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\font\" />
+    <Folder Include="Views\Release\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

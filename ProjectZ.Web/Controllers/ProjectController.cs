@@ -15,15 +15,17 @@ namespace ProjectZ.Web.Controllers
         //
         // GET: /Project/
 
+        [GET("Projects")]
         public ActionResult Index()
         {
             var projects = RavenSession.Query<Project>().ToList();
             return View(projects);
         }
 
-        public ActionResult Details()
+        [GET("Projects/{id}/{projectName}/Details")]
+        public ActionResult Details(int id, string projectName)
         {
-            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+            var project = RavenSession.Load<Project>(id);
 
             if (project == null)
                 return RedirectToAction("Index");
@@ -33,7 +35,35 @@ namespace ProjectZ.Web.Controllers
 
             var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
 
-            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), NumberOfIssues = issues, NumberOfReleases = releases});
+            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), NumberOfIssues = issues, NumberOfReleases = releases });
+        }
+
+        [GET("Projects/{id}/{projectName}/Issues")]
+        public ActionResult Issues(int id, string projectName)
+        {
+            var project = RavenSession.Load<Project>(id);
+            var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
+            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+
+            return View(new IssueViewModel { Project = project, Issues = issues, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id, NumberOfReleases = releases });
+        }
+
+        [GET("Projects/{id}/{projectName}/Releases")]
+        public ActionResult Releases(int id, string projectName)
+        {
+            var project = RavenSession.Load<Project>(id);
+            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).OrderByDescending(x => x.Created).ToList();
+            var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
+            return View(new ReleaseViewModel { NumberOfIssues = issues, Project = project, Releases = releases });
+        }
+
+        [GET("Projects/{id}/{projectName}/Polls")]
+        public ActionResult Polls(int id, string projectName)
+        {
+            var project = RavenSession.Load<Project>(id);
+            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+            var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
+            return View(new PollViewModel { NumberOfIssues = issues, Project = project, NumberOfReleases = releases });
         }
 
         public ActionResult Manage()
@@ -90,17 +120,16 @@ namespace ProjectZ.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Project project, Role role)
+        public JsonResult Create(Project project, Role role)
         {
 
             project.Created = DateTime.Now;
             project.Slug = project.Name.GenerateSlug();
             project.Admins.Add(new TeamMember(CurrentUser, role, true));
             RavenSession.Store(project);
+            var url = string.Format("/{0}/{1}/details/", project.Id, project.Slug);
 
-            return Redirect("/project/details/" + project.Slug);
-
-            return View();
+            return Json(new { Success = true, Url = url });
         }
 
     }

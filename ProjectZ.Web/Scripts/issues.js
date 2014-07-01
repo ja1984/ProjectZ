@@ -17,6 +17,8 @@
         inner.hasVoted = ko.observable(false);
         inner.votes = ko.observableArray([]);
         inner.type = data.IssueType;
+        inner.typeInText = inner.type == 1 ? "Feature" : "Bug";
+        
 
         inner.issueType = ko.computed(function () {
             return inner.type == 1 ? 'fa-lightbulb-o feature' : 'fa-bug bug';
@@ -69,34 +71,37 @@
         inner.issues = ko.observableArray([]);
         inner.newIssue = ko.observable(false);
 
-        inner.issueTitle = ko.observable('');
-        inner.issueDescription = ko.observable('');
+        inner.title = ko.observable('');
+        inner.description = ko.observable('');
         inner.selectedIssueType = ko.observable(0);
-        inner.availableIssueTypes = [{ 'text': 'Bug', 'value': 0 }, { 'text': 'Feature', 'value': 1 }];
+        inner.type = ko.observable('');
+        inner.saving = ko.observable(false);
+        inner.types = [{ 'text': 'Bug', 'value': 0 }, { 'text': 'Feature', 'value': 1 }];
 
 
         inner.submitIssueButton = ko.computed(function () {
-            return inner.issueTitle() === '' || inner.issueDescription() === '';
+            return inner.title() === '' || inner.description() === '';
         });
 
         inner.resetNewIssue = function() {
-            inner.issueTitle('');
-            inner.issueDescription('');
-            inner.selectedIssueType(0);
+            inner.title('');
+            inner.description('');
+            inner.type('Bug');
             inner.newIssue(false);
         };
 
-        inner.submitIssue = function () {
+        inner.save = function () {
 
             $.ajax({
                 url: '/Issue/Create',
                 method: 'post',
                 dataType: 'json',
-                data: { 'Title': inner.issueTitle, 'Description': inner.issueDescription, 'IssueType': inner.selectedIssueType().value, 'ProjectId': priv.options.projectId },
+                data: { 'Title': inner.title, 'Description': inner.description, 'IssueType': inner.type(), 'ProjectId': priv.options.projectId },
                 success: function (response) {
                     if (response.success) {
+                        $('#create-issue').modal('hide');
                         var vote = new priv.Vote({ 'UserId': priv.options.userId });
-                        var issue = new priv.Issue({ 'Title': inner.issueTitle(), 'Description': inner.issueDescription(), 'IssueType': inner.selectedIssueType().value, 'ProjectId': priv.options.projectId, 'Id': response.message, 'Votes': [vote] });
+                        var issue = new priv.Issue({ 'Title': inner.title(), 'Description': inner.description(), 'IssueType': inner.type().value, 'ProjectId': priv.options.projectId, 'Id': response.message, 'Votes': [vote] });
                         inner.issues.push(issue);
                         inner.resetNewIssue();
                     }

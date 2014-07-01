@@ -1,0 +1,23 @@
+﻿@model ProjectZ.Web.Models.ViewModels.UserViewModel
+
+<h2>
+    <img src="@Model.User.GetImage(104)" alt="@Model.User.UserName" title="@Model.User.UserName" class="user-image"/>
+    @Model.User.UserName</h2>
+
+<div class="form-row-group">
+    <div class="form-row half">
+        <div class="inner">
+            @Model.User.Description
+        </div>
+    </div>
+    <div class="form-row half">
+        <div class="inner">
+            <p>@Model.User.FirstName @Model.User.LastName</p>
+            @if (Model.User.DisplayEmail)
+            {
+                <p>@Model.User.Email</p>    
+            }
+
+        </div>
+    </div>
+</div>

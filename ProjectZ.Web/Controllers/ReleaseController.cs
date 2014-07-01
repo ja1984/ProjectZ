@@ -10,15 +10,6 @@ namespace ProjectZ.Web.Controllers
 {
     public class ReleaseController : RavenController
     {
-        //
-        // GET: /Release/
-        public ActionResult Index()
-        {
-            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).OrderByDescending(x => x.Created).ToList();
-            var issues = RavenSession.Query<Issue>().Count(x => x.ProjectId == project.Id);
-            return View(new ReleaseViewModel { NumberOfIssues = issues, Project = project, Releases = releases });
-        }
 
         //
         // GET: /Release/Details/5
@@ -36,25 +27,25 @@ namespace ProjectZ.Web.Controllers
 
         //
         // POST: /Release/Create
-        [HttpPost]
-        public ActionResult Create(Release release)
-        {
-            try
-            {
-                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-                if (project == null)
-                    return View();
+        //[HttpPost]
+        //public ActionResult Create(Release release)
+        //{
+        //    try
+        //    {
+        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+        //        if (project == null)
+        //            return View();
 
-                release.ProjectId = project.Id;
-                release.Created = DateTime.Now;
-                RavenSession.Store(release);
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        release.ProjectId = project.Id;
+        //        release.Created = DateTime.Now;
+        //        RavenSession.Store(release);
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
         //
         // GET: /Release/Edit/5
@@ -89,31 +80,31 @@ namespace ProjectZ.Web.Controllers
 
         //
         // POST: /Release/Delete/5
-        [HttpPost]
-        public ActionResult Delete(string id)
-        {
-            try
-            {
+        //[HttpPost]
+        //public ActionResult Delete(string id)
+        //{
+        //    try
+        //    {
 
-                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
 
-                if (project == null)
-                    return View();
-
-
-                if (project.Admins.Any(x => x.Id == CurrentUser.Id))
-                {
-                    var release = RavenSession.Load<Release>(id);
-                    RavenSession.Delete(release);
-                }
+        //        if (project == null)
+        //            return View();
 
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        if (project.Admins.Any(x => x.Id == CurrentUser.Id))
+        //        {
+        //            var release = RavenSession.Load<Release>(id);
+        //            RavenSession.Delete(release);
+        //        }
+
+
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }

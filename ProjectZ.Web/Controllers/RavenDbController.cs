@@ -12,13 +12,9 @@ namespace ProjectZ.Web.Controllers
 {
     public abstract class RavenController : Controller
     {
-        protected string Subdomain
-        {
-            get { return (string)Request.RequestContext.RouteData.Values["subdomain"]; }
-        }
         protected RavenController()
         {
-            DocumentStore.Conventions.SaveEnumsAsIntegers = true;            
+            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
         }
 
         public User CurrentUser { get; set; }
@@ -28,12 +24,11 @@ namespace ProjectZ.Web.Controllers
             {
                 return new DocumentStore
                 {
-                    Url = "https://ec2-eu5.cloudbird.net/databases/d56aa754-cac6-4505-9871-5693754df001.projectz",
-                    ApiKey = "88d52e06-c340-4fa1-95e9-2bd502272a03"
+                    ConnectionStringName = "RavenDb"
                 }.Initialize();
             }
         }
-         
+
         public IDocumentSession RavenSession { get; protected set; }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

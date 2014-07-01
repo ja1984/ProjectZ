@@ -1,0 +1,88 @@
+﻿@model ProjectZ.Web.ViewModels.ReleaseViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="jumbo">
+    <img src="/Content/images/dexter.jpg" class="header-image">
+</div>
+
+<div class="wrapper">
+    <nav class="nav">
+        <ul>
+            <li><a href="details">Overview</a></li>
+            <li class="active"><p>Releases @Html.Raw(Model.Releases.Count > 0 ? string.Format("<span class='badge'>{0}</span>", Model.Releases.Count) : "")</p></li>
+            <li><a href="polls">Polls</a></li>
+            <li><a href="issues">Issues @Html.Raw(Model.NumberOfIssues > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfIssues) : "")</a></li>
+        </ul>
+    </nav>
+    <div class="inner">
+        <div class="content full">
+            <ul class="unstyled inline explanation">
+                <li>Legend: </li>
+                <li><div class="timeline-badge beta">Beta</div></li>
+                <li><div class="timeline-badge minor">Minor</div></li>
+                <li><div class="timeline-badge major">Major</div></li>
+            </ul>
+            <ul class="timeline">
+                @{
+                    var i = 1;
+                }
+
+                @foreach(var release in Model.Releases)
+                {
+                    <li class="@(i%2 == 0 ? "timeline-inverted" : "")">
+                        <div class="timeline-badge @(release.Type.ToString().ToLower())">@release.Version</div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4 class="timeline-title">@release.Title</h4>
+                                <p>
+                                    <small class="text-muted"><i class="fa fa-time"></i>Created @release.Created</small>
+                                </p>
+                            </div>
+                            <div class="timeline-body">
+                                <p>
+                                    @release.Description
+                                </p>
+
+                                <p>Changes</p>
+                                @if(release.Changes != null && release.Changes.Any()){
+                                    <ul class="unstyled">
+                                        @foreach(var change in release.Changes){
+                                            <li><i class="fa fa-check-square-o"></i>&nbsp;test</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span>No changes in this release</span>    
+                                }
+                                <p>Issues</p>
+                                @if(release.Issues != null && release.Issues.Any()){
+                                    
+                                    <ul class="unstyled">
+                                        @foreach(var issue in release.Issues){
+                                            <li><i class="fa fa-check-square-o"></i>&nbsp;test</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span>No issues resolved in this release</span>    
+                                }
+                            </div>
+                        </div>
+                    </li>
+
+                    {
+                        i++;
+                    }
+                }
+
+    
+            </ul>
+
+
+        </div>
+    </div>
+</div>

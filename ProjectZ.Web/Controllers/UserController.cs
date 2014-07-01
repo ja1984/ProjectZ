@@ -8,52 +8,99 @@ using System.Web.Security;
 using AttributeRouting.Web.Mvc;
 using ProjectZ.Web.Helpers;
 using ProjectZ.Web.Models;
+using ProjectZ.Web.Models.ViewModels;
 
 namespace ProjectZ.Web.Controllers
 {
+
     public class UserController : RavenController
     {
-
-
+        [GET("Users")]
         public ActionResult Index()
         {
-            return View();
+            var users = RavenSession.Query<User>().ToList();
+
+            return View(users);
         }
 
-        [GET("User/Details/{userName}")]
+        [GET("User/{userName}/Details")]
         public ActionResult Details(string userName)
         {
-
             var user = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == userName);
 
             if (user == null)
-                throw new HttpException(404, "Post not found");
+                throw new HttpException(404, "User not found");
 
-            return View();
+            return View(new UserViewModel { User = user });
         }
+
+
+        [GET("User/{userName}/Edit")]
+        public ActionResult Edit(string userName)
+        {
+            var user = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == userName);
+
+            if (user == null)
+                throw new HttpException(404, "User not found");
+
+            if (CurrentUser.Id != user.Id)
+                throw new HttpException(403, "You can not edit this user");
+
+
+            return View(new UserViewModel { User = user });
+        }
+
+        [POST("User/Edit/{userName}")]
+        public ActionResult Edit(User user)
+        {
+            var oldUser = RavenSession.Load<User>(CurrentUser.Id);
+
+            oldUser.GravatarEmail = user.GravatarEmail;
+            oldUser.Email = user.Email;
+            oldUser.FirstName = user.FirstName;
+            oldUser.LastName = user.LastName;
+            oldUser.Description = user.Description;
+            oldUser.DisplayEmail = user.DisplayEmail;
+            oldUser.GitHub = user.GitHub;
+
+            RavenSession.SaveChanges();
+
+
+            return RedirectToAction("edit", "user", new { username = CurrentUser.Slug });
+        }
+
 
         public ActionResult Login()
         {
-            return View();
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
-        public ActionResult Login(string username, string password)
+        public ActionResult Login(LoginViewModel loginModel)
         {
-            var user = RavenSession.Query<User>().FirstOrDefault(x => x.UserName == username || x.Email == username);
+            var user = RavenSession.Query<User>().FirstOrDefault(x => x.UserName == loginModel.Username || x.Email == loginModel.Username);
 
             if (user == null)
-                return View();
+            {
+                loginModel.HasError = true;
+                loginModel.Error = "Wrong username/email";
+                return View(loginModel);
+            }
 
 
-            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-                return View();
+
+            if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
+            {
+                loginModel.HasError = true;
+                loginModel.Error = "Wrong password";
+                return View(loginModel);
+            }
 
 
             LoginUser(user.Id);
 
 
-            return View();
+            return RedirectToAction("Details", "User", new { userName = user.Slug });
         }
 
         public JsonResult Search(string q)
@@ -108,7 +155,7 @@ namespace ProjectZ.Web.Controllers
 
             RavenSession.Store(user);
 
-            return Redirect("/user/" + user.Slug);
+            return Redirect("/user/" + user.Slug + "/edit");
 
             return View();
         }

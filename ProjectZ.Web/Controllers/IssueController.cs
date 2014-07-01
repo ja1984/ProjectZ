@@ -13,15 +13,6 @@ namespace ProjectZ.Web.Controllers
         //
         // GET: /Issue/
 
-        public ActionResult Index()
-        {
-            var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-            var issues = RavenSession.Query<Issue>().Where(x => x.ProjectId == project.Id).ToList();
-            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
-
-            return View(new IssueViewModel { Project = project, Issues = issues, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id, NumberOfReleases = releases});
-        }
-
         //
         // GET: /Issue/Details/5
         public ActionResult Details(string id)
@@ -110,31 +101,31 @@ namespace ProjectZ.Web.Controllers
 
         //
         // POST: /Issue/Delete/5
-        [HttpPost]
-        public ActionResult Delete(string id)
-        {
-            try
-            {
+        //[HttpPost]
+        //public ActionResult Delete(string id)
+        //{
+        //    try
+        //    {
 
-                var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
+        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
 
-                if (project == null)
-                    return View();
+        //        if (project == null)
+        //            return View();
 
 
-                if (project.Admins.Any(x => x.Id == CurrentUser.Id))
-                {
-                    var issue = RavenSession.Load<Issue>(id);
-                    RavenSession.Delete(issue);
-                }
-                // TODO: Add delete logic here
+        //        if (project.Admins.Any(x => x.Id == CurrentUser.Id))
+        //        {
+        //            var issue = RavenSession.Load<Issue>(id);
+        //            RavenSession.Delete(issue);
+        //        }
+        //        // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }

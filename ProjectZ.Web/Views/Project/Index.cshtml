@@ -4,25 +4,24 @@
         ViewBag.Title = "Index";
         Layout = "~/Views/Shared/_Layout.cshtml";
     }
+    <div class="projects">
 
-    <h2>Index</h2>
-
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
-
-    <ul class="unstyled projects">
-        @foreach (var project in Model)
+@foreach (var project in Model)
         {
-            <li class="project">
-                <h1>@Html.ActionLink(project.Name, "Details", new { subdomain = project.Name })</h1>
-                <p class="description">
+            <div class="project">
+
+                <div class="panel panel-default">
+                <div class="panel-body">
+                    <h6><a href="/@(project.Id)/@(project.Slug)/details">@(project.Name)</a></h6>
+                    <p class="description">
                     @project.Description
                 </p>
-                <p>
+                    </div>
+                    <div class="panel-footer">
                     <span class="left"><i class="fa fa-heart"></i></span>
                     <span class="right"><i class="fa fa-users"></i></span>
-                </p>
-            </li>
+                </div>
+                </div>
+            </div>
         }
-    </ul>
+        </div>

@@ -18,7 +18,7 @@ namespace ProjectZ.Web.Models
         public string Slug { get; set; }
 
 
-        public string GetImage(int imageSize = 26)
+        public string GetImage(int imageSize = 52)
         {
             using (var md5Hash = MD5.Create())
             {

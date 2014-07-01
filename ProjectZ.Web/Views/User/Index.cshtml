@@ -1,0 +1,10 @@
+﻿@model IEnumerable<ProjectZ.Web.Models.User>
+@{
+    ViewBag.Title = "Index";
+}
+
+<ul>
+    @foreach(var user in Model){
+        <li><a href="/user/@(user.Slug)/details">@user.UserName</a></li>
+    }
+</ul>

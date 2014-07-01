@@ -1,4 +1,4 @@
-﻿@model ProjectZ.Web.Models.Project
+﻿@model ProjectZ.Web.Models.ViewModels.LoginViewModel
 
 @{
     ViewBag.Title = "Login";
@@ -8,17 +8,26 @@
 
 <div class="box">
     <form action="/user/login" id="register" method="POST" parsley-validate novalidate>
-    
-    <section>
-        <label>Username / Email</label>
-        <input type="text" id="username" name="username" required />
-    </section>
-    <section>
-        <label>Password</label>
-        <input type="password" id="password" name="password" required />
-    </section>
-    <p>
-        <input type="submit" value="Login" class="btn btn-success btn-fill" />
-    </p>
-</form>
+
+        <section>
+            <label>Username / Email</label>
+            <input type="text" id="username" name="username" value="@Model.Username" required />
+        </section>
+        <section>
+            <label>Password</label>
+            <input type="password" id="password" name="password" required />
+        </section>
+        @if (Model.HasError)
+        {
+            <section>
+                @Model.Error
+            </section>
+        }
+        <p>
+            <a href="/user/register">Register</a>
+        </p>
+        <p>
+            <input type="submit" value="Login" class="btn btn-success btn-fill" />
+        </p>
+    </form>
 </div>
