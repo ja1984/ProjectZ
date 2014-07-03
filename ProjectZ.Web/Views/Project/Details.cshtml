@@ -25,7 +25,7 @@
         </div>
         <div class="sidebar">
             <div class="text-center">
-                <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="user-image"/>
+                <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="user-image" />
             </div>
 
             <h3>Team</h3>
@@ -35,7 +35,7 @@
                     @foreach (var member in Model.Project.Admins)
                     {
                         <li class="team-member">
-                            <img src="@(member.GetImage())" class="user-image"/>
+                            <img src="@(member.GetImage())" class="user-image" />
                             <div>
                                 <p><a href="/user/@(member.Slug)/details" style="display: block;">@member.FirstName @member.LastName</a></p>
                                 <p>@member.Role</p>
@@ -47,15 +47,31 @@
             @if (Model.IsPageAdmin)
             {
                 <div class="admin-wrapper">
-                    <button class="btn btn-default btn-block btn-lg">Manage team</button>
+                    <button class="button button-block button-filled button-large">Manage team</button>
                 </div>
             }
             <div class="follow-wrapper">
                 <p><span data-bind="text: followers"></span>&nbsp;people are following this project</p>
                 @if (Context.User.Identity.IsAuthenticated)
                 {
-                    <button data-bind="click: toggleFollow" class="btn btn-primary btn-block btn-lg"><span data-bind="    text: following() ? 'Unfollow' : 'Follow'"></span></button>                
+                    <button data-bind="click: toggleFollow" class="button button-primary button-block button-filled button-large"><span class="fa fa-heart" data-bind="css: following() ? 'fa-heart-o' : 'fa-heart'"></span>&nbsp;<span data-bind="text: following() ? 'Unfollow' : 'Follow'"></span></button>
                 }
+
+            </div>
+            <div>
+                <br/>
+                <button class="button button-block button-filled button-large">test</button>
+                <button class="button button-block button-filled button-large button-success">test</button><br/>
+                <button class="button button-block button-filled button-large button-error" >test</button><br />
+                <button class="button button-block button-filled button-large button-primary">test</button><br />
+                <button class="button button-block button-filled button-large button-warning">test</button><br />
+                <br/><br/>
+                <button class="button button-block button-large">test</button>
+                <button class="button button-block button-large button-success">test</button><br />
+                <button class="button button-block button-large button-error">test</button><br />
+                <button class="button button-block button-large button-primary">test</button><br />
+                <button class="button button-block button-large button-warning">test</button><br />
+                
 
             </div>
         </div>
@@ -67,7 +83,7 @@
 {
     <script type="text/javascript">
 
-        
+
         var projectConfig = {
             projectId: '@(Model.Project.Id)',
             followers: @Model.Followers,
@@ -88,7 +104,7 @@
                 var inner = {};
                 inner.followers = ko.observable(config.followers);
                 inner.following = ko.observable(config.following);
-            
+
                 inner.toggleFollow = function () {
                     if(!inner.following()) {
                         inner.follow();
@@ -112,7 +128,7 @@
 
                         });
                 };
-                
+
                 inner.unFollow = function() {
                     inner.followers(parseInt(inner.followers()) - 1);
                     inner.following(false);
@@ -138,7 +154,7 @@
                     data: { projectId: projectId }
                 });
             };
-            
+
             priv.unFollow = function (projectId) {
                 return $.ajax({
                     method:'post',

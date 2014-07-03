@@ -17,7 +17,7 @@
 <ul class="projects">
     @foreach(var project in Model.Follows)
     {
-        <li><a href="/@project.Id/@project.Name/details"><img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/> @project.Name</a></li>
+        <li><a href="/@project.Id/@project.Name.GenerateSlug()/details"><img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/> @project.Name</a></li>
     }
 </ul>
 
