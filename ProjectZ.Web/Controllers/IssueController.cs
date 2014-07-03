@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using ProjectZ.Web.Models;
 using ProjectZ.Web.ViewModels;
+using Action = ProjectZ.Web.Models.Action;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -21,6 +22,37 @@ namespace ProjectZ.Web.Controllers
             return View(issue);
         }
 
+        [HttpPost]
+        public JsonResult Comment(string comment, string projectId, int issueId)
+        {
+            var project = RavenSession.Load<Project>(projectId);
+            var issue = project.Issues.FirstOrDefault(x => x.Id == issueId);
+
+            var issueComment = new IssueComment
+                                   {
+                                       Id = issue.Comments.Count() + 1,
+                                       Comment = comment,
+                                       Posted = DateTime.Now,
+                                       User = new IssueCommentUser(CurrentUser)
+                                   };
+
+            issue.Comments.Add(issueComment);
+
+            var eventAction = new EventAction()
+            {
+                Action = issue.IssueType == IssueType.Feature ? Action.Feature : Action.Bug,
+                Created = DateTime.Now,
+                ProjectId = projectId,
+                Title = comment,
+                ProjectName = project.Name,
+                Url = string.Format("/{0}/{1}/issues/{2}#{3}", projectId, project.Slug, issue.Id, issueComment.Id)
+            };
+            RavenSession.Store(eventAction);
+
+            RavenSession.SaveChanges();
+            return Json("");
+        }
+
         //
         // GET: /Issue/Create
         public ActionResult Create()
@@ -31,18 +63,36 @@ namespace ProjectZ.Web.Controllers
         //
         // POST: /Issue/Create
         [HttpPost]
-        public JsonResult Create(Issue issue)
+        public JsonResult Create(Issue issue, string projectId)
         {
             try
             {
-                var project = RavenSession.Load<Project>(issue.ProjectId);
+                var project = RavenSession.Load<Project>(projectId);
                 if (project == null)
-                    return Json(new {success = false, message = "No project found"});
+                    return Json(new { success = false, message = "No project found" });
 
-                issue.ProjectId = project.Id;
-                issue.UserId = CurrentUser.Id;
+                if (CurrentUser == null)
+                    return Json(new { success = false, message = "You are not logged in" });
+
+                issue.User = new IssueUser(CurrentUser);
                 issue.Votes.Add(new Vote { UserId = CurrentUser.Id });
-                RavenSession.Store(issue);
+                issue.Posted = DateTime.Now;
+                issue.Id = project.Issues.Count() + 1;
+                project.Issues.Add(issue);
+
+                var eventAction = new EventAction()
+                               {
+                                   Action = issue.IssueType == IssueType.Feature ? Action.Feature : Action.Bug,
+                                   Created = DateTime.Now,
+                                   ProjectId = projectId,
+                                   Title = issue.Title,
+                                   ProjectName = project.Name,
+                                   Url = string.Format("/{0}/{1}/issues/{2}", projectId, project.Slug, issue.Id)
+                               };
+                RavenSession.Store(eventAction);
+                RavenSession.SaveChanges();
+
+
                 return Json(new { success = true, message = issue.Id });
             }
             catch

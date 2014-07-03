@@ -27,6 +27,12 @@ namespace ProjectZ.Web.Helpers
             byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(txt);
             return System.Text.Encoding.ASCII.GetString(bytes);
         }
+
+        public static string GetProjectId(string projectId)
+        {
+            var id = projectId.Split('/');
+            return id[1];
+        }
     }
 
 

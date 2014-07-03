@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using ProjectZ.Web.Helpers;
 
 namespace ProjectZ.Web.Models
 {
@@ -11,15 +12,17 @@ namespace ProjectZ.Web.Models
         public Issue()
         {
             Votes = new List<Vote>();
+            Comments = new List<IssueComment>();
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public DateTime Posted { get; set; }
         public IList<Vote> Votes { get; set; }
-        public string UserId { get; set; }
-        public string ProjectId { get; set; }
         public IssueType IssueType { get; set; }
+        public List<IssueComment> Comments { get; set; }
+        public IssueUser User { get; set; }
     }
 
     public enum IssueType
@@ -33,5 +36,22 @@ namespace ProjectZ.Web.Models
         Closed = 0,
         Open = 1,
         InProgress = 2,
+    }
+
+    public class IssueUser
+    {
+        public IssueUser() { }
+
+        public IssueUser(User user)
+        {
+            UserId = user.Id;
+            DisplayName = user.UserName;
+            Image = user.GetImage();
+        }
+
+        public string Id { get; set; }
+        public string UserId { get; set; }
+        public string DisplayName { get; set; }
+        public string Image { get; set; }
     }
 }

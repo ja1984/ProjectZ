@@ -1,0 +1,17 @@
+﻿@model IEnumerable<ProjectZ.Web.Models.EventAction>
+@{
+    ViewBag.Title = "HomeFeed";
+}
+
+<ul>
+    @foreach(var action in Model)
+    {
+        <li>
+            <a href="@action.Url">
+                <h5>@action.Title</h5>
+                <p>@action.Created</p>
+            </a>
+        </li>
+    }
+</ul>
+

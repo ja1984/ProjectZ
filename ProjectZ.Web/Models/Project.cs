@@ -10,6 +10,25 @@ namespace ProjectZ.Web.Models
         public Project()
         {
             Admins = new List<TeamMember>();
+            Followers = new List<string>();
+            Issues = new List<Issue>();
+        }
+
+        public string GetShortDescription()
+        {
+            return Description.Length > 200 ? Description.Substring(0, 200) : Description;
+        }
+        public bool LongText()
+        {
+            return Description.Length > 200;
+        }
+
+        public string GetLogo(int size = 52, LogoSize imageType = LogoSize.Normal)
+        {
+            if (string.IsNullOrEmpty(Logo))
+                return "/Content/Images/nologo.png";
+
+            return imageType == LogoSize.Normal ? Logo : string.Format("icon_{0}", Logo);
         }
 
         public string Id { get; set; }
@@ -20,5 +39,12 @@ namespace ProjectZ.Web.Models
         public string Logo { get; set; }
         public string Header { get; set; }
         public List<TeamMember> Admins { get; set; }
+        public List<String> Followers { get; set; }
+        public List<Issue> Issues { get; set; }
+
+        public enum LogoSize
+        {
+            Normal, Icon
+        }
     }
 }

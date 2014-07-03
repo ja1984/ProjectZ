@@ -6,13 +6,11 @@ using ProjectZ.Web.Models;
 
 namespace ProjectZ.Web.ViewModels
 {
-    public class ProjectViewModel
+    public class IssuesViewModel
     {
         public Project Project { get; set; }
-        public int NumberOfIssues { get; set; }
+        public List<Issue> Issues { get; set; }
         public int NumberOfReleases { get; set; }
-        public int Followers { get; set; }
-        public bool IsPageAdmin { get; set; }
-        public bool Following { get; set; }
+        public string UserId { get; set; }
     }
 }

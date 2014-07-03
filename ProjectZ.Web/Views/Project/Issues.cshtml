@@ -1,27 +1,39 @@
 ﻿@using System.Web.Script.Serialization
-@model ProjectZ.Web.ViewModels.IssueViewModel
+@model ProjectZ.Web.ViewModels.IssuesViewModel
 
 @{
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Issues <a href="#" class="btn btn-success pull-right" data-toggle="modal" data-target="#create-issue">Add issue</a></h2>
-<div style="border: 1px solid #ccc;" id="issues">
+<h2>Issues <a href="#" class="btn btn-default btn-lg pull-right" data-toggle="modal" data-target="#create-issue">Add issue</a></h2>
+<div class="wrapper" id="issues">
+    <nav class="nav">
+        <ul>
+            <li><a href="details">Overview</a></li>
+            <li><a href="releases">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
+            <li><a href="polls">Polls</a></li>
+            <li class="active">
+                <p>Issues @Html.Raw(Model.Issues.Count > 0 ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</p>
+            </li>
+        </ul>
+    </nav>
+    <div class="inner">
+        <div style="border: 1px solid #ccc;" id="issues">
     <!-- ko foreach: issues-->
-    <a href="#" class="issue">
+    <a href="#" class="issue" data-bind="attr: {'href': 'issues/' + id}">
         <div class="row issues">
             <div class="col-lg-1 type text-center">
                 <p class="icon"><i class="fa fa-fw" data-bind="css: issueType()"></i></p>
             </div>
             <div class="col-lg-1 type">
-                <span data-bind="text: typeInText"></span>
+                <span data-bind="text: typeInText"></span>&nbsp;<span data-bind="    text: '('+comments+')'"></span>
             </div>
             <div class="col-lg-9">
                 <p style="margin: 1px;"></p>
                 <span data-bind="text: title"></span>
             </div>
-            <div class="col-lg-1 text-center" style="color: #0052FF;">
-                <span>+1</span>
+            <div class="col-lg-1 text-center" style="color: #8F9194;">
+                <p class="plusone" data-bind="css: {'active': !allowedToVote()}"><span>+1</span></p>
             </div>
         </div>
     </a>
@@ -47,69 +59,8 @@
         </div>
     </div>
 </div>
-
-@*<div class="jumbo">
-    <img src="/Content/images/dexter.jpg" class="header-image">
-</div>
-
-<div class="wrapper" id="issues">
-    <nav class="nav">
-        <ul>
-            <li><a href="details">Overview</a></li>
-            <li><a href="releases">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
-            <li><a href="polls">Polls</a></li>
-            <li class="active">
-                <p>Issues @Html.Raw(Model.Issues.Count > 0 ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</p>
-            </li>
-        </ul>
-    </nav>
-    <div class="inner">
-        <div class="content">
-
-            <ul class="unstyled" data-bind="foreach: issues">
-                <li class="issue"><a href="#">
-                    <div class="row issues">
-                        <div class="col-lg-3 type">
-                            <p class="icon"><i class="fa fa-bug fa-fw" data-bind="css: issueType()"></i></p>
-                            <span data-bind="text: typeInText"></span>
-                        </div>
-                        <div class="col-lg-9">
-                            <p style="margin: 1px;"></p>
-                            <span data-bind="text: title"></span>
-                        </div>
-                    </div>
-                </a>
-                </li>
-            </ul>
-
-            <div class="new-issue" data-bind="css: {open: newIssue}">
-                <input type="text" class="fill" placeholder="Issue title" data-bind="value: issueTitle, valueUpdate: 'keyup'" />
-                <textarea class="fill" rows="15" draggable="false" placeholder="Issue description" data-bind="value: issueDescription, valueUpdate: 'keyup'"></textarea>
-                <select class="fill" data-bind="options: availableIssueTypes, optionsText: 'text', value: selectedIssueType"></select>
-                <p class="toolbar">
-                    <button class="btn btn-success" data-bind="disable: submitIssueButton, click: submitIssue">Submit new issue</button>
-                </p>
-            </div>
-
-        </div>
-        <div class="sidebar">
-            <button class="btn btn-success btn-fill" data-bind="click: toggleNewIssue">New issue</button>
-            <div class="menu">
-                <ul class="unstyled">
-                    <li>
-                        <p>All issues</p>
-                    </li>
-                    <li>
-                        <p>Enhancment</p>
-                    </li>
-                    <li>
-                        <p>Bug</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
-</div>*@
+</div>
 
 @section scripts
 {

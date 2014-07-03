@@ -1,4 +1,5 @@
-﻿@model ProjectZ.Web.Models.User
+﻿@using ProjectZ.Web.Helpers
+@model ProjectZ.Web.Models.User
 <li class="user">
     <a href="/user/@Model.Slug/edit/">
         <div class="user-image">
@@ -12,4 +13,11 @@
 <li>
     <a href="/user/logout">Sign out</a>
 </li>
+
+<ul class="projects">
+    @foreach(var project in Model.Follows)
+    {
+        <li><a href="/@project.Id/@project.Name/details"><img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/> @project.Name</a></li>
+    }
+</ul>
 

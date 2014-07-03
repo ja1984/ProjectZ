@@ -10,11 +10,15 @@
     };
 
     priv.Issue = function (data) {
+
+        console.log(data);
+
         var inner = {};
         inner.id = data.Id;
         inner.title = data.Title;
         inner.description = data.Description;
         inner.hasVoted = ko.observable(false);
+        inner.comments = data.Comments.length;
         inner.votes = ko.observableArray([]);
         inner.type = data.IssueType;
         inner.typeInText = inner.type == 1 ? "Feature" : "Bug";
@@ -101,7 +105,7 @@
                     if (response.success) {
                         $('#create-issue').modal('hide');
                         var vote = new priv.Vote({ 'UserId': priv.options.userId });
-                        var issue = new priv.Issue({ 'Title': inner.title(), 'Description': inner.description(), 'IssueType': inner.type().value, 'ProjectId': priv.options.projectId, 'Id': response.message, 'Votes': [vote] });
+                        var issue = new priv.Issue({ 'Title': inner.title(), 'Description': inner.description(), 'IssueType': inner.type().value, 'ProjectId': priv.options.projectId, 'Id': response.message, 'Votes': [vote], 'Comments': 0 });
                         inner.issues.push(issue);
                         inner.resetNewIssue();
                     }

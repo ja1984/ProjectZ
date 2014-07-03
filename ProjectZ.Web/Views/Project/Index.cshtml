@@ -1,27 +1,46 @@
 ﻿@model IEnumerable<ProjectZ.Web.Models.Project>
 
-    @{
-        ViewBag.Title = "Index";
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
-    <div class="projects">
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="projects" id="projects">
 
 @foreach (var project in Model)
-        {
-            <div class="project">
+    {
+        <div class="project">
 
-                <div class="panel panel-default">
-                <div class="panel-body">
-                    <h6><a href="/@(project.Id)/@(project.Slug)/details">@(project.Name)</a></h6>
-                    <p class="description">
-                    @project.Description
+            <div class="panel panel-default">
+            <div class="panel-body">
+                <h6><a href="/@(project.Id)/@(project.Slug)/details">@(project.Name)</a></h6>
+                <p class="description">
+                @project.GetShortDescription()
+                    @if(project.LongText()){
+                        <div class="text-overlay"></div>
+                    }
+
                 </p>
-                    </div>
-                    <div class="panel-footer">
-                    <span class="left"><i class="fa fa-heart"></i></span>
-                    <span class="right"><i class="fa fa-users"></i></span>
                 </div>
-                </div>
+                <div class="panel-footer">
+                <span class="left"><i class="fa fa-heart"></i></span>
+                <span class="right"><i class="fa fa-users"></i></span>
             </div>
-        }
+            </div>
         </div>
+    }
+    </div>
+    
+    
+@section scripts
+{
+    <script type="text/javascript">
+        $(function() {
+            var $container = $('#projects');
+            // initialize
+            $container.masonry({
+                columnWidth: ".project",
+                itemSelector: '.project'
+            });
+        });
+    </script>
+}

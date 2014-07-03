@@ -1,0 +1,207 @@
+﻿@model ProjectZ.Web.Models.Project
+@{
+    ViewBag.Title = "Edit";
+}
+<div id="edit-project-wrapper">
+    <h2>
+        <div class="project-logo" data-toggle="modal" data-target="#logo-upload">
+            <img src="@Model.GetLogo()" alt="@Model.Name" title="@Model.Name" class="user-image" data-bind="attr: { 'src': logoUrl }">
+            <i class="fa fa-upload fa-1x"></i>
+        </div>
+
+        @Model.Name
+    </h2>
+
+    <form method="post" action="/User/Edit">
+
+        <div class="form-row-group">
+            <div class="form-row half">
+                <div class="inner">
+                    @Model.Name
+                </div>
+            </div>
+            <div class="form-row half">
+                <div class="inner">
+                </div>
+            </div>
+        </div>
+        <div class="form-row-group">
+            <div class="form-row half">
+                <div class="inner">
+                </div>
+            </div>
+            <div class="form-row half">
+                <div class="inner">
+                </div>
+            </div>
+        </div>
+        <div class="form-row-group">
+            <div class="form-row half">
+                <div class="inner">
+                    @Html.TextAreaFor(x => x.Description, new { @class = "fill", placeholder = "Description", rows = "7" })
+                </div>
+            </div>
+            <div>
+                <div class="form-row half">
+                    <div class="inner">
+                        @*@Html.TextBoxFor(x => x.User.GitHub, new { @class = "fill", placeholder = "Github username" })*@
+                    </div>
+                </div>
+                <div class="form-row half">
+                    <div class="inner">
+                        @*                    <label class="fill" style="font-weight: normal; margin: 0; cursor: pointer;">
+                        @Html.CheckBoxFor(x => x.User.DisplayEmail)Show my email
+                    </label>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <input type="submit" class="btn btn-success btn-large" style="margin-right: 8px;" value="Save changes" />
+        </div>
+    </form>
+
+
+
+
+
+
+
+
+
+    <div class="modal fade" id="logo-upload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h3>Upload logo</h3>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm(new { enctype = "multipart/form-data", action = "/Upload" }))
+                    {
+                        @Html.AntiForgeryToken(); 
+                        <input type="file" name="uploadedFile" id="fileupload" /> 
+                        <input type="hidden" name="projectId" id="projectId" value="@Model.Id"/>
+                    }
+
+                    <div id="progress">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-danger pull-left" style="width: auto;" value="Remove logo" data-bind="click: removeLogo" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery.ui.widget.js"></script>
+    <script src="~/Scripts/jquery.fileupload.js"></script>
+    <script src="~/Scripts/jquery.iframe-transport.js"></script>
+    <script type="text/javascript">
+
+        var editProjectConfig = {
+            fileUpload: $('#fileupload'),
+            imageUrl: '@Model.GetLogo()',
+            projectId: '@Model.Id'
+        };
+
+        var EditModel = function () {
+            var priv = {};
+            var pub = {};
+
+            pub.Init = function (config) {
+                var viewModel = new priv.viewModel(config);
+                viewModel.initFileUpload();
+                return viewModel;
+            };
+
+            priv.updateLogo = function (data) {
+                return $.ajax({
+                    method: 'post',
+                    url: '/Project/SaveLogo',
+                    data: { projectId: data.projectId, url: data.url }
+                });
+            };
+
+            priv.removeLogo = function (data) {
+                return $.ajax({
+                    method: 'post',
+                    url: '/Project/RemoveLogo',
+                    data: { projectId: data.projectId }
+                });
+            };
+
+            priv.viewModel = function (config) {
+                var inner = {};
+
+                inner.logoUrl = ko.observable(config.imageUrl);
+                inner.projectId = config.projectId;
+                inner.updateLogo = function (url) {
+                    priv.updateLogo({ projectId: inner.projectId, url: url })
+                        .done(function (response) {
+                            console.log(response);
+                        });
+                };
+
+                inner.removeLogo = function () {
+                    if (confirm("Are you sure?"))
+                        priv.removeLogo({ projectId: inner.projectId }).done(function (response) {
+                            console.log(response);
+                        });
+                };
+
+                inner.initFileUpload = function () {
+                    config.fileUpload.fileupload({
+                        // Only submit the file if it is jpg file
+                        add: function (e, data) {
+                            var goUpload = true;
+                            var uploadFile = data.files[0];
+                            // Only allow JPG files
+                            if (!(/\.(jpg)$/i).test(uploadFile.name)) {
+                                alert("Incorrect file format. Please try again.");
+                                goUpload = false;
+                            }
+                            if (goUpload == true) {
+                                data.submit();
+                            }
+                        },
+                        type: 'post',
+                        // Handles the server side validation on file type
+                        done: function (e, data) {
+                            var response = JSON.parse(data.result);
+                            console.log(response);
+                            if (response.statusCode == 200) {
+                                var logoUrl = '/Uploads/' + response.file;
+                                inner.logoUrl(logoUrl);
+                                inner.updateLogo(logoUrl);
+                            }
+                        },
+                        progressall: function (e, data) {
+                            // Handle the progress bar
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            $('#progress .bar').css(
+                                'width',
+                                progress + '%'
+                            );
+                        }
+                    });
+                };
+
+                return inner;
+            };
+
+            return pub;
+        }();
+
+
+        $(function () {
+            ko.applyBindings(new EditModel.Init(editProjectConfig), document.getElementById("edit-project-wrapper"));
+        });
+    </script>
+
+}
