@@ -5,63 +5,65 @@
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Issues <button class="button pull-right" data-toggle="modal" data-target="#create-issue"><span>Add issue</span></button></h2>
-<div class="wrapper" id="issues">
-    <nav class="nav">
-        <ul>
-            <li><a href="details">Overview</a></li>
-            <li><a href="releases">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
-            <li><a href="polls">Polls</a></li>
-            <li class="active">
-                <p>Issues @Html.Raw(Model.Issues.Count > 0 ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</p>
-            </li>
-        </ul>
-    </nav>
-    <div class="inner">
-        <div style="border: 1px solid #ccc;" id="issues">
-    <!-- ko foreach: issues-->
-    <a href="#" class="issue" data-bind="attr: {'href': 'issues/' + id}">
-        <div class="row issues">
-            <div class="col-lg-1 type text-center">
-                <p class="icon"><i class="fa fa-fw" data-bind="css: issueType()"></i></p>
-            </div>
-            <div class="col-lg-1 type">
-                <span data-bind="text: typeInText"></span>&nbsp;<span data-bind="    text: '('+comments+')'"></span>
-            </div>
-            <div class="col-lg-9">
-                <p style="margin: 1px;"></p>
-                <span data-bind="text: title"></span>
-            </div>
-            <div class="col-lg-1 text-center" style="color: #8F9194;">
-                <p class="plusone" data-bind="css: {'active': !allowedToVote()}"><span>+1</span></p>
-            </div>
-        </div>
-    </a>
-    <!--/ko-->
-    <div class="modal fade" id="create-issue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
-                </div>
-                <div class="modal-body">
-                    <textarea rows="5" class="fill" placeholder="Description" data-bind="value: description"></textarea>
-                    <select class="fill" data-bind="options: types, optionsText: 'text', value: type">
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <i class="fa fa-circle-o-notch fa-spin fa-fw pull-left fa-2x" style="color: #ccc;" data-bind="visible: saving"></i>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" data-bind="click: save">Create Issue</button>
+<div id="issues">
+    <h2>Issues
+        <button class="button pull-right" data-toggle="modal" data-target="#create-issue"><span>Add issue</span></button></h2>
+    <div class="wrapper" id="issues">
+        <nav class="nav">
+            <ul>
+                <li><a href="details">Overview</a></li>
+                <li><a href="releases">Releases @Html.Raw(Model.NumberOfReleases > 0 ? string.Format("<span class='badge'>{0}</span>", Model.NumberOfReleases) : "")</a></li>
+                <li><a href="polls">Polls</a></li>
+                <li class="active">
+                    <p>Issues @Html.Raw(Model.Issues.Count > 0 ? string.Format("<span class='badge'>{0}</span>", Model.Issues.Count) : "")</p>
+                </li>
+            </ul>
+        </nav>
+        <div class="inner">
+            <div style="border: 1px solid #ccc;" id="issues">
+                <!-- ko foreach: issues-->
+                <a href="#" class="issue" data-bind="attr: {'href': 'issues/' + id}">
+                    <div class="row issues">
+                        <div class="col-lg-1 type text-center">
+                            <p class="icon"><i class="fa fa-fw" data-bind="css: issueType()"></i></p>
+                        </div>
+                        <div class="col-lg-1 type">
+                            <span data-bind="text: typeInText"></span>&nbsp;<span data-bind="    text: '('+comments+')'"></span>
+                        </div>
+                        <div class="col-lg-9">
+                            <p style="margin: 1px;"></p>
+                            <span data-bind="text: title"></span>
+                        </div>
+                        <div class="col-lg-1 text-center" style="color: #8F9194;">
+                            <p class="plusone" data-bind="css: {'active': !allowedToVote()}"><span>+1</span></p>
+                        </div>
+                    </div>
+                </a>
+                <!--/ko-->
+                <div class="modal fade" id="create-issue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
+                            </div>
+                            <div class="modal-body">
+                                <textarea rows="5" class="fill" placeholder="Description" data-bind="value: description"></textarea>
+                                <select class="fill" data-bind="options: types, optionsText: 'text', value: type">
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <i class="fa fa-circle-o-notch fa-spin fa-fw pull-left fa-2x" style="color: #ccc;" data-bind="visible: saving"></i>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-success" data-bind="click: save">Create Issue</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-    </div>
-</div>
-
 @section scripts
 {
     <script src="~/Scripts/issues.js"></script>

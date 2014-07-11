@@ -1,4 +1,5 @@
-﻿@model ProjectZ.Web.Models.ViewModels.UserViewModel
+﻿@using ProjectZ.Web.Helpers
+@model ProjectZ.Web.Models.ViewModels.UserViewModel
 
 <h2>
     <img src="@Model.User.GetImage(104)" alt="@Model.User.UserName" title="@Model.User.UserName" class="user-image"/>
@@ -17,6 +18,17 @@
             {
                 <p>@Model.User.Email</p>    
             }
+
+        </div>
+
+        <div class="inner">
+            <h6 style="border-bottom: 1px solid #f3f3f3;">Projects I'm involved with</h6>
+            <ul class="unstyled">
+                @foreach (var project in Model.User.Projects)
+                {
+                    <li><a href="/@project.Id/@project.Name.GenerateSlug()/details">@project.Name</a></li>
+                }
+            </ul>
 
         </div>
     </div>

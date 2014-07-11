@@ -12,6 +12,7 @@ namespace ProjectZ.Web.Models
             Admins = new List<TeamMember>();
             Followers = new List<string>();
             Issues = new List<Issue>();
+            Polls = new List<Poll>();
         }
 
         public string GetShortDescription()
@@ -41,6 +42,8 @@ namespace ProjectZ.Web.Models
         public List<TeamMember> Admins { get; set; }
         public List<String> Followers { get; set; }
         public List<Issue> Issues { get; set; }
+        public List<Poll> Polls { get; set; }
+        public bool IsPrivate { get; set; }
 
         public enum LogoSize
         {

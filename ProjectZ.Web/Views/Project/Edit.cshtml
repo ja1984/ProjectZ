@@ -57,16 +57,52 @@
             </div>
         </div>
         <div class="text-right">
-            <input type="submit" class="btn btn-success btn-large" style="margin-right: 8px;" value="Save changes" />
+            <button type="submit" class="button button-success button-large" style="margin-right: 8px;"><span>Save changes</span></button>
         </div>
     </form>
 
+    <div class="edit-polls">
+        <h4>Polls
+            <button class="button button-success pull-right" data-bind="click: newPoll"><span>New poll</span></button>
 
+        </h4>
 
+        <form id="polls-form" data-bind="with: selectedPoll">
+            <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
+            <!-- ko foreach: options-->
+            <div style="position: relative;">
+                <input type="text" class="fill" data-bind="value: title, attr: { 'Placeholder': 'Option #' + $index() }" />
+                <i class="fa fa-times-circle-o" style="position: absolute; right: 12px; top: 12px;" data-bind="click: removeOption, visible: $index() > 1"></i>
+            </div>
+            <!--/ko-->
+            <p class="button button-primary" data-bind="click: newOption"><span>New option</span></p>
+            <button class="button button-success" data-bind="click: savePoll"><span>Save poll</span></button>
+        </form>
 
+    </div>
 
+    <div class="edit-issues">
+        <h4>Issues</h4>
+    </div>
 
+    <div class="edit-releases">
+        <h4>Releases</h4>
+    </div>
 
+    <div class="edit-teammamber">
+        <h4>Teammembers</h4>
+        <input type="text" id="txtUsername" placeholder="Username/Email" data-bind="jqAuto: { value: selectedUser, source: getOptions, labelProp: 'UserName', template: 'rowTmpl' }" /><br/>
+        <div data-bind="visible: selectedUser() != ''" style="display: none;">
+        <label><input type="checkbox" data-bind="checked: isPageAdmin">User is also page admin</input></label><br/>
+            <select class="fill" data-bind="options: roles, optionsText: 'role', value: role"></select><br/>
+            </div>
+        <button class="button" data-bind="css: { 'button-success': selectedUser() != '' }, click: addUser">Add member</button>
+    </div>
+
+    <script id="rowTmpl" type="text/html">
+        <a>
+            <img class='user-image smaller' data-bind="attr: { 'src': Image }"><strong data-bind="    text: UserName"></strong>&nbsp;<span data-bind="    text: FirstName"></span>&nbsp;<span data-bind="    text: LastName"></span></a>
+    </script>
 
 
     <div class="modal fade" id="logo-upload" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -102,10 +138,12 @@
     <script src="~/Scripts/jquery.ui.widget.js"></script>
     <script src="~/Scripts/jquery.fileupload.js"></script>
     <script src="~/Scripts/jquery.iframe-transport.js"></script>
+    <script src="~/Scripts/knockout-jqAutocomplete.min.js"></script>
     <script type="text/javascript">
 
         var editProjectConfig = {
             fileUpload: $('#fileupload'),
+            autocomplete: $("#txtUsername"),
             imageUrl: '@Model.GetLogo()',
             projectId: '@Model.Id'
         };
@@ -115,7 +153,8 @@
             var pub = {};
 
             pub.Init = function (config) {
-                var viewModel = new priv.viewModel(config);
+                priv.config = config;
+                var viewModel = new priv.viewModel();
                 viewModel.initFileUpload();
                 return viewModel;
             };
@@ -136,16 +175,97 @@
                 });
             };
 
-            priv.viewModel = function (config) {
+            priv.option = function (viewModel) {
                 var inner = {};
 
-                inner.logoUrl = ko.observable(config.imageUrl);
-                inner.projectId = config.projectId;
+                inner.title = ko.observable();
+                inner.votes = ko.observableArray([]);
+
+                inner.removeOption = function () {
+                    if (confirm('Are you sure?'))
+                        viewModel.options.remove(this);
+                };
+
+                return inner;
+            };
+
+            priv.poll = function () {
+                var inner = {};
+                inner.title = ko.observable();
+                inner.options = ko.observableArray([]);
+
+                for (var i = 0; i < 2; i++) {
+                    inner.options.push(priv.option(inner));
+                }
+
+                inner.newOption = function () {
+                    inner.options.push(priv.option(inner));
+                };
+
+                inner.savePoll = function () {
+                    priv.savePoll(inner).done(function (response) {
+                        console.log(response);
+                    });
+                };
+
+                return inner;
+            };
+
+            priv.savePoll = function (data) {
+                return $.ajax({
+                    url: '/Project/CreatePoll',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: ko.toJSON({ projectId: priv.config.projectId, Poll: { Title: data.title, Options: data.options } })
+                });
+            };
+
+            priv.addMember = function (userId, admin, role) {
+                return $.ajax({
+                    url: '/Project/AddTeamMember',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: ko.toJSON({ projectId: priv.config.projectId, userId: userId, isAdmin: admin, role: role })
+                });
+            };
+
+            priv.viewModel = function () {
+                var inner = {};
+
+                inner.logoUrl = ko.observable(priv.config.imageUrl);
+                inner.projectId = priv.config.projectId;
                 inner.updateLogo = function (url) {
                     priv.updateLogo({ projectId: inner.projectId, url: url })
                         .done(function (response) {
                             console.log(response);
                         });
+                };
+
+                inner.getOptions = function (searchTerm, callback) {
+                    $.ajax({
+                        dataType: "json",
+                        url: "/User/Search",
+                        data: {
+                            query: searchTerm
+                        },
+                    }).done(callback);
+                };
+
+                inner.selectedPoll = ko.observable();
+
+                inner.selectedUser = ko.observable('');
+                inner.isPageAdmin = ko.observable(false);
+
+                inner.newPoll = function () {
+                    inner.selectedPoll(priv.poll());
+                };
+
+                inner.addUser = function () {
+                    if (!inner.selectedUser()) return false;
+
+                    priv.addMember(inner.selectedUser().UserId, inner.isPageAdmin(), inner.role().id).done(function(response) {
+                        console.log(response);
+                    });
                 };
 
                 inner.removeLogo = function () {
@@ -155,8 +275,44 @@
                         });
                 };
 
+                inner.role = ko.observable('');
+
+                inner.roles = ko.observableArray([
+                    {
+                        role: 'Developer',
+                        id: 0
+                    },
+                    {
+                        role: 'Designer',
+                        id: 1
+                    },
+                    {
+                        role: 'Administrative',
+                        id: 2
+                    }
+                ]);
+
+                //inner.initAutocomplete = function() {
+                //    priv.config.autocomplete.autocomplete({
+                //        source: "/User/Search",
+                //        minLength: 2,
+                //        select: function(event, ui) {
+                //            console.log(ui.item ?
+                //                "Selected: " + ui.item.value + " aka " + ui.item.id :
+                //                "Nothing selected, input was " + this.value);
+                //        }
+                //    }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                //        console.log(item);
+                //        return $("<li>")
+                //            .data("ui-autocomplete-item", item)
+                //            .append("<a><img class='user-image smaller' src='" + item.Image + "'>" + item.UserName + "</a>")
+                //            .appendTo(ul);
+                //    };
+                //};
+
+
                 inner.initFileUpload = function () {
-                    config.fileUpload.fileupload({
+                    priv.config.fileUpload.fileupload({
                         // Only submit the file if it is jpg file
                         add: function (e, data) {
                             var goUpload = true;

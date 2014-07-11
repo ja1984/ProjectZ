@@ -1,46 +1,128 @@
-﻿@model IEnumerable<ProjectZ.Web.Models.Project>
+﻿@using System.Web.Script.Serialization
+@using ProjectZ.Web.Models
+@model ProjectZ.Web.ViewModels.ProjectViewModel
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="projects" id="projects">
 
-@foreach (var project in Model)
-    {
-        <div class="project">
+<div id="project-wrapper">
 
-            <div class="panel panel-default">
-            <div class="panel-body">
-                <h6><a href="/@(project.Id)/@(project.Slug)/details">@(project.Name)</a></h6>
-                <p class="description">
-                @project.GetShortDescription()
-                    @if(project.LongText()){
-                        <div class="text-overlay"></div>
-                    }
+    <h2>@Model.Project.Name
 
-                </p>
+        @if (Context.User.Identity.IsAuthenticated)
+        {
+            <button data-bind="click: toggleFollow" class="button button-primary button-filled button-large pull-right"><span class="fa fa-heart" data-bind="    css: following() ? 'fa-heart-o' : 'fa-heart'"></span>&nbsp;<span data-bind="    text: following() ? 'Unfollow' : 'Follow'"></span></button>
+        }
+    </h2>
+    <div class="wrapper">
+        <nav class="nav">
+            <ul>
+                <li data-bind="css: {'active': selectedPage()=='overview'}"><a href="overview" data-page="overview" data-bind="    click:changePage">Overview</a></li>
+                <li data-bind="css: {'active': selectedPage()=='releases'}"><a href="releases" data-page="releases" data-bind="    click:changePage">Releases @Html.Raw(Model.Releases.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Releases.Count()) : "")</a></li>
+                <li data-bind="css: {'active': selectedPage()=='polls'}"><a href="polls" data-page="polls" data-bind="    click:changePage">Polls @Html.Raw(Model.Project.Polls.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Project.Polls.Count()) : "")</a></li>
+                <li data-bind="css: {'active': selectedPage()=='issues'}"><a href="issues" data-page="issues" data-bind="    click:changePage">Issues @Html.Raw(Model.Project.Issues.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Project.Issues.Count()) : "")</a></li>
+            </ul>
+        </nav>
+        <div class="inner">
+
+            <div class="content">
+                <div data-bind="visible: selectedPage() == 'overview'">
+                    @Html.Partial("Partials/Project/Overview", Model.Project)
                 </div>
-                <div class="panel-footer">
-                <span class="left"><i class="fa fa-heart"></i></span>
-                <span class="right"><i class="fa fa-users"></i></span>
+                <div data-bind="visible: selectedPage() == 'releases'" style="display: none;">
+                    @Html.Partial("Partials/Project/Releases", Model.Releases)
+                </div>
+                <div data-bind="visible: selectedPage() == 'polls'" style="display: none;">
+                    @Html.Partial("Partials/Project/Polls", Model.Project.Polls)
+                </div>
+                <div data-bind="visible: selectedPage() == 'issues'" style="display: none;">
+                    @Html.Partial("Partials/Project/Issues", Model.Project)
+                </div>
             </div>
+            <div class="sidebar">
+                <div class="text-center">
+                    <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="user-image" />
+                </div>
+
+                <h3>Team</h3>
+
+                <div class="menu">
+                    <ul class="unstyled">
+                        @foreach (var member in Model.Project.Admins)
+                        {
+                            <li class="team-member">
+                                <img src="@(member.GetImage())" class="user-image" />
+                                <div>
+                                    <p><a href="/user/@(member.Slug)" style="display: block;">@member.FirstName @member.LastName</a></p>
+                                    <p>@member.Role</p>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                @if (Model.IsPageAdmin)
+                {
+                    <div class="admin-wrapper">
+                        <a href="edit/"  class="button button-block button-filled button-large">Manage project</a>
+                    </div>
+                }
+                <div class="follow-wrapper">
+                    <p><span data-bind="text: followers"></span>&nbsp;people are following this project</p>
+
+
+                </div>
             </div>
         </div>
-    }
     </div>
-    
-    
+</div>
+
+<div id="issues">
+    <div class="modal fade" id="create-issue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
+                </div>
+                <div class="modal-body">
+                <textarea rows="5" class="fill" placeholder="Description" data-bind="value: description"></textarea>
+                    <select class="fill" data-bind="options: types, optionsText: 'text', value: type">
+                    </select>
+                    <select class="fill" data-bind="options: releases, optionsText: 'version', value: release, optionsCaption:'Specific release affected', visible: type().text == 'Bug'">
+                </select>
+                </div>
+                <div class="modal-footer">
+                    <i class="fa fa-circle-o-notch fa-spin fa-fw pull-left fa-2x" style="color: #ccc;" data-bind="visible: saving"></i>
+                    <button type="button" class="button" data-dismiss="modal"><span>Close</span></button>
+                    <button type="button" class="button button-success" data-bind="click: save"><span>Create Issue</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section scripts
 {
+    <script src="~/Scripts/issues.js"></script>
+    <script src="~/Scripts/project.information.js"></script>
     <script type="text/javascript">
-        $(function() {
-            var $container = $('#projects');
-            // initialize
-            $container.masonry({
-                columnWidth: ".project",
-                itemSelector: '.project'
-            });
+        var projectConfig = {
+            projectId: '@(Model.Project.Id)',
+            followers: @Model.Followers,
+            following: @Model.Following.ToString().ToLower(),
+            startPage: '@Model.StartPage',
+            url: 'http://@(HttpContext.Current.Request.Url.Authority)/@(Model.Project.Id)/@(Model.Project.Slug)',
+            data: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project.Issues)),
+            releases: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Releases)),
+            projectId: '@Model.Project.Id'
+        };
+
+        $(function () {
+            ko.applyBindings(new projectModel.Init(projectConfig), document.getElementById("project-wrapper"));
+            ko.applyBindings(new issuesModel.init(projectConfig), document.getElementById("issues"));
         });
     </script>
 }

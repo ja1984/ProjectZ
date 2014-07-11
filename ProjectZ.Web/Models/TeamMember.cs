@@ -32,13 +32,12 @@ namespace ProjectZ.Web.Models
         {
             return new
                        {
-                           Image = GetImage(40),
-                           Slug = Slug,
+                           Image = GetImage(24),
                            Role = Role.ToString(),
                            UserName = UserName,
                            FirstName = FirstName,
                            LastName = LastName,
-                           GravatarEmail = GravatarEmail
+                           UserId = UserId
                        };
         }
 

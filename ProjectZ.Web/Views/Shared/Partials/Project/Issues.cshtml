@@ -1,0 +1,40 @@
+﻿@using System.Web.Script.Serialization
+@model ProjectZ.Web.Models.Project
+<div class="text-right margin margin-bottom-15">
+    <a href="#" class="button button-success" data-toggle="modal" data-target="#create-issue"><span>New issue</span></a>
+</div>
+
+
+@if(Model.Issues.Any()){
+
+    <ul class="unstyled">
+        @foreach (var issue in Model.Issues)
+        {
+            <a href="issues/@issue.Id" class="issue">
+                <div class="row issues">
+                    <div class="col-lg-1 type text-center">
+                        <p class="icon"><i class="fa fa-fw @(issue.IssueTypeIcon())"></i></p>
+                    </div>
+                    <div class="col-lg-1 type">
+                        <span>@(issue.IssueTypeText())</span>&nbsp;<span>(@issue.Comments.Count())</span>
+                    </div>
+                    <div class="col-lg-9">
+                        <p style="margin: 1px;"></p>
+                        <span>@issue.Title</span>
+                    </div>
+                    <div class="col-lg-1 text-center" style="color: #8F9194;">
+                        <p class="plusone"><span>+1</span></p>
+                    </div>
+                </div>
+            </a>
+        }
+    </ul>
+}
+else
+{
+    <h4 class="empty">No issues created yet!</h4>
+}
+
+
+
+

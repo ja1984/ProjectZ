@@ -4,21 +4,22 @@
     ViewBag.Title = "Issue";
 }
 
-<div class="text-right" style="margin-bottom: 15px;">
-    <button class="button" data-toggle="modal" data-target="#comment-issue">Comment</button>
-</div>
+<h2>@Model.Issue.Title
+    <button class="button button-large; pull-right" data-toggle="modal" data-target="#comment-issue"><span>Comment</span></button>
+</h2>
 
 <div class="issue-wrapper">
-    <div class="panel panel-default" style="z-index: 1000">
-        <div class="panel-body">
-            <h2>@Model.Issue.Title</h2>
+    <div class="panel panel-default comment" style="z-index: 1000">
+        <div class="panel-body" >
+            <p class="created">@Model.Issue.Posted</p>
             <p>
                 @Html.Raw(Model.Issue.Description)
             </p>
         </div>
         <div class="panel-footer">
-            <span class="left"><i class="fa fa-heart"></i></span>
-            <span class="right"><i class="fa fa-users"></i></span>
+            <a href="/user/@Model.Issue.User.DisplayName.GenerateSlug()/details">
+                    <img src="@Model.Issue.User.Image" class="user-image smaller"/>@Model.Issue.User.DisplayName
+                </a>
         </div>
     </div>
 
@@ -30,16 +31,16 @@
     @foreach (var comment in Model.Issue.Comments)
     {
         <a name="@comment.Id"></a>
-        <div class="panel panel-default" style="z-index: @(1000 - i)">
+        <div class="panel panel-default comment" style="z-index: @(1000 - i)">
             <div class="panel-body">
+                <p class="created">@comment.Posted</p>
                 <p>
-                    @comment.Comment
+                    @Html.Raw(comment.Comment)
                 </p>
             </div>
             <div class="panel-footer">
                 <a href="/user/@comment.User.DisplayName.GenerateSlug()/details">
-                    <img src="@comment.User.Image" class="user-image smaller"/>
-                    @comment.User.DisplayName
+                    <img src="@comment.User.Image" class="user-image smaller"/>@comment.User.DisplayName
                 </a>
             </div>
         </div>  
@@ -64,8 +65,8 @@
             </div>
             <div class="modal-footer">
                 <i class="fa fa-circle-o-notch fa-spin fa-fw pull-left fa-2x" style="color: #ccc;" data-bind="visible: saving"></i>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" data-bind="click: save">Create Issue</button>
+                <button type="button" class="button " data-dismiss="modal">Close</button>
+                <button type="button" class="button button-success" data-bind="click: save">Create Issue</button>
             </div>
         </div>
     </div>

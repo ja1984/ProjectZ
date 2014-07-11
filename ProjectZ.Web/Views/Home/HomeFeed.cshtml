@@ -1,17 +1,89 @@
-﻿@model IEnumerable<ProjectZ.Web.Models.EventAction>
+﻿@using ProjectZ.Web.Helpers
+@model ProjectZ.Web.Models.ViewModels.FeedViewModel
 @{
     ViewBag.Title = "HomeFeed";
 }
 
-<ul>
-    @foreach(var action in Model)
-    {
-        <li>
-            <a href="@action.Url">
-                <h5>@action.Title</h5>
-                <p>@action.Created</p>
-            </a>
-        </li>
-    }
-</ul>
+<div class="col-lg-9">
+    <div class="events">
+        @foreach (var action in Model.Events)
+        {
+            <div class="row action">
+                <div class="col-lg-1">
+                    <i class="fa @action.EventIcon()"></i>
+                </div>
+                <div class="col-lg-11">
+                    <p class="margin no-margin created">@action.Created</p>
+                    <p class="margin no-margin">
+                        @Html.Raw(action.GetEvent())
+                        @*@if(action.User != null)
+                        {
+                        <a href="/user/@action.User.Username.GenerateSlug()">@action.User.Username</a>    
+                        }
+                        <a href="@action.Url">@action.Title</a>*@
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+<div class="col-lg-3 side-bar">
+
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Projects you're following</div>
+        <div class="panel-body">
+
+            @if (Model.Following.Any())
+            {
+
+                <ul class="projects unstyled">
+                    @foreach (var project in Model.Following)
+                    {
+                        <a href="/@project.Id/@project.Name.GenerateSlug()">
+                            <li>
+                                <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</li>
+                        </a>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="empty">You are not following any projects</p>
+            }
+        </div>
+    </div>
+    <div class="margin margin-top-15"></div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Your projects
+            
+            <button class="button button-success pull-right button-small" data-toggle="modal" data-target="#create-project"><span>Create</span></button>
+
+        </div>
+        <div class="panel-body">
+            @if (Model.Projects.Any())
+            {
+
+                <ul class="projects unstyled">
+                    @foreach (var project in Model.Projects)
+                    {
+                        <a href="/@project.Id/@project.Name.GenerateSlug()">
+                            <li>
+                                <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</li>
+                        </a>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="empty">You have no projects</p>
+            }
+        </div>
+    </div>
+</div>
+
+
 

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ProjectZ.Web.Models.Poll>
+<h1>Polls</h1>
+	
+	@if(Model.Any())
+	{
+		<div class="polls">
+		@foreach(var poll in Model){
+			<div class="poll">
+				<div class="panel panel-default">
+                    <div class="panel-body">
+                        <strong>@poll.Title</strong>
+                        <ul class="projects unstyled">
+                            @foreach(var option in poll.Options){
+                                <li>
+                                    @option.Title
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="panel-footer">
+                <span class="left">@poll.Options.SelectMany(x=>x.Votes).Count()</span>
+                
+            </div>
+				</div>
+				</div>
+		}
+			</div>
+	}else
+	{
+		<h4 class="empty">No polls created yet!</h4>        
+	}
+

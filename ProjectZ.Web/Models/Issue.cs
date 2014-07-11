@@ -23,6 +23,23 @@ namespace ProjectZ.Web.Models
         public IssueType IssueType { get; set; }
         public List<IssueComment> Comments { get; set; }
         public IssueUser User { get; set; }
+
+        public string IssueTypeIcon()
+        {
+            if (IssueType == IssueType.Feature)
+                return "fa-lightbulb-o";
+
+            return "fa-bug";
+        }
+
+        public string IssueTypeText()
+        {
+            if (IssueType == IssueType.Feature)
+                return "Feature";
+
+            return "Bug";
+        }
+
     }
 
     public enum IssueType

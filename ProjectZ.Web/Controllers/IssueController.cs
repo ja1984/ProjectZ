@@ -40,12 +40,18 @@ namespace ProjectZ.Web.Controllers
 
             var eventAction = new EventAction()
             {
-                Action = issue.IssueType == IssueType.Feature ? Action.Feature : Action.Bug,
+                Action = Action.Comment,
                 Created = DateTime.Now,
                 ProjectId = projectId,
                 Title = comment,
                 ProjectName = project.Name,
-                Url = string.Format("/{0}/{1}/issues/{2}#{3}", projectId, project.Slug, issue.Id, issueComment.Id)
+                Url = string.Format("/{0}/{1}/issues/{2}#{3}", projectId, project.Slug, issue.Id, issueComment.Id),
+                User = new EventActionUser(CurrentUser),
+                Reference = new EventActionReference
+                                {
+                                    Id = issue.Id.ToString(),
+                                    Name = issue.Title
+                                }
             };
             RavenSession.Store(eventAction);
 
@@ -87,7 +93,8 @@ namespace ProjectZ.Web.Controllers
                                    ProjectId = projectId,
                                    Title = issue.Title,
                                    ProjectName = project.Name,
-                                   Url = string.Format("/{0}/{1}/issues/{2}", projectId, project.Slug, issue.Id)
+                                   Url = string.Format("/{0}/{1}/issues/{2}", projectId, project.Slug, issue.Id),
+                                   User = new EventActionUser(CurrentUser)
                                };
                 RavenSession.Store(eventAction);
                 RavenSession.SaveChanges();

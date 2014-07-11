@@ -23,7 +23,77 @@ namespace ProjectZ.Web.Controllers
             return View(users);
         }
 
-        [GET("User/{userName}/Details")]
+        [GET("User/Login")]
+        public ActionResult Login()
+        {
+            return View(new LoginViewModel());
+        }
+        [GET("User/Search")]
+        public JsonResult Search(string query)
+        {
+            return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(query) || x.Email.StartsWith(query)).ToList().Select(x => new TeamMember(x, Role.Developer, true).SmallInfo()), JsonRequestBehavior.AllowGet);
+        }
+
+        [POST("User/Login")]
+        public ActionResult Login(LoginViewModel loginModel)
+        {
+            var user = RavenSession.Query<User>().FirstOrDefault(x => x.UserName == loginModel.Username || x.Email == loginModel.Username);
+
+            if (user == null)
+            {
+                loginModel.HasError = true;
+                loginModel.Error = "Wrong username/email";
+                return View(loginModel);
+            }
+
+
+
+            if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
+            {
+                loginModel.HasError = true;
+                loginModel.Error = "Wrong password";
+                return View(loginModel);
+            }
+
+
+            LoginUser(user.Id);
+
+
+            return RedirectToAction("Details", "User", new { userName = user.Slug });
+        }
+
+
+        [GET("User/Logout")]
+        public ActionResult LogOut()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
+        [GET("User/Register")]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Register(User user)
+        {
+
+            user.Created = DateTime.Now;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            user.Slug = user.UserName.GenerateSlug();
+
+            if (string.IsNullOrEmpty(user.GravatarEmail))
+                user.GravatarEmail = user.Email;
+
+            RavenSession.Store(user);
+
+            return Redirect("/user/" + user.Slug + "/edit");
+
+            return View();
+        }
+
+        [GET("User/{userName}")]
         public ActionResult Details(string userName)
         {
             var user = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == userName);
@@ -70,43 +140,8 @@ namespace ProjectZ.Web.Controllers
         }
 
 
-        public ActionResult Login()
-        {
-            return View(new LoginViewModel());
-        }
-
-        [HttpPost]
-        public ActionResult Login(LoginViewModel loginModel)
-        {
-            var user = RavenSession.Query<User>().FirstOrDefault(x => x.UserName == loginModel.Username || x.Email == loginModel.Username);
-
-            if (user == null)
-            {
-                loginModel.HasError = true;
-                loginModel.Error = "Wrong username/email";
-                return View(loginModel);
-            }
 
 
-
-            if (!BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
-            {
-                loginModel.HasError = true;
-                loginModel.Error = "Wrong password";
-                return View(loginModel);
-            }
-
-
-            LoginUser(user.Id);
-
-
-            return RedirectToAction("Details", "User", new { userName = user.Slug });
-        }
-
-        public JsonResult Search(string q)
-        {
-            return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(q) || x.Email.StartsWith(q)).ToList().Select(x => new TeamMember(x, Role.Developer, true).SmallInfo()), JsonRequestBehavior.AllowGet);
-        }
 
         public ActionResult Manage()
         {
@@ -125,40 +160,13 @@ namespace ProjectZ.Web.Controllers
             return View();
         }
 
-        public ActionResult LogOut()
-        {
-            FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "Home");
-        }
 
         public void LoginUser(string userId)
         {
             FormsAuthentication.SetAuthCookie(userId, true);
         }
 
-        [GET("User/Register")]
-        public ActionResult Register()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        public ActionResult Register(User user)
-        {
-
-            user.Created = DateTime.Now;
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            user.Slug = user.UserName.GenerateSlug();
-
-            if (string.IsNullOrEmpty(user.GravatarEmail))
-                user.GravatarEmail = user.Email;
-
-            RavenSession.Store(user);
-
-            return Redirect("/user/" + user.Slug + "/edit");
-
-            return View();
-        }
 
         public JsonResult CheckUsernameAvailability(string username)
         {

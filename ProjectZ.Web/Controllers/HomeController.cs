@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ProjectZ.Web.Models;
+using ProjectZ.Web.Models.ViewModels;
 using Raven.Client.Linq;
 
 namespace ProjectZ.Web.Controllers
@@ -27,11 +28,12 @@ namespace ProjectZ.Web.Controllers
         public ActionResult HomeFeed()
         {
             var projects = CurrentUser.Follows.Select(x => x.Id).ToList();
+            projects.AddRange(CurrentUser.Projects.Select(x=>x.Id).ToList());
 
             var events = new List<EventAction>();
-            events.AddRange(RavenSession.Query<EventAction>().Where(x => x.ProjectId.In(projects)));
+            events.AddRange(RavenSession.Query<EventAction>().Where(x => x.ProjectId.In(projects)).OrderByDescending(x => x.Created).ToList());
 
-            return View(events);
+            return View(new FeedViewModel { Events = events, Projects = CurrentUser.Projects, Following = CurrentUser.Follows });
         }
 
     }

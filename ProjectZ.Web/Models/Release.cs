@@ -21,8 +21,6 @@ namespace ProjectZ.Web.Models
             Beta = 0,
             Minor = 1,
             Major = 2,
-
-
         }
 
     }

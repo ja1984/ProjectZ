@@ -12,6 +12,7 @@ using ProjectZ.Web.Helpers;
 using ProjectZ.Web.Models;
 using ProjectZ.Web.Models.ViewModels;
 using ProjectZ.Web.ViewModels;
+using Action = ProjectZ.Web.Models.Action;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -21,47 +22,28 @@ namespace ProjectZ.Web.Controllers
         // GET: /Project/
 
         [GET("Projects")]
-        public ActionResult Index()
+        public ActionResult List()
         {
             var projects = RavenSession.Query<Project>().ToList();
             return View(projects);
         }
 
-        [GET("Projects/{id}/{projectName}/Details")]
-        public ActionResult Details(int id, string projectName)
+        [GET("Projects/{id}/{projectName}/Edit")]
+        public ActionResult Edit(int id, string projectName)
         {
             var project = RavenSession.Load<Project>(id);
 
             if (project == null)
-                return RedirectToAction("Index");
+                throw new HttpException(404, "No project");
 
-            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+            if (CurrentUser == null)
+                throw new HttpException(403, "You are not logged in");
 
-            var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
+            if (!project.Admins.Select(x => x.UserId).Contains(CurrentUser.Id))
+                throw new HttpException(403, "You are not logged in");
 
-            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), NumberOfIssues = project.Issues.Count(), NumberOfReleases = releases, Followers = project.Followers.Count(), Following = CurrentUser == null || project.Followers.Contains(CurrentUser.Id) });
-        }
-
-        [GET("Projects/{id}/{projectName}/edit")]
-        public ActionResult Edit(int id, string projectName)
-        {
-            var project = RavenSession.Load<Project>(id);
-            var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
-
-            if (!pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id))
-                throw new HttpException(403, "You are not admin on the project");
 
             return View(project);
-        }
-
-
-        [GET("Projects/{id}/{projectName}/Issues")]
-        public ActionResult Issues(int id, string projectName)
-        {
-            var project = RavenSession.Load<Project>(id);
-            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
-
-            return View(new IssuesViewModel { Project = project, Issues = project.Issues, UserId = CurrentUser == null ? string.Empty : CurrentUser.Id, NumberOfReleases = releases });
         }
 
         [GET("Projects/{id}/{projectName}/Issues/{issueId}")]
@@ -73,21 +55,73 @@ namespace ProjectZ.Web.Controllers
             return View(new IssueViewModel() { Issue = issue, ProjectId = project.Id });
         }
 
-        [GET("Projects/{id}/{projectName}/Releases")]
-        public ActionResult Releases(int id, string projectName)
+        [GET("Projects/{id}/{projectName}/{startpage?}")]
+        public ActionResult Index(int id, string projectName, string startPage)
         {
             var project = RavenSession.Load<Project>(id);
-            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).OrderByDescending(x => x.Created).ToList();
-            return View(new ReleaseViewModel { NumberOfIssues = project.Issues.Count(), Project = project, Releases = releases });
+
+            var test = HttpContext.Request.Url;
+
+            if (project == null)
+                return RedirectToAction("Index");
+
+            var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).ToList();
+            var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
+
+            if (string.IsNullOrEmpty(startPage))
+                startPage = "overview";
+
+            return View(new ProjectViewModel { Project = project, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), Releases = releases, Followers = project.Followers.Count(), Following = CurrentUser == null || project.Followers.Contains(CurrentUser.Id), StartPage = startPage.ToLower() });
         }
 
-        [GET("Projects/{id}/{projectName}/Polls")]
-        public ActionResult Polls(int id, string projectName)
+
+        [HttpPost]
+        public JsonResult CreatePoll(string projectId, Poll poll)
         {
-            var project = RavenSession.Load<Project>(id);
-            var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
-            return View(new PollViewModel { NumberOfIssues = project.Issues.Count(), Project = project, NumberOfReleases = releases });
+
+            var project = RavenSession.Load<Project>(projectId);
+
+            var eventAction = new EventAction()
+            {
+                Action = Action.Poll,
+                Created = DateTime.Now,
+                ProjectId = projectId,
+                Title = poll.Title,
+                ProjectName = project.Name,
+                Url = string.Format("/{0}/{1}/polls", projectId, project.Slug),
+                User = new EventActionUser(CurrentUser),
+                Reference = new EventActionReference
+                                {
+                                    Id = project.Id,
+                                    Name = project.Name
+                                }
+            };
+            RavenSession.Store(eventAction);
+
+            project.Polls.Add(poll);
+            RavenSession.SaveChanges();
+
+            return Json("");
         }
+
+
+
+
+        //[GET("Projects/{id}/{projectName}/Releases")]
+        //public ActionResult Releases(int id, string projectName)
+        //{
+        //    var project = RavenSession.Load<Project>(id);
+        //    var releases = RavenSession.Query<Release>().Where(x => x.ProjectId == project.Id).OrderByDescending(x => x.Created).ToList();
+        //    return View(new ReleaseViewModel { NumberOfIssues = project.Issues.Count(), Project = project, Releases = releases });
+        //}
+
+        //[GET("Projects/{id}/{projectName}/Polls")]
+        //public ActionResult Polls(int id, string projectName)
+        //{
+        //    var project = RavenSession.Load<Project>(id);
+        //    var releases = RavenSession.Query<Release>().Count(x => x.ProjectId == project.Id);
+        //    return View(new PollViewModel { NumberOfIssues = project.Issues.Count(), Project = project, NumberOfReleases = releases });
+        //}
 
         [HttpPost]
         public JsonResult Follow(string projectId)
@@ -157,7 +191,7 @@ namespace ProjectZ.Web.Controllers
             return View(project);
         }
 
-        public JsonResult AddTeamMember(TeamMember teamMember, string projectId)
+        public JsonResult AddTeamMember(string projectId, string userId, bool isAdmin, Role role)
         {
 
             var project = RavenSession.Load<Project>(projectId);
@@ -165,14 +199,38 @@ namespace ProjectZ.Web.Controllers
             if (project == null)
                 return Json(new { success = false, message = "Couldn´t find project" });
 
+            var user = RavenSession.Load<User>(userId);
+
+            if (user == null)
+                return Json(new { success = false, message = "Couldn´t find user" });
+
             if (CurrentUser == null)
                 return Json(new { success = false, message = "You are not admin of this project" });
 
-            if (!project.Admins.Select(x => x.Id).Contains(CurrentUser.Id))
+            if (!project.Admins.Where(x => x.IsPageAdmin).Select(x => x.UserId).Contains(CurrentUser.Id))
                 return Json(new { success = false, message = "You are not admin of this project" });
 
 
-            project.Admins.Add(teamMember);
+            project.Admins.Add(new TeamMember(user, role, isAdmin));
+
+            var eventAction = new EventAction()
+            {
+                Action = Action.TeamMember,
+                Created = DateTime.Now,
+                ProjectId = projectId,
+                ProjectName = project.Name,
+                Title = user.UserName,
+                Url = string.Format("/user/{0}", user.Slug),
+                User = new EventActionUser(CurrentUser),
+                Reference = new EventActionReference
+                {
+                    Id = project.Id,
+                    Name = project.Name
+                }
+            };
+
+            RavenSession.Store(eventAction);
+
             RavenSession.SaveChanges();
 
 
@@ -198,7 +256,14 @@ namespace ProjectZ.Web.Controllers
             project.Slug = project.Name.GenerateSlug();
             project.Admins.Add(new TeamMember(CurrentUser, role, true));
             RavenSession.Store(project);
-            var url = string.Format("/{0}/{1}/details/", project.Id, project.Slug);
+            var user = RavenSession.Load<User>(CurrentUser.Id);
+
+            if (user.Projects == null)
+                user.Projects = new List<UserProject>();
+
+            user.Projects.Add(new UserProject(project));
+            RavenSession.SaveChanges();
+            var url = string.Format("/{0}/{1}", project.Id, project.Slug);
 
             return Json(new { Success = true, Url = url });
         }

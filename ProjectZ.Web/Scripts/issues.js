@@ -9,10 +9,14 @@
         return inner;
     };
 
+    priv.Release = function(data) {
+        var inner = {};
+        inner.version = data.Version;
+        inner.id = data.Id;
+        return inner;
+    };
+
     priv.Issue = function (data) {
-
-        console.log(data);
-
         var inner = {};
         inner.id = data.Id;
         inner.title = data.Title;
@@ -82,6 +86,14 @@
         inner.saving = ko.observable(false);
         inner.types = [{ 'text': 'Bug', 'value': 0 }, { 'text': 'Feature', 'value': 1 }];
 
+        inner.releases = ko.observableArray([]);
+        inner.release = ko.observable();
+
+
+        $.each(priv.options.releases, function() {
+            inner.releases.push(new priv.Release(this));
+        });
+
 
         inner.submitIssueButton = ko.computed(function () {
             return inner.title() === '' || inner.description() === '';
@@ -95,7 +107,7 @@
         };
 
         inner.save = function () {
-
+            console.log("sabe");
             $.ajax({
                 url: '/Issue/Create',
                 method: 'post',

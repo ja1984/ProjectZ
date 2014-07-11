@@ -86,6 +86,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.1.0-rc1\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.DomainServices.Hosting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.ServiceModel.DomainServices.Server, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -175,11 +178,13 @@
     <Compile Include="Models\EventAction.cs" />
     <Compile Include="Models\Issue.cs" />
     <Compile Include="Models\IssueComment.cs" />
+    <Compile Include="Models\Poll.cs" />
     <Compile Include="Models\Release.cs" />
     <Compile Include="Models\TeamMember.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserBase.cs" />
+    <Compile Include="Models\ViewModels\FeedViewModel.cs" />
     <Compile Include="Models\ViewModels\IssueViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\PollViewModel.cs" />
@@ -206,6 +211,7 @@
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\nologo.png" />
     <Content Include="Content\images\twee.jpg" />
+    <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\Site.css">
       <DependentUpon>Site.less</DependentUpon>
@@ -283,7 +289,6 @@
     </Content>
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.less" />
     <Content Include="Content\fonts.less" />
     <Content Include="Content\Timeline.less" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -291,15 +296,14 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\Site.css.map">
-      <DependentUpon>Site.css</DependentUpon>
-    </Content>
+    <Content Include="Content\Site.less" />
     <None Include="Properties\PublishProfiles\ProjectZ.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="LICENSE.txt" />
     <Content Include="logo.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\history.min.js" />
     <Content Include="Scripts\hogan-2.0.0.js" />
     <Content Include="Scripts\issues.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
@@ -320,11 +324,13 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\knockout-3.0.0.debug.js" />
     <Content Include="Scripts\knockout-3.0.0.js" />
+    <Content Include="Scripts\knockout-jqAutocomplete.min.js" />
     <Content Include="Scripts\masonry.pkgd.min.js" />
     <Content Include="Scripts\md5.js" />
     <Content Include="Scripts\modernizr-2.7.1.js" />
     <Content Include="Scripts\pager.js" />
     <Content Include="Scripts\parsley.js" />
+    <Content Include="Scripts\project.js" />
     <Content Include="Scripts\team.js" />
     <Content Include="Scripts\typeahead.js" />
     <Content Include="Scripts\_references.js" />
@@ -334,29 +340,27 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
-    <Content Include="Views\Project\Create.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\LoggedIn\Index.cshtml" />
     <Content Include="Views\LoggedIn\NotLoggedIn.cshtml" />
-    <Content Include="Views\Project\Manage.cshtml" />
-    <Content Include="Views\Issue\Create.cshtml" />
-    <Content Include="Views\Issue\Edit.cshtml" />
-    <Content Include="Views\Project\Issues.cshtml" />
-    <Content Include="Views\Issue\Details.cshtml" />
-    <Content Include="Views\Project\releases.cshtml" />
-    <Content Include="Views\Project\Details.cshtml" />
     <Content Include="Views\Project\Index.cshtml" />
+    <Content Include="Views\Project\List.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\User\Details.cshtml" />
-    <Content Include="Views\Project\Polls.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Shared\Partials\Menu.cshtml" />
-    <Content Include="Views\Project\Issue.cshtml" />
     <Content Include="Views\Home\HomeFeed.cshtml" />
     <Content Include="Views\Project\Edit.cshtml" />
+    <Content Include="Views\Shared\Partials\Footer.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Overview.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Releases.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Polls.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Issues.cshtml" />
+    <Content Include="Views\Project\Issue.cshtml" />
+    <Content Include="Scripts\project.information.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

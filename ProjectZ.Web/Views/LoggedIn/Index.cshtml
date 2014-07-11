@@ -6,18 +6,31 @@
             <img src="@Model.GetImage(104)"/>
             <i class="fa fa-pencil-square-o fa-3x"></i>
         </div>
-        <p class="user-displayname">@Model.UserName</p>
     </a>
+    <a href="/user/@Model.Slug"><p class="user-displayname">@Model.UserName</p></a>
+
 </li>
 
 <li>
     <a href="/user/logout">Sign out</a>
 </li>
 
+<h6>Following</h6>
 <ul class="projects">
-    @foreach(var project in Model.Follows)
+    @foreach (var project in Model.Follows)
     {
-        <li><a href="/@project.Id/@project.Name.GenerateSlug()/details"><img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/> @project.Name</a></li>
+        <li><a href="/@project.Id/@project.Name.GenerateSlug()">
+            <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
+    }
+</ul>
+
+
+<h6>Member of</h6>
+<ul class="projects">
+    @foreach (var project in Model.Projects)
+    {
+        <li><a href="/@project.Id/@project.Name.GenerateSlug()">
+            <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
     }
 </ul>
 

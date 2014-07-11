@@ -7,7 +7,8 @@
     <link href='http://fonts.googleapis.com/css?family=Emblema+One' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    @*<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />*@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -42,37 +43,10 @@
     <div class="container">
         @RenderBody()
     </div>
+    
+    @*@Html.Partial("Partials/Footer")*@
 
-    <footer>
-        <div class="container">
-            <div class="wrapper">
-                <section>
-                    <h6>Test</h6>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </section>
-                <section>
-                    <h6>Test</h6>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </section>
-                <section>
-                    <h6>Test</h6>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </section>
-                <section>
-                    <h6>Test</h6>
-                    <ul>
-                        <li></li>
-                    </ul>
-                </section>
-            </div>
-        </div>
-    </footer>
+    
 
     <div class="modal fade" id="create-project" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -104,7 +78,10 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/masonry.pkgd.min.js"></script>
     @Scripts.Render("~/bundles/parsley")
+    <script src="~/Scripts/project.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.3.min.js"></script>
     @RenderSection("scripts", required: false)
+
 
     <script type="text/javascript">
         var config = {
@@ -112,77 +89,8 @@
             toggle: $('.slideout-toggler')
         };
 
-        var project = function () {
-            var priv = {};
-            var pub = {};
-
-            pub.init = function () {
-                var viewModel = priv.viewModel();
-                return viewModel;
-            };
-
-            priv.save = function (data) {
-
-                var postData = {
-                    project: {
-                        name: data.name,
-                        description: data.description
-                    },
-                    role: data.role().id
-                };
-
-                return $.ajax({
-                    method: 'post',
-                    url: '/Project/Create',
-                    contentType: 'application/json',
-                    data: ko.toJSON(postData)
-
-                });
-            };
-
-            priv.viewModel = function () {
-                var inner = {};
-
-                inner.name = ko.observable('');
-                inner.description = ko.observable('');
-                inner.role = ko.observable('');
-
-                inner.roles = ko.observableArray([
-                    {
-                        role: 'Developer',
-                        id: 0
-                    },
-                    {
-                        role: 'Designer',
-                        id: 1
-                    },
-                    {
-                        role: 'Administrative',
-                        id: 2
-                    }
-                ]);
-
-                inner.saving = ko.observable(false);
-
-                inner.save = function () {
-                    inner.saving(true);
-                    priv.save(inner).done(function (response) {
-                        if (response.Success) {
-                            location.href = response.Url;
-                        }
-                    });
-                };
-
-                return inner;
-            };
-
-
-            return pub;
-        }();
-
         $(function () {
             ko.applyBindings(new project.init(), document.getElementById("create-project"));
-
             config.toggle.on('click', function () {
                 config.slideoutMenu.toggleClass("open");
                 config.toggle.toggleClass("open");
