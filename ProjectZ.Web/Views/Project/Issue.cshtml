@@ -3,134 +3,79 @@
 @{
     ViewBag.Title = "Issue";
 }
+<div class="row">
+    <div class="col-lg-10 col-lg-offset-1">
 
-<h2>@Model.Issue.Title
-    <button class="button button-large; pull-right" data-toggle="modal" data-target="#comment-issue"><span>Comment</span></button>
-</h2>
+        <h2>@Model.Issue.Title</h2>
 
-<div class="issue-wrapper">
-    <div class="panel panel-default comment" style="z-index: 1000">
-        <div class="panel-body" >
-            <p class="created">@Model.Issue.Posted</p>
-            <p>
-                @Html.Raw(Model.Issue.Description)
-            </p>
+        <div class="issue-wrapper">
+            <div class="panel panel-default comment" style="z-index: 1000">
+                <div class="panel-body">
+                    <p class="created">@Model.Issue.Posted</p>
+                    <p>
+                        @Html.Raw(Model.Issue.Description)
+                    </p>
+                </div>
+                <div class="panel-footer">
+                    <a href="/user/@Model.Issue.User.DisplayName.GenerateSlug()">
+                        <img src="@Model.Issue.User.Image" class="user-image smaller"/>@Model.Issue.User.DisplayName
+                    </a>
+                </div>
+            </div>
+
+
+
+            @{
+                int i = 1;
+            }
+            @foreach (var comment in Model.Issue.Comments)
+            {
+                <a name="@comment.Id"></a>
+                <div class="panel panel-default comment" style="z-index: @(1000 - i)">
+                    <div class="panel-body">
+                        <p class="created">@comment.Posted</p>
+                        <p>
+                            @Html.Raw(comment.Comment)
+                        </p>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="/user/@comment.User.DisplayName.GenerateSlug()">
+                            <img src="@comment.User.Image" class="user-image smaller"/>@comment.User.DisplayName
+                        </a>
+                    </div>
+                </div>  
+                {
+                    i++;
+                }
+            }
+
+            @if (!Context.User.Identity.IsAuthenticated)
+            {
+                <div class="bs-callout bs-callout-warning">
+                    You must be logged in to comment on a issue! <a href="/User/Login?returnUrl=@(Context.Request.Url)" class="button"><span>Log in</span></a>
+                </div>
+            }
+            else
+            {
+                <form method="POST" action="/Issue/Comment">
+                    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                    <input type="hidden" name="issueId" value="@Model.Issue.Id" />
+
+                    <div class="panel panel-default comment margin margin-top-30">
+                        <div class="panel-body">
+                            <div class="comment-issue">
+                                <textarea class="fill" name="comment" rows="10" placeholder="Comment"></textarea>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-right">
+                            <button class="button button-success"><span>Comment</span></button>
+                        </div>
+                    </div>
+                </form>
+            }
+
+
         </div>
-        <div class="panel-footer">
-            <a href="/user/@Model.Issue.User.DisplayName.GenerateSlug()/details">
-                    <img src="@Model.Issue.User.Image" class="user-image smaller"/>@Model.Issue.User.DisplayName
-                </a>
-        </div>
+
     </div>
-
-
-
-    @{
-        int i = 1;
-    }
-    @foreach (var comment in Model.Issue.Comments)
-    {
-        <a name="@comment.Id"></a>
-        <div class="panel panel-default comment" style="z-index: @(1000 - i)">
-            <div class="panel-body">
-                <p class="created">@comment.Posted</p>
-                <p>
-                    @Html.Raw(comment.Comment)
-                </p>
-            </div>
-            <div class="panel-footer">
-                <a href="/user/@comment.User.DisplayName.GenerateSlug()/details">
-                    <img src="@comment.User.Image" class="user-image smaller"/>@comment.User.DisplayName
-                </a>
-            </div>
-        </div>  
-        {
-            i++;
-        }
-    }
 </div>
-
-
-
-
-<div class="modal fade" id="comment-issue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h3>New comment</h3>
-            </div>
-            <div class="modal-body">
-                <textarea rows="5" class="fill" placeholder="Description" data-bind="value: description"></textarea>
-            </div>
-            <div class="modal-footer">
-                <i class="fa fa-circle-o-notch fa-spin fa-fw pull-left fa-2x" style="color: #ccc;" data-bind="visible: saving"></i>
-                <button type="button" class="button " data-dismiss="modal">Close</button>
-                <button type="button" class="button button-success" data-bind="click: save">Create Issue</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-@section scripts
-{
-    <script type="text/javascript">
-        var commentConfig = {
-            issueId: '@(Model.Issue.Id)',
-            projectId: '@(Model.ProjectId)'
-        };
-
-        var comment = function () {
-            var priv = {};
-            var pub = {};
-
-            pub.init = function (config) {
-                var viewModel = priv.viewModel(config);
-                return viewModel;
-            };
-
-            priv.save = function (data) {
-
-                var postData = {
-                    comment: data.description,
-                    projectId: data.projectId,
-                    issueId: data.issueId
-                };
-
-                return $.ajax({
-                    method: 'post',
-                    url: '/Issue/Comment',
-                    contentType: 'application/json',
-                    data: ko.toJSON(postData)
-
-                });
-            };
-
-            priv.viewModel = function (config) {
-                var inner = {};
-                inner.description = ko.observable('');
-                inner.saving = ko.observable(false);
-                inner.projectId = config.projectId;
-                inner.issueId = config.issueId;
-
-                inner.save = function () {
-                    inner.saving(true);
-                    priv.save(inner).done(function (response) {
-                        inner.saving(false);
-                    });
-                };
-
-                return inner;
-            };
-
-
-            return pub;
-        }();
-
-        $(function () {
-            ko.applyBindings(new comment.init(commentConfig), document.getElementById("comment-issue"));
-        });
-
-    </script>
-}

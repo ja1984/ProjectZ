@@ -14,13 +14,13 @@
 <li>
     <a href="/user/logout">Sign out</a>
 </li>
-
+@Html.Partial("Partials/Menu")
 <h6>Following</h6>
 <ul class="projects">
     @foreach (var project in Model.Follows)
     {
         <li><a href="/@project.Id/@project.Name.GenerateSlug()">
-            <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
+            <img src="@ImageUtils.GetProjectImage(project.Id, ImageUtils.ImageSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
     }
 </ul>
 
@@ -30,7 +30,7 @@
     @foreach (var project in Model.Projects)
     {
         <li><a href="/@project.Id/@project.Name.GenerateSlug()">
-            <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
+            <img src="@ImageUtils.GetProjectImage(project.Id, ImageUtils.ImageSize.Icon)" class="project-image smaller"/>@project.Name</a></li>
     }
 </ul>
 

@@ -5,27 +5,36 @@
 }
 
 <div class="col-lg-9">
-    <div class="events">
-        @foreach (var action in Model.Events)
-        {
-            <div class="row action">
-                <div class="col-lg-1">
-                    <i class="fa @action.EventIcon()"></i>
-                </div>
-                <div class="col-lg-11">
-                    <p class="margin no-margin created">@action.Created</p>
-                    <p class="margin no-margin">
-                        @Html.Raw(action.GetEvent())
-                        @*@if(action.User != null)
+    @if (Model.Events.Any())
+    {
+
+        <div class="events">
+            @foreach (var action in Model.Events)
+            {
+                <div class="row action">
+                    <div class="col-lg-1">
+                        <i class="fa @action.EventIcon()"></i>
+                    </div>
+                    <div class="col-lg-11">
+                        <p class="margin no-margin created">@action.Created</p>
+                        <p class="margin no-margin">
+                            @Html.Raw(action.GetEvent())
+                            @*@if(action.User != null)
                         {
                         <a href="/user/@action.User.Username.GenerateSlug()">@action.User.Username</a>    
                         }
                         <a href="@action.Url">@action.Title</a>*@
-                    </p>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
+    else
+    {
+        <h2>Your feed is empty!</h2>
+        <h6>As you start following projects your Home Feed will fill up with updates from the projects you're following</h6>
+    }
 
 </div>
 <div class="col-lg-3 side-bar">
@@ -44,7 +53,7 @@
                     {
                         <a href="/@project.Id/@project.Name.GenerateSlug()">
                             <li>
-                                <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</li>
+                                <img src="@ImageUtils.GetProjectImage(project.Id, ImageUtils.ImageSize.Icon)" class="project-image smaller"/>@project.Name</li>
                         </a>
                     }
                 </ul>
@@ -72,7 +81,7 @@
                     {
                         <a href="/@project.Id/@project.Name.GenerateSlug()">
                             <li>
-                                <img src="@ImageUtils.GetLogo(project.Id, ImageUtils.LogoSize.Icon)" class="project-image smaller"/>@project.Name</li>
+                                <img src="@ImageUtils.GetProjectImage(project.Id, ImageUtils.ImageSize.Icon)" class="project-image smaller"/>@project.Name</li>
                         </a>
                     }
                 </ul>

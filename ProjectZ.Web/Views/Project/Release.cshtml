@@ -1,0 +1,47 @@
+﻿@model ProjectZ.Web.ViewModels.ReleaseViewModel
+@{
+    ViewBag.Title = "Release";
+}
+<div class="row">
+    <div class="col-lg-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h6 class="margin no-margin">Version</h6>
+                <p>@Model.Version</p>
+                @if (!string.IsNullOrEmpty(Model.Title))
+                {
+                    <h6 class="margin no-margin">Name</h6>
+                    <p class="margin no-margin">@Model.Title</p>
+                }
+            </div>
+        </div>
+
+        @if (Model.SolvedIssues.Any())
+        {
+            <div class="panel panel-default margin margin-top-15">
+                <div class="panel-heading">Solved issues</div>
+                <div class="panel-body">
+                    <ul class="projects unstyled">
+                        @foreach (var issue in Model.SolvedIssues)
+                        {
+                            <a href="/@Model.Project.Id/@Model.Project.Slug/issues/@issue.Id">
+                                <li>@issue.Title</li>
+                            </a>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+

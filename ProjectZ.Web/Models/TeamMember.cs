@@ -14,7 +14,7 @@ namespace ProjectZ.Web.Models
 
         }
 
-        public TeamMember(User user, Role role, bool isPageAdmin)
+        public TeamMember(User user, Role role, bool isPageAdmin, bool isCreator = false)
         {
             FirstName = user.FirstName;
             LastName = user.LastName;
@@ -26,6 +26,7 @@ namespace ProjectZ.Web.Models
             IsPageAdmin = isPageAdmin;
             UserId = user.Id;
             Image = GetImage();
+            IsCreator = IsCreator;
         }
 
         public object SmallInfo()
@@ -46,12 +47,15 @@ namespace ProjectZ.Web.Models
         public string Image { get; set; }
         public bool IsPageAdmin { get; set; }
         public string UserId { get; set; }
+        public bool IsCreator { get; set; }
     }
 
     public enum Role
     {
         Developer = 0,
         Designer = 1,
-        Administrative = 2
+        Administrative = 2,
+        Support = 3,
+        Other = 4
     }
 }

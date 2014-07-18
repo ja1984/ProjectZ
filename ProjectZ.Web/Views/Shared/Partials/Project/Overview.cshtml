@@ -1,3 +1,27 @@
-﻿@model ProjectZ.Web.Models.Project
+﻿@model ProjectZ.Web.ViewModels.ProjectViewModel
 
-<p>@Html.Raw(Model.Description.Replace("\n", "<br />"))</p>
+
+
+<div class="events margin margin-bottom-15">
+    @foreach (var action in Model.Events.OrderByDescending(x=>x.Created).Take(5))
+    {
+        <div class="row action">
+            <div class="col-lg-1">
+                <i class="fa @action.EventIcon()"></i>
+            </div>
+            <div class="col-lg-11">
+                <p class="margin no-margin created">@action.Created</p>
+                <p class="margin no-margin">
+                    @Html.Raw(action.GetEvent())
+                    @*@if(action.User != null)
+                        {
+                        <a href="/user/@action.User.Username.GenerateSlug()">@action.User.Username</a>    
+                        }
+                        <a href="@action.Url">@action.Title</a>*@
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+<p>@Html.Raw(Model.ProjectDescription)</p>

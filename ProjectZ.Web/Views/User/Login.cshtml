@@ -8,7 +8,7 @@
 
 <div class="box login">
     <h2>Login</h2>
-    <form action="/user/login" id="register" method="POST" parsley-validate novalidate>
+    <form action='/user/login@(string.IsNullOrEmpty(Request.QueryString["returnUrl"]) ? "" : "?returnUrl=" + Request.QueryString["returnUrl"])' id="register" method="POST" parsley-validate novalidate>
 
         <section>
             <input type="text" id="username" class="fill" name="username" value="@Model.Username" placeholder="Username / email" required />

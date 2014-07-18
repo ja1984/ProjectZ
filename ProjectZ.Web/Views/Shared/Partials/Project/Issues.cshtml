@@ -1,14 +1,15 @@
 ﻿@using System.Web.Script.Serialization
-@model ProjectZ.Web.Models.Project
+@model ProjectZ.Web.ViewModels.ProjectViewModel
 <div class="text-right margin margin-bottom-15">
     <a href="#" class="button button-success" data-toggle="modal" data-target="#create-issue"><span>New issue</span></a>
 </div>
 
 
-@if(Model.Issues.Any()){
+@if (Model.Project.Issues.Any())
+{
 
     <ul class="unstyled">
-        @foreach (var issue in Model.Issues)
+        @foreach (var issue in Model.Project.Issues)
         {
             <a href="issues/@issue.Id" class="issue">
                 <div class="row issues">
@@ -21,9 +22,17 @@
                     <div class="col-lg-9">
                         <p style="margin: 1px;"></p>
                         <span>@issue.Title</span>
+
                     </div>
                     <div class="col-lg-1 text-center" style="color: #8F9194;">
-                        <p class="plusone"><span>+1</span></p>
+                        @if (issue.Solved)
+                        {
+                            <span class="label label-success">Solved</span>
+                        }
+                        else
+                        {
+                            <p class="plusone"><span>+1</span></p>
+                        }
                     </div>
                 </div>
             </a>
@@ -33,6 +42,37 @@
 else
 {
     <h4 class="empty">No issues created yet!</h4>
+}
+
+@if (!Context.User.Identity.IsAuthenticated)
+{
+    <div class="bs-callout bs-callout-warning">
+        You must be logged in to post a new issue! <a href="/User/Login?returnUrl=http://@HttpContext.Current.Request.Url.Authority/@Model.Project.Id/@Model.Project.Slug/issues" class="button"><span>Log in</span></a>
+    </div>
+}
+else
+{
+    <div class="panel panel-default comment margin margin-top-30">
+        <div class="panel-body">
+            <div class="comment-issue">
+                <input type="text" placeholder="Title" class="fill" />
+                <textarea class="fill" rows="6" placeholder="Description"></textarea>
+                <select class="fill">
+                    <option value="0">Bug</option>
+                    <option value="1">Feature</option>
+                </select>
+                <select class="fill">
+                    @foreach (var version in Model.Releases)
+                    {
+                        <option>@version.Version</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="panel-footer text-right">
+            <button class="button button-success"><span>Create issue</span></button>
+        </div>
+    </div>
 }
 
 

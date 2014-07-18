@@ -1,103 +1,76 @@
-﻿@model ProjectZ.Web.Models.Project
+﻿@using System.Web.Script.Serialization
+@model ProjectZ.Web.Models.ViewModels.EditProjectViewModel
 @{
     ViewBag.Title = "Edit";
 }
 <div id="edit-project-wrapper">
-    <h2>
-        <div class="project-logo" data-toggle="modal" data-target="#logo-upload">
-            <img src="@Model.GetLogo()" alt="@Model.Name" title="@Model.Name" class="user-image" data-bind="attr: { 'src': logoUrl }">
-            <i class="fa fa-upload fa-1x"></i>
+
+
+    <div class="row">
+        <div class="col-lg-12 margin margin-bottom-15">
+            <h2>
+                <div class="project-logo" data-toggle="modal" data-target="#logo-upload">
+                    <img src="@Model.Project.GetLogo()" alt="@Model.Project.Name" title="@Model.Project.Name" class="user-image" data-bind="attr: { 'src': logoUrl }">
+                    <i class="fa fa-upload fa-1x"></i>
+                </div>
+
+                @Model.Project.Name
+            </h2>
         </div>
-
-        @Model.Name
-    </h2>
-
-    <form method="post" action="/User/Edit">
-
-        <div class="form-row-group">
-            <div class="form-row half">
-                <div class="inner">
-                    @Model.Name
-                </div>
-            </div>
-            <div class="form-row half">
-                <div class="inner">
-                </div>
-            </div>
-        </div>
-        <div class="form-row-group">
-            <div class="form-row half">
-                <div class="inner">
-                </div>
-            </div>
-            <div class="form-row half">
-                <div class="inner">
-                </div>
-            </div>
-        </div>
-        <div class="form-row-group">
-            <div class="form-row half">
-                <div class="inner">
-                    @Html.TextAreaFor(x => x.Description, new { @class = "fill", placeholder = "Description", rows = "7" })
-                </div>
-            </div>
-            <div>
-                <div class="form-row half">
-                    <div class="inner">
-                        @*@Html.TextBoxFor(x => x.User.GitHub, new { @class = "fill", placeholder = "Github username" })*@
-                    </div>
-                </div>
-                <div class="form-row half">
-                    <div class="inner">
-                        @*                    <label class="fill" style="font-weight: normal; margin: 0; cursor: pointer;">
-                        @Html.CheckBoxFor(x => x.User.DisplayEmail)Show my email
-                    </label>*@
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="text-right">
-            <button type="submit" class="button button-success button-large" style="margin-right: 8px;"><span>Save changes</span></button>
-        </div>
-    </form>
-
-    <div class="edit-polls">
-        <h4>Polls
-            <button class="button button-success pull-right" data-bind="click: newPoll"><span>New poll</span></button>
-
-        </h4>
-
-        <form id="polls-form" data-bind="with: selectedPoll">
-            <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
-            <!-- ko foreach: options-->
-            <div style="position: relative;">
-                <input type="text" class="fill" data-bind="value: title, attr: { 'Placeholder': 'Option #' + $index() }" />
-                <i class="fa fa-times-circle-o" style="position: absolute; right: 12px; top: 12px;" data-bind="click: removeOption, visible: $index() > 1"></i>
-            </div>
-            <!--/ko-->
-            <p class="button button-primary" data-bind="click: newOption"><span>New option</span></p>
-            <button class="button button-success" data-bind="click: savePoll"><span>Save poll</span></button>
-        </form>
-
     </div>
 
-    <div class="edit-issues">
-        <h4>Issues</h4>
-    </div>
+    <div class="row">
+        <div class="col-lg-9">
 
-    <div class="edit-releases">
-        <h4>Releases</h4>
-    </div>
-
-    <div class="edit-teammamber">
-        <h4>Teammembers</h4>
-        <input type="text" id="txtUsername" placeholder="Username/Email" data-bind="jqAuto: { value: selectedUser, source: getOptions, labelProp: 'UserName', template: 'rowTmpl' }" /><br/>
-        <div data-bind="visible: selectedUser() != ''" style="display: none;">
-        <label><input type="checkbox" data-bind="checked: isPageAdmin">User is also page admin</input></label><br/>
-            <select class="fill" data-bind="options: roles, optionsText: 'role', value: role"></select><br/>
+            <div class="edit-description" data-bind="visible: selectedPage() == 'description'">
+                @Html.Partial("Partials/Project/Edit/Description", Model.Project)
             </div>
-        <button class="button" data-bind="css: { 'button-success': selectedUser() != '' }, click: addUser">Add member</button>
+
+            <div class="edit-polls" data-bind="visible: selectedPage() == 'polls'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Polls", Model.Project.Polls)
+            </div>
+
+            <div class="edit-issues" data-bind="visible: selectedPage() == 'issues'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Issues", Model.Project.Issues)
+            </div>
+
+            <div class="edit-releases" data-bind="visible: selectedPage() == 'releases'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Releases", Model)
+            </div>
+            <div class="edit-teammamber" data-bind="visible: selectedPage() == 'team'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Team", Model.Project.Admins)
+            </div>
+
+
+        </div>
+        <div class="col-lg-3 side-bar">
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <ul class="projects unstyled">
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'description' }, click: changePage" data-page="description">
+                            <li>Description</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'team' }, click: changePage" data-page="team">
+                            <li>Team members</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'releases' }, click: changePage" data-page="releases">
+                            <li>Releases</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'polls' }, click: changePage" data-page="polls">
+                            <li>Polls</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'issues' }, click: changePage" data-page="issues">
+                            <li>Issues</li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+
+
+
 
     <script id="rowTmpl" type="text/html">
         <a>
@@ -117,7 +90,7 @@
                     {
                         @Html.AntiForgeryToken(); 
                         <input type="file" name="uploadedFile" id="fileupload" /> 
-                        <input type="hidden" name="projectId" id="projectId" value="@Model.Id"/>
+                        <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
                     }
 
                     <div id="progress">
@@ -141,11 +114,17 @@
     <script src="~/Scripts/knockout-jqAutocomplete.min.js"></script>
     <script type="text/javascript">
 
+
+
         var editProjectConfig = {
             fileUpload: $('#fileupload'),
+            releaseImages: $('#releaseImages'),
             autocomplete: $("#txtUsername"),
-            imageUrl: '@Model.GetLogo()',
-            projectId: '@Model.Id'
+            imageUrl: '@Model.Project.GetLogo()',
+            projectId: '@Model.Project.Id',
+            startPage: '@Model.StartPage',
+            url: 'http://@(HttpContext.Current.Request.Url.Authority)/@(Model.Project.Id)/@(Model.Project.Slug)/edit',
+            data: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Project))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"))
         };
 
         var EditModel = function () {
@@ -156,6 +135,8 @@
                 priv.config = config;
                 var viewModel = new priv.viewModel();
                 viewModel.initFileUpload();
+                viewModel.InitHistory();
+                viewModel.initDeleteMethods();
                 return viewModel;
             };
 
@@ -163,8 +144,143 @@
                 return $.ajax({
                     method: 'post',
                     url: '/Project/SaveLogo',
-                    data: { projectId: data.projectId, url: data.url }
+                    data: { projectId: data.projectId, logo: data.logo, icon: data.icon }
                 });
+            };
+
+            priv.saveRelease = function(data) {
+                return $.ajax({
+                    method: 'post',
+                    contentType: 'application/json',
+                    url: '/Release/Create',
+                    data: data
+                });
+            };
+
+            priv.previewMarkdown = function(data) {
+                return $.ajax({
+                    method: 'post',
+                    url: '/Home/PreviewMarkdown',
+                    data: {text: data}
+                });
+            };
+
+            priv.saveDescription = function(data) {
+                return $.ajax({
+                    method: 'post',
+                    contentType: 'application/json',
+                    url: '/Project/SaveDescription',
+                    data: JSON.stringify({ projectId: priv.config.projectId, text: data })
+                });
+            };
+
+            priv.overview = function(data) {
+                var inner = { };
+                inner.description = ko.observable(data.Description);
+                inner.markdown = ko.observable();
+                inner.viewMarkdown = ko.observable(false);
+                inner.hideMarkdown = function() {
+                    inner.viewMarkdown(false);
+                };
+
+                inner.previewMarkdown = function () {
+                    if (inner.viewMarkdown()) {
+                        inner.viewMarkdown(false);
+                        return;
+                    }
+
+                    priv.previewMarkdown(inner.description()).done(function (response) {
+                        inner.viewMarkdown(true);
+                        inner.markdown(response.Code);
+                    });
+                };
+
+                inner.save = function() {
+                    priv.saveDescription(inner.description()).done(function(response) {
+                        console.log(response);
+                    });
+                };
+
+                return inner;
+            };
+
+            priv.release = function (data) {
+                var inner = {};
+                inner.version = ko.observable();
+                inner.title = ko.observable();
+                inner.description = ko.observable();
+                inner.solvedIssues = ko.observableArray([]);
+                inner.issues = ko.observableArray([]);
+                inner.projectId = priv.config.projectId;
+                inner.markdown = ko.observable();
+                inner.viewMarkdown = ko.observable(false);
+
+                inner.previewMarkdown = function () {
+                    
+                    if (inner.viewMarkdown()) {
+                        inner.viewMarkdown(false);
+                        return;
+                    }
+
+                    priv.previewMarkdown(inner.description()).done(function (response) {
+                        inner.viewMarkdown(true);
+                        inner.markdown(response.Code);
+                    });
+                };
+
+                inner.saveRelease = function () {
+                    priv.saveRelease(ko.toJSON(inner)).done(function(response) {
+                        if (response.Success)
+                            location.reload();
+                    });
+                };
+
+                $.each(data.Issues, function () {
+                    inner.issues.push(this);
+                });
+
+                inner.initFileUpload = function() {
+                    priv.config.releaseImages.fileupload({
+                        // Only submit the file if it is jpg file
+                        add: function (e, data) {
+                            var goUpload = true;
+                            var uploadFile = data.files[0];
+                            // Only allow JPG files
+                            if (!(/\.(jpg|png)$/i).test(uploadFile.name)) {
+                                alert("Incorrect file format. Please try again.");
+                                goUpload = false;
+                            }
+                            if (goUpload == true) {
+                                data.submit();
+                            }
+                        },
+                        type: 'post',
+                        // Handles the server side validation on file type
+                        done: function (e, data) {
+                            var response = JSON.parse(data.result);
+                            console.log(response);
+                            var icon = response.icon;
+                            var logo = response.logo;
+
+                            if (response.statusCode == 200) {
+                                var logoUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + logo;
+                                var iconUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + icon;
+                                inner.logoUrl(logoUrl);
+                                inner.updateLogo(logoUrl, iconUrl);
+                            }
+                        },
+                        progressall: function (e, data) {
+                            // Handle the progress bar
+                            var progress = parseInt(data.loaded / data.total * 100, 10);
+                            $('#progress .bar').css(
+                                'width',
+                                progress + '%'
+                            );
+                        }
+                    });
+                }();
+
+                return inner;
             };
 
             priv.removeLogo = function (data) {
@@ -204,7 +320,8 @@
 
                 inner.savePoll = function () {
                     priv.savePoll(inner).done(function (response) {
-                        console.log(response);
+                        if (response.success)
+                            location.reload();
                     });
                 };
 
@@ -220,6 +337,16 @@
                 });
             };
 
+            priv.deletePoll = function (pollId) {
+                return $.ajax({
+                    url: '/Project/DeletePoll',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: ko.toJSON({ projectId: priv.config.projectId, pollId: pollId })
+                });
+            };
+
+
             priv.addMember = function (userId, admin, role) {
                 return $.ajax({
                     url: '/Project/AddTeamMember',
@@ -229,13 +356,44 @@
                 });
             };
 
+            priv.deleteMember = function (userId) {
+                return $.ajax({
+                    url: '/Project/DeleteTeamMember',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: ko.toJSON({ projectId: priv.config.projectId, userId: userId })
+                });
+            };
+
             priv.viewModel = function () {
                 var inner = {};
 
+                inner.selectedPage = ko.observable(priv.config.startPage);
+                inner.changePage = function (a, b, c) {
+                    var newPage = $(b.currentTarget).attr('data-page');
+                    if (newPage === inner.selectedPage()) return false;
+                    history.pushState(newPage, 'test', priv.config.url + '/' + newPage);
+                    inner.selectedPage(newPage);
+                };
+
+                inner.overview = new priv.overview(priv.config.data);
+                
+                inner.release = ko.observable(new priv.release(priv.config.data));
+                inner.showNewRelease = ko.observable(false);
+                inner.newRelease = function() {
+                    inner.showNewRelease(true);
+                    history.pushState('new', 'test', priv.config.url + '/release/new');
+                };
+                inner.InitHistory = function () {
+                    window.addEventListener('popstate', function (event) {
+                        inner.selectedPage(event.state);
+                    });
+                };
+
                 inner.logoUrl = ko.observable(priv.config.imageUrl);
                 inner.projectId = priv.config.projectId;
-                inner.updateLogo = function (url) {
-                    priv.updateLogo({ projectId: inner.projectId, url: url })
+                inner.updateLogo = function (logo, icon) {
+                    priv.updateLogo({ projectId: inner.projectId, logo: logo, icon: icon })
                         .done(function (response) {
                             console.log(response);
                         });
@@ -251,6 +409,31 @@
                     }).done(callback);
                 };
 
+
+
+                inner.initDeleteMethods = function () {
+                    $(".poll .delete").on('click', function () {
+                        if (!confirm('Are you sure?')) return;
+                        var pollId = $(this).attr('data-poll-id');
+                        if (pollId)
+                            priv.deletePoll(pollId).done(function (response) {
+                                if (response.success)
+                                    location.reload();
+                            });
+                    });
+
+                    $(".member .delete").on('click', function () {
+                        if (!confirm('Are you sure?')) return;
+                        var userId = $(this).attr('data-user-id');
+                        console.log(userId);
+                        if (userId)
+                            priv.deleteMember(userId).done(function (response) {
+                                if (response.success)
+                                    location.reload();
+                            });
+                    });
+                };
+
                 inner.selectedPoll = ko.observable();
 
                 inner.selectedUser = ko.observable('');
@@ -263,8 +446,9 @@
                 inner.addUser = function () {
                     if (!inner.selectedUser()) return false;
 
-                    priv.addMember(inner.selectedUser().UserId, inner.isPageAdmin(), inner.role().id).done(function(response) {
-                        console.log(response);
+                    priv.addMember(inner.selectedUser().UserId, inner.isPageAdmin(), inner.role().id).done(function (response) {
+                        if (response.success)
+                            location.reload();
                     });
                 };
 
@@ -289,27 +473,16 @@
                     {
                         role: 'Administrative',
                         id: 2
-                    }
+                    },
+            {
+                role: 'Support',
+                id: 3
+            },
+            {
+                role: 'Other',
+                id: 4
+            }
                 ]);
-
-                //inner.initAutocomplete = function() {
-                //    priv.config.autocomplete.autocomplete({
-                //        source: "/User/Search",
-                //        minLength: 2,
-                //        select: function(event, ui) {
-                //            console.log(ui.item ?
-                //                "Selected: " + ui.item.value + " aka " + ui.item.id :
-                //                "Nothing selected, input was " + this.value);
-                //        }
-                //    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-                //        console.log(item);
-                //        return $("<li>")
-                //            .data("ui-autocomplete-item", item)
-                //            .append("<a><img class='user-image smaller' src='" + item.Image + "'>" + item.UserName + "</a>")
-                //            .appendTo(ul);
-                //    };
-                //};
-
 
                 inner.initFileUpload = function () {
                     priv.config.fileUpload.fileupload({
@@ -318,7 +491,7 @@
                             var goUpload = true;
                             var uploadFile = data.files[0];
                             // Only allow JPG files
-                            if (!(/\.(jpg)$/i).test(uploadFile.name)) {
+                            if (!(/\.(jpg|png)$/i).test(uploadFile.name)) {
                                 alert("Incorrect file format. Please try again.");
                                 goUpload = false;
                             }
@@ -331,10 +504,14 @@
                         done: function (e, data) {
                             var response = JSON.parse(data.result);
                             console.log(response);
+                            var icon = response.icon;
+                            var logo = response.logo;
+                                
                             if (response.statusCode == 200) {
-                                var logoUrl = '/Uploads/' + response.file;
+                                var logoUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + logo;
+                                var iconUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + icon;
                                 inner.logoUrl(logoUrl);
-                                inner.updateLogo(logoUrl);
+                                inner.updateLogo(logoUrl, iconUrl);
                             }
                         },
                         progressall: function (e, data) {

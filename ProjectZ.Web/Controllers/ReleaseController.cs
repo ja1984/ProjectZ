@@ -3,108 +3,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AttributeRouting.Web.Mvc;
 using ProjectZ.Web.Models;
 using ProjectZ.Web.ViewModels;
+using Action = ProjectZ.Web.Models.Action;
 
 namespace ProjectZ.Web.Controllers
 {
     public class ReleaseController : RavenController
     {
-
-        //
-        // GET: /Release/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        //
-        // GET: /Release/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Release/Create
-        //[HttpPost]
-        //public ActionResult Create(Release release)
-        //{
-        //    try
-        //    {
-        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-        //        if (project == null)
-        //            return View();
-
-        //        release.ProjectId = project.Id;
-        //        release.Created = DateTime.Now;
-        //        RavenSession.Store(release);
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        //
-        // GET: /Release/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /Release/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, Release release)
+        public JsonResult Create(CreateReleaseModel release)
         {
-            try
+            var project = RavenSession.Load<Project>(release.ProjectId);
+            var issues = new List<Issue>();
+            if (release.SolvedIssues != null)
             {
-                // TODO: Add update logic here
+                issues.AddRange(project.Issues.Where(x => release.SolvedIssues.Contains(x.Id)).ToList());
 
-                return RedirectToAction("Index");
+                foreach (var issue in issues)
+                {
+                    issue.Solved = true;
+                }
             }
-            catch
+
+            var newRelease = new Release
             {
-                return View();
-            }
+                Created = DateTime.Now,
+                Description = release.Description,
+                Issues = issues,
+                ProjectId = release.ProjectId,
+                Title = release.Title,
+                Version = release.Version
+            };
+
+            var eventAction = new EventAction()
+            {
+                Action = Action.Release,
+                Created = DateTime.Now,
+                ProjectId = release.ProjectId,
+                Title = release.Version,
+                ProjectName = project.Name,
+                Url = string.Format("/{0}/{1}/releases/{2}", release.ProjectId, project.Slug, release.Id),
+                User = new EventActionUser(CurrentUser)
+            };
+
+            RavenSession.Store(eventAction);
+            RavenSession.Store(newRelease);
+            RavenSession.SaveChanges();
+
+            return Json(new { Success = true });
         }
 
-        //
-        // GET: /Release/Delete/5
-        public ActionResult Delete(string projectName, int id)
-        {
-            return View();
-        }
-
-        //
-        // POST: /Release/Delete/5
-        //[HttpPost]
-        //public ActionResult Delete(string id)
-        //{
-        //    try
-        //    {
-
-        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-
-        //        if (project == null)
-        //            return View();
-
-
-        //        if (project.Admins.Any(x => x.Id == CurrentUser.Id))
-        //        {
-        //            var release = RavenSession.Load<Release>(id);
-        //            RavenSession.Delete(release);
-        //        }
-
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

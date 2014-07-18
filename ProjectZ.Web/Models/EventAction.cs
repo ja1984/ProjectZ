@@ -66,9 +66,9 @@ namespace ProjectZ.Web.Models
             return string.Format("<a href='{0}'>{1}</a>", Url, Title);
         }
 
-        private string GetCommentLink()
+        private string GetReleaseLink()
         {
-            return string.Format("<a href='{0}'>{1}</a>", Reference.Id, Reference.Name);
+            return string.Format("<a href='{0}'>{1}</a>", Url, Title);
         }
 
 
@@ -89,6 +89,9 @@ namespace ProjectZ.Web.Models
 
             if(Action == Action.TeamMember)
                 return string.Format("{0} added new team member {1} to {2}", GetUserLink(), GetTeammemberLink(), GetProjectLink());
+
+            if (Action == Action.Release)
+                return string.Format("{0} added a new release {1} to {2}", GetUserLink(), GetReleaseLink(), GetProjectLink());
 
             return "";
         }

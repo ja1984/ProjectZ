@@ -11,19 +11,16 @@ namespace ProjectZ.Web.Controllers
 {
     public class IssueController : RavenController
     {
-        //
-        // GET: /Issue/
 
-        //
-        // GET: /Issue/Details/5
         public ActionResult Details(string id)
         {
             var issue = RavenSession.Load<Issue>(id);
             return View(issue);
         }
 
+
         [HttpPost]
-        public JsonResult Comment(string comment, string projectId, int issueId)
+        public ActionResult Comment(string comment, string projectId, int issueId)
         {
             var project = RavenSession.Load<Project>(projectId);
             var issue = project.Issues.FirstOrDefault(x => x.Id == issueId);
@@ -54,9 +51,11 @@ namespace ProjectZ.Web.Controllers
                                 }
             };
             RavenSession.Store(eventAction);
-
             RavenSession.SaveChanges();
-            return Json("");
+
+
+
+            return Redirect(HttpContext.Request.UrlReferrer.ToString());
         }
 
         //
@@ -154,35 +153,5 @@ namespace ProjectZ.Web.Controllers
             }
         }
 
-
-
-        //
-        // POST: /Issue/Delete/5
-        //[HttpPost]
-        //public ActionResult Delete(string id)
-        //{
-        //    try
-        //    {
-
-        //        var project = RavenSession.Query<Project>().FirstOrDefault(x => x.Name == Subdomain);
-
-        //        if (project == null)
-        //            return View();
-
-
-        //        if (project.Admins.Any(x => x.Id == CurrentUser.Id))
-        //        {
-        //            var issue = RavenSession.Load<Issue>(id);
-        //            RavenSession.Delete(issue);
-        //        }
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

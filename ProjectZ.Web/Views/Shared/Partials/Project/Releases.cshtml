@@ -1,3 +1,7 @@
 ﻿@model IEnumerable<ProjectZ.Web.Models.Release>
     
-    <h1>Releases</h1>
+<h1>Releases</h1>
+@foreach (var release in Model)
+{
+    <a href="@release.Id" class="issue">@release.Version</a>
+}

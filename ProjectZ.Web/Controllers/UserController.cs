@@ -23,6 +23,34 @@ namespace ProjectZ.Web.Controllers
             return View(users);
         }
 
+        public void LoginUser(string userId)
+        {
+            FormsAuthentication.SetAuthCookie(userId, true);
+        }
+
+
+        [GET("User/CheckUsernameAvailability")]
+        public JsonResult CheckUsernameAvailability(string username)
+        {
+            var user = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == username.GenerateSlug());
+
+            if (user != null)
+                throw new HttpException(404, "Username is taken");
+
+            return Json(new { success = user == null, message = "This username is taken" }, JsonRequestBehavior.AllowGet);
+        }
+
+        [GET("User/CheckEmailAvailability")]
+        public JsonResult CheckEmailAvailability(string email)
+        {
+            var _email = RavenSession.Query<User>().FirstOrDefault(x => x.Email == email);
+
+            if (_email != null)
+                throw new HttpException(404, "Email is taken");
+
+            return Json(new { success = _email == null, message = "This email is in use" }, JsonRequestBehavior.AllowGet);
+        }
+
         [GET("User/Login")]
         public ActionResult Login()
         {
@@ -34,8 +62,8 @@ namespace ProjectZ.Web.Controllers
             return Json(RavenSession.Query<User>().Where(x => x.UserName.StartsWith(query) || x.Email.StartsWith(query)).ToList().Select(x => new TeamMember(x, Role.Developer, true).SmallInfo()), JsonRequestBehavior.AllowGet);
         }
 
-        [POST("User/Login")]
-        public ActionResult Login(LoginViewModel loginModel)
+        [POST("User/Login/{returnUrl}")]
+        public ActionResult Login(LoginViewModel loginModel, string returnUrl)
         {
             var user = RavenSession.Query<User>().FirstOrDefault(x => x.UserName == loginModel.Username || x.Email == loginModel.Username);
 
@@ -58,8 +86,10 @@ namespace ProjectZ.Web.Controllers
 
             LoginUser(user.Id);
 
+            if (!string.IsNullOrEmpty(returnUrl))
+                return Redirect(returnUrl);
 
-            return RedirectToAction("Details", "User", new { userName = user.Slug });
+            return RedirectToAction("HomeFeed", "Home");
         }
 
 
@@ -86,7 +116,9 @@ namespace ProjectZ.Web.Controllers
             if (string.IsNullOrEmpty(user.GravatarEmail))
                 user.GravatarEmail = user.Email;
 
+            
             RavenSession.Store(user);
+            LoginUser(user.Id);
 
             return Redirect("/user/" + user.Slug + "/edit");
 
@@ -161,22 +193,7 @@ namespace ProjectZ.Web.Controllers
         }
 
 
-        public void LoginUser(string userId)
-        {
-            FormsAuthentication.SetAuthCookie(userId, true);
-        }
 
-
-
-        public JsonResult CheckUsernameAvailability(string username)
-        {
-            return Json(new { success = RavenSession.Query<User>().FirstOrDefault(x => x.Slug == username.GenerateSlug()) == null, message = "This username is taken" }, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult CheckEmailAvailability(string email)
-        {
-            return Json(new { success = RavenSession.Query<User>().FirstOrDefault(x => x.Email.ToLower() == email.ToLower()) == null, message = "This email is in use" }, JsonRequestBehavior.AllowGet);
-        }
 
 
     }

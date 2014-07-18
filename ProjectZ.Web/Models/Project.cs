@@ -13,6 +13,7 @@ namespace ProjectZ.Web.Models
             Followers = new List<string>();
             Issues = new List<Issue>();
             Polls = new List<Poll>();
+            Questions = new List<Question>();
         }
 
         public string GetShortDescription()
@@ -26,10 +27,10 @@ namespace ProjectZ.Web.Models
 
         public string GetLogo(int size = 52, LogoSize imageType = LogoSize.Normal)
         {
-            if (string.IsNullOrEmpty(Logo))
+            if (Image == null)
                 return "/Content/Images/nologo.png";
 
-            return imageType == LogoSize.Normal ? Logo : string.Format("icon_{0}", Logo);
+            return imageType == LogoSize.Normal ? Image.Logo : Image.Icon;
         }
 
         public string Id { get; set; }
@@ -37,17 +38,26 @@ namespace ProjectZ.Web.Models
         public DateTime Created { get; set; }
         public string Description { get; set; }
         public string Slug { get; set; }
-        public string Logo { get; set; }
+        public ProjectImage Image { get; set; }
         public string Header { get; set; }
         public List<TeamMember> Admins { get; set; }
         public List<String> Followers { get; set; }
         public List<Issue> Issues { get; set; }
         public List<Poll> Polls { get; set; }
         public bool IsPrivate { get; set; }
+        public List<Question> Questions { get; set; }
 
         public enum LogoSize
         {
             Normal, Icon
+        }
+
+
+        public class ProjectImage
+        {
+            public string Logo { get; set; }
+            public string Icon { get; set; }
+            public string Banner { get; set; }
         }
     }
 }

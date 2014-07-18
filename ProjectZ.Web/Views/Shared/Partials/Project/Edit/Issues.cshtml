@@ -1,0 +1,18 @@
+﻿@model IEnumerable<ProjectZ.Web.Models.Issue>
+    
+    <div class="panel panel-default">
+    <div class="panel-body">
+            @foreach(var issue in Model)
+            {
+                <div class="row">
+                    <div class="col-lg-7">@issue.Title</div>
+                    <div class="col-lg-1">@issue.Version</div>
+                    <div class="col-lg-2 text-right"><button class="button button-error button-small"><span>Delete</span></button></div>
+                    <div class="col-lg-2 text-right"><button class="button button-success button-small"><span>Solved</span></button></div>
+                </div>   
+            }
+    </div>
+    <div class="panel-footer text-right">
+        <button class="button button-success"><span>Create release</span></button>
+    </div>
+</div>

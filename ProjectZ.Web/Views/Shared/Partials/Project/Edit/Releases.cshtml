@@ -1,0 +1,64 @@
+﻿@model ProjectZ.Web.Models.ViewModels.EditProjectViewModel
+
+<div class="panel panel-default" data-bind="visible: !showNewRelease()">
+    <div class="panel-body">
+        @foreach(var release in Model.Releases)
+        {
+            <div class="row release">
+                <div class="col-lg-9">
+                    @release.Version
+                </div>
+                <div class="col-lg-3 text-right">
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="panel-footer text-right">
+        <a href="/@Model.Project.Id/@Model.Project.Slug/edit/releases/new" data-bind="click: newRelease" class="button button-success"><span>New release</span></a>
+    </div>
+
+</div>
+
+
+
+<div data-bind="with: release, visible: showNewRelease()">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <input type="text" data-bind="value: title" placeholder="Title (optional)" id="version" name="version" class="fill" />
+            <input type="text" data-bind="value: version" placeholder="Version" id="version" name="version" class="fill" />
+
+            <div style="position: relative;">
+                <textarea class="fill" id="description" rows="10" data-bind="value: description" name="description" placeholder="Changelog"></textarea>
+                <div class="markdown" data-bind="visible: viewMarkdown, html: markdown" style="display: none;"></div>
+                <button class="markdown-toggler" data-bind="click: previewMarkdown">--</button>
+            </div>
+            <h6 style="border-bottom: 1px solid #f3f3f3;" class="margin margin-top-15">Fixed issues</h6>
+            <div data-bind="foreach: issues">
+                <label class="fill no-padding">
+                    <input type="checkbox" data-bind="checked: $parent.solvedIssues, attr: { 'value': Id }"><span data-bind="text: Title"></span>
+                </label>
+            </div>
+
+        </div>
+        <div class="panel-footer text-right">
+            <button class="button button-success" data-bind="click: saveRelease"><span>Create release</span></button>
+        </div>
+        
+        
+        @using (Html.BeginForm(new { enctype = "multipart/form-data", action = "/Upload" }))
+                    {
+                        @Html.AntiForgeryToken(); 
+                        <input type="file" name="uploadedFile" id="releaseImages" /> 
+                        <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
+                    }
+
+                    <div id="progress">
+                        <div class="bar" style="width: 0%;"></div>
+                    </div>
+        
+        
+
+    </div>
+</div>

@@ -1,0 +1,10 @@
+﻿@model IEnumerable<ProjectZ.Web.Models.Question>
+@foreach (var question in Model)
+{
+    <div class="question">
+        <h6>@question.Title</h6>
+        <p class="answer">
+            @question.Answer
+        </p>
+    </div>
+}

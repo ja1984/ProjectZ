@@ -2,44 +2,43 @@
     ViewBag.Title = "Index";
 }
 
-<div class="jumbo">
-    <img src="/Content/images/dexter.jpg" class="header-image">
-</div>
+<div class="row">
+    <div class="col-lg-8">
+        <h2>Connecting developers with their users shouldn't take time!</h2>
+        <h6>Sign up now to keep in touch with your users (if you're a developer) or help your favourite app get even better by supporting it with issues and help answering polls</h6>
+    </div>
+    <div class="col-lg-4">
+        <div class="box login">
+            <h2>Login</h2>
+            <form action="/user/login" id="register" method="POST" parsley-validate novalidate>
 
-<div class="wrapper">
-    <nav class="nav">
-        <ul>
-            <li><a href="#">Overview <span class="badge">2</span></a></li>
-            <li><a href="#">Releases</a></li>
-            <li><a href="#">Polls</a></li>
-            <li><a href="#">Issues</a></li>
-        </ul>
-    </nav>
-    <div class="inner">
-        <div class="content">
-            <h1>Twee</h1>
-
-            <p>You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man.</p>
-
-            <p>You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man.</p>
-
-            <p>Do you see any Teletubbies in here? Do you see a slender plastic tag clipped to my shirt with my name printed on it? Do you see a little Asian child with a blank expression on his face sitting outside on a mechanical helicopter that shakes when you put quarters in it? No? Well, that's what you see at a toy store. And you must think you're in a toy store, because you're here shopping for an infant named Jeb.</p>
-
-            <!-- please do not remove this line -->
-
-            <div style="display: none;">
-                <a href="http://slipsum.com">lorem ipsum</a>
-            </div>
-
-            <!-- end slipsum code -->
-
-        </div>
-        <div class="sidebar">
-            <h1>Test</h1>
-            <h2>Test</h2>
-            <h3>Test</h3>
-            <h4>Test</h4>
+                <section>
+                    <input type="text" id="username" class="fill" name="username" placeholder="Username / email" required />
+                </section>
+                <section>
+                    <input type="password" id="password" class="fill" name="password" required placeholder="Password" />
+                </section>
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <section>
+                        @ViewBag.Error
+                    </section>
+                }
+                <p class="margin margin-top-15">
+                    <a href="/user/register" class="button button-primary"><span>Register</span></a>
+                    <button type="submit" class="button button-success pull-right"><span>Login</span></button>
+                </p>
+            </form>
         </div>
     </div>
 </div>
-<!-- start slipsum code -->
+
+<div class="row">
+    <div class="col-lg-4">
+    </div>
+    <div class="col-lg-4">
+    </div>
+    <div class="col-lg-4">
+    </div>
+</div>
+

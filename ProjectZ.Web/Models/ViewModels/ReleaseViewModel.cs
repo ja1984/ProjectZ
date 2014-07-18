@@ -8,8 +8,16 @@ namespace ProjectZ.Web.ViewModels
 {
     public class ReleaseViewModel
     {
+        public ReleaseViewModel()
+        {
+            SolvedIssues = new List<Issue>();
+        }
+
+        public string Version { get; set; }
+        public string Description { get; set; }
+        public string Title { get; set; }
+        public List<Issue> SolvedIssues { get; set; }
         public Project Project { get; set; }
-        public int NumberOfIssues { get; set; }
-        public List<Release> Releases { get; set; }
+
     }
 }

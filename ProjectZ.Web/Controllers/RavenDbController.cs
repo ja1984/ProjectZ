@@ -12,29 +12,19 @@ namespace ProjectZ.Web.Controllers
 {
     public abstract class RavenController : Controller
     {
-        protected RavenController()
-        {
-            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
-        }
+        public IDocumentSession RavenSession { get; protected set; }
 
         public User CurrentUser { get; set; }
-        public static IDocumentStore DocumentStore
-        {
-            get
-            {
-                return new DocumentStore
-                {
-                    ConnectionStringName = "RavenDb"
-                }.Initialize();
-            }
-        }
 
-        public IDocumentSession RavenSession { get; protected set; }
+        protected RavenController()
+        {
+            //DocumentStore.Conventions.SaveEnumsAsIntegers = true;
+        }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            RavenSession = DocumentStore.OpenSession();
-            DocumentStore.Conventions.SaveEnumsAsIntegers = true;
+            RavenSession = MvcApplication.Store.OpenSession();
+
             var userFromAuthCookie = User;
 
             if (userFromAuthCookie != null && userFromAuthCookie.Identity.IsAuthenticated)

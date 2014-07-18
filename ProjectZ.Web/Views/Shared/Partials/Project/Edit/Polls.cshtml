@@ -1,0 +1,41 @@
+﻿@model List<ProjectZ.Web.Models.Poll>
+    
+    <div class="panel panel-default" data-bind="visible: !selectedPoll()">
+        <div class="panel-body">
+            @if(Model.Any()){
+                <ul class="list-unstyled">
+                    @foreach (var poll in Model)
+                    {
+                        <li class="poll">@poll.Title<i class="fa fa-times delete pull-right" data-poll-id="@poll.Id"></i></li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <h4 class="empty">No polls created yet</h4>
+            }
+        </div>
+        <div class="panel-footer text-right">
+            <button class="button button-success" data-bind="click: newPoll"><span>New poll</span></button>
+        </div>
+    </div>
+    
+
+<div class="panel panel-default" data-bind="with: selectedPoll, visible: selectedPoll">
+    <div class="panel-body">
+        <form id="polls-form">
+            <input type="text" class="fill" placeholder="Title" data-bind="value: title" />
+            <!-- ko foreach: options-->
+            <div style="position: relative;">
+                <input type="text" class="fill" data-bind="value: title, attr: { 'Placeholder': 'Option #' + ($index() + 1) }" />
+                <i class="fa fa-times" style="position: absolute; right: 12px; top: 12px;" data-bind="click: removeOption, visible: $index() > 1"></i>
+            </div>
+            <!--/ko-->
+
+        </form>
+    </div>
+    <div class="panel-footer">
+        <p class="button button-primary" data-bind="click: newOption"><span>New option</span></p>
+        <button class="button button-success pull-right" data-bind="click: savePoll"><span>Save poll</span></button>
+    </div>
+</div>

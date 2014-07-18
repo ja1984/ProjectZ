@@ -23,13 +23,14 @@
                 <li data-bind="css: {'active': selectedPage()=='releases'}"><a href="releases" data-page="releases" data-bind="    click:changePage">Releases @Html.Raw(Model.Releases.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Releases.Count()) : "")</a></li>
                 <li data-bind="css: {'active': selectedPage()=='polls'}"><a href="polls" data-page="polls" data-bind="    click:changePage">Polls @Html.Raw(Model.Project.Polls.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Project.Polls.Count()) : "")</a></li>
                 <li data-bind="css: {'active': selectedPage()=='issues'}"><a href="issues" data-page="issues" data-bind="    click:changePage">Issues @Html.Raw(Model.Project.Issues.Any() ? string.Format("<span class='badge'>{0}</span>", Model.Project.Issues.Count()) : "")</a></li>
+                <li data-bind="css: {'active': selectedPage()=='questions'}"><a href="questions" data-page="questions" data-bind="click:changePage">FAQ</a></li>
             </ul>
         </nav>
         <div class="inner">
 
             <div class="content">
                 <div data-bind="visible: selectedPage() == 'overview'">
-                    @Html.Partial("Partials/Project/Overview", Model.Project)
+                    @Html.Partial("Partials/Project/Overview", Model)
                 </div>
                 <div data-bind="visible: selectedPage() == 'releases'" style="display: none;">
                     @Html.Partial("Partials/Project/Releases", Model.Releases)
@@ -38,7 +39,10 @@
                     @Html.Partial("Partials/Project/Polls", Model.Project.Polls)
                 </div>
                 <div data-bind="visible: selectedPage() == 'issues'" style="display: none;">
-                    @Html.Partial("Partials/Project/Issues", Model.Project)
+                    @Html.Partial("Partials/Project/Issues", Model)
+                </div>
+                <div data-bind="visible: selectedPage() == 'questions'" style="display: none;">
+                    @Html.Partial("Partials/Project/Questions", Model.Project.Questions)
                 </div>
             </div>
             <div class="sidebar">
@@ -65,7 +69,7 @@
                 @if (Model.IsPageAdmin)
                 {
                     <div class="admin-wrapper">
-                        <a href="edit/"  class="button button-block button-filled button-large">Manage project</a>
+                        <a href="/@Model.Project.Id/@Model.Project.Slug/edit/"  class="button button-block button-filled button-large">Manage project</a>
                     </div>
                 }
                 <div class="follow-wrapper">

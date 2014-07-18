@@ -28,7 +28,7 @@ namespace ProjectZ.Web.Controllers
         public ActionResult HomeFeed()
         {
             var projects = CurrentUser.Follows.Select(x => x.Id).ToList();
-            projects.AddRange(CurrentUser.Projects.Select(x=>x.Id).ToList());
+            projects.AddRange(CurrentUser.Projects.Select(x => x.Id).ToList());
 
             var events = new List<EventAction>();
             events.AddRange(RavenSession.Query<EventAction>().Where(x => x.ProjectId.In(projects)).OrderByDescending(x => x.Created).ToList());
@@ -36,5 +36,10 @@ namespace ProjectZ.Web.Controllers
             return View(new FeedViewModel { Events = events, Projects = CurrentUser.Projects, Following = CurrentUser.Follows });
         }
 
+        [ValidateInput(false)]
+        public JsonResult PreviewMarkDown(string text)
+        {
+            return Json(string.IsNullOrEmpty(text) ? new { Code = "" } : new { Code = new MarkdownSharp.Markdown().Transform(text) });
+        }
     }
 }

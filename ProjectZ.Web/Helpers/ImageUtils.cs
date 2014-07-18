@@ -4,60 +4,56 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
+using ProjectZ.Web.Models;
+using Raven.Client.Document;
 
 namespace ProjectZ.Web.Helpers
 {
 
-    public class ImageUtils
+    public static class ImageUtils
     {
-        private const string UPLOAD_FOLDER = "{0}logo_{1}";
-        private const string UPLOAD_FOLDER_ICON = "{0}icon_{1}";
+        private const string NOIMAGE_URL = "/Content/Images/nologo.png";
 
-        public static string GetLogo(string projectId, LogoSize imageType = LogoSize.Normal)
+        public static string GetProjectImage(string projectId, ImageSize imageType = ImageSize.Normal)
         {
 
-            var id = StringHelper.GetProjectId(projectId);
+            using (var session = MvcApplication.Store.OpenSession())
+            {
+                using (session.Advanced.DocumentStore.AggressivelyCacheFor(TimeSpan.FromMinutes(1000)))
+                {
+                    var project = session.Load<Project>(projectId);
 
-            if (string.IsNullOrEmpty(projectId))
-                return "/Content/Images/nologo.png";
+                    if (project == null)
+                        return NOIMAGE_URL;
+
+                    if (project.Image == null)
+                        return NOIMAGE_URL;
+
+                    switch (imageType)
+                    {
+                        case ImageSize.Normal:
+                            return project.Image.Logo;
+                        case ImageSize.Icon:
+                            return project.Image.Icon;
+                        case ImageSize.Banner:
+                            return string.IsNullOrEmpty(project.Image.Banner) ? NOIMAGE_URL : project.Image.Banner;
+                    }
 
 
-            if (imageType == LogoSize.Icon && !string.IsNullOrEmpty(GetImage(id, string.Format(UPLOAD_FOLDER_ICON, GetUploadFolder(), id))))
-                return string.Format(UPLOAD_FOLDER_ICON, "/Uploads/", GetImage(id, string.Format(UPLOAD_FOLDER_ICON, GetUploadFolder(), id)));
 
-            if (imageType == LogoSize.Normal &&  !string.IsNullOrEmpty(GetImage(id, string.Format(UPLOAD_FOLDER, GetUploadFolder(), id))))
-                return string.Format(UPLOAD_FOLDER, "/Uploads/", GetImage(id, string.Format(UPLOAD_FOLDER_ICON, GetUploadFolder(), id)));
+                }
+            }
 
-            return "/Content/Images/nologo.png";
+            return NOIMAGE_URL;
         }
 
-        public enum LogoSize
+
+
+        public enum ImageSize
         {
-            Normal, Icon
+            Normal, Icon, Banner
         }
 
-        private static string GetUploadFolder()
-        {
-            var test = HostingEnvironment.MapPath("/Uploads") + "\\";
-            return test;
-        }
-
-        public static string GetImage(string id, string url)
-        {
-
-            //string.Format(UPLOAD_FOLDER_ICON, GetUploadFolder(), id)
-
-            if (File.Exists(url + ".jpg"))
-                return (id + ".jpg");
-
-            if (File.Exists(url + ".png"))
-                return (id + ".png");
-
-            if (File.Exists(url + ".gif"))
-                return (id + ".gif");
-
-            return "";
-        }
 
     }
 }

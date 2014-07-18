@@ -45,7 +45,16 @@
             {
                 role: 'Administrative',
                 id: 2
+            },
+            {
+                role: 'Support',
+                id: 3
+            },
+            {
+                role: 'Other',
+                id: 4
             }
+        
         ]);
 
         inner.saving = ko.observable(false);

@@ -23,6 +23,8 @@ namespace ProjectZ.Web.Models
         public IssueType IssueType { get; set; }
         public List<IssueComment> Comments { get; set; }
         public IssueUser User { get; set; }
+        public Boolean Solved { get; set; }
+        public string Version { get; set; }
 
         public string IssueTypeIcon()
         {
