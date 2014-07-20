@@ -127,6 +127,9 @@
         $(function () {
             ko.applyBindings(new projectModel.Init(projectConfig), document.getElementById("project-wrapper"));
             ko.applyBindings(new issuesModel.init(projectConfig), document.getElementById("issues"));
+            $(".question").on('click', function() {
+                $(this).toggleClass("open");
+            });
         });
     </script>
 }

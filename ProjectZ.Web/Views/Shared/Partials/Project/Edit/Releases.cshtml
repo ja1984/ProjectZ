@@ -51,6 +51,7 @@
                     {
                         @Html.AntiForgeryToken(); 
                         <input type="file" name="uploadedFile" id="releaseImages" /> 
+            <div id="dropzone" class="fade well">Drop files here</div>
                         <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
                     }
 

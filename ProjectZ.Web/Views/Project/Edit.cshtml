@@ -40,6 +40,9 @@
             <div class="edit-teammamber" data-bind="visible: selectedPage() == 'team'" style="display: none;">
                 @Html.Partial("Partials/Project/Edit/Team", Model.Project.Admins)
             </div>
+            <div class="edit-questions" data-bind="visible: selectedPage() == 'questions'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Questions", Model.Project.Questions)
+            </div>
 
 
         </div>
@@ -62,6 +65,9 @@
                         </a>
                         <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'issues' }, click: changePage" data-page="issues">
                             <li>Issues</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'questions' }, click: changePage" data-page="questions">
+                            <li>Questions</li>
                         </a>
                     </ul>
                 </div>
@@ -119,6 +125,7 @@
         var editProjectConfig = {
             fileUpload: $('#fileupload'),
             releaseImages: $('#releaseImages'),
+            dropZone: $('#dropZone'),
             autocomplete: $("#txtUsername"),
             imageUrl: '@Model.Project.GetLogo()',
             projectId: '@Model.Project.Id',
@@ -138,6 +145,17 @@
                 viewModel.InitHistory();
                 viewModel.initDeleteMethods();
                 return viewModel;
+            };
+
+            priv.base = function() {
+                var inner = {};
+                inner.isInEditMode = ko.observable(false);
+                inner.toggleEditMode = function() {
+                    inner.isInEditMode(!inner.isInEditMode());
+                };
+
+
+                return inner;
             };
 
             priv.updateLogo = function (data) {
@@ -204,6 +222,49 @@
                 return inner;
             };
 
+            priv.questionModel = function(data) {
+                var inner = new priv.base();
+                inner.title = ko.observable();
+                inner.answer = ko.observable();
+                inner.questions = ko.observableArray([]);
+
+                inner.newQuestion = function() {
+                    inner.title();
+                    inner.answer();
+                };
+
+                inner.save = function() {
+                    inner.saveQuestion().done(function(response) {
+                        if (response.Success)
+                            inner.questions.push(new priv.question(response.Question));
+                        inner.toggleEditMode();
+                        inner.newQuestion();
+                    });
+                };
+
+                inner.saveQuestion = function() {
+                    return $.ajax({
+                        method: 'post',
+                        url: '/Question/Create',
+                        contentType: 'application/json',
+                        data: ko.toJSON({question: {projectId: priv.config.projectId, title: inner.title(), answer: inner.answer()}})
+                    });
+                };
+
+                $.each(data.Questions, function() {
+                    inner.questions.push(new priv.question(this));
+                });
+
+                return inner;
+            };
+
+            priv.question = function (data) {
+                var inner = {};
+                inner.title = data.Title;
+                inner.answer = data.Answer;
+                return inner;
+            };
+
             priv.release = function (data) {
                 var inner = {};
                 inner.version = ko.observable();
@@ -241,6 +302,7 @@
 
                 inner.initFileUpload = function() {
                     priv.config.releaseImages.fileupload({
+                        dropZone: priv.config.dropzone,
                         // Only submit the file if it is jpg file
                         add: function (e, data) {
                             var goUpload = true;
@@ -277,6 +339,38 @@
                                 progress + '%'
                             );
                         }
+                    });
+                }();
+
+                inner.initDropZone = function() {
+                    $(document).bind('dragover', function (e) {
+                        var dropZone = priv.config.dropZone,
+                            timeout = window.dropZoneTimeout;
+
+                        console.log(dropZone);
+                        if (!timeout) {
+                            dropZone.addClass('in');
+                        } else {
+                            clearTimeout(timeout);
+                        }
+                        var found = false,
+                            node = e.target;
+                        do {
+                            if (node === dropZone[0]) {
+                                found = true;
+                                break;
+                            }
+                            node = node.parentNode;
+                        } while (node != null);
+                        if (found) {
+                            dropZone.addClass('hover');
+                        } else {
+                            dropZone.removeClass('hover');
+                        }
+                        window.dropZoneTimeout = setTimeout(function () {
+                            window.dropZoneTimeout = null;
+                            dropZone.removeClass('in hover');
+                        }, 100);
                     });
                 }();
 
@@ -375,6 +469,8 @@
                     history.pushState(newPage, 'test', priv.config.url + '/' + newPage);
                     inner.selectedPage(newPage);
                 };
+
+                inner.questionModel = new priv.questionModel(priv.config.data);
 
                 inner.overview = new priv.overview(priv.config.data);
                 

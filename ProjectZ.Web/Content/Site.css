@@ -265,6 +265,9 @@ ul.parsley-error-list {
 .margin.margin-bottom-15 {
   margin-bottom: 15px !important;
 }
+.question h6 {
+  cursor: pointer;
+}
 .question .answer {
   height: 0;
   overflow: hidden;
@@ -1851,6 +1854,31 @@ a.issue div.type .icon {
 .bs-callout-info {
   background-color: #f0f7fd;
   border-color: #d0e3f0;
+}
+#dropzone {
+  background: palegreen;
+  width: 150px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-weight: bold;
+}
+#dropzone.in {
+  width: 600px;
+  height: 200px;
+  line-height: 200px;
+  font-size: larger;
+}
+#dropzone.hover {
+  background: lawngreen;
+}
+#dropzone.fade {
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+  opacity: 1;
 }
 .timeline {
   position: relative;

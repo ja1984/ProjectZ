@@ -169,6 +169,7 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\LoggedInController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
+    <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\RavenDbController.cs" />
     <Compile Include="Controllers\ReleaseController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -375,6 +376,7 @@
     <Content Include="Views\Project\Releases.cshtml" />
     <Content Include="Views\Project\Release.cshtml" />
     <Content Include="Views\Shared\Partials\Project\Questions.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Edit\Questions.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -386,6 +388,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Content\font\" />
     <Folder Include="Uploads\" />
+    <Folder Include="Views\Question\" />
     <Folder Include="Views\Release\" />
   </ItemGroup>
   <ItemGroup>

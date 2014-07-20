@@ -13,4 +13,10 @@ namespace ProjectZ.Web.Models
         public string Answer { get; set; }
 
     }
+
+
+    public class CreateQuestionModel : Question
+    {
+        public string ProjectId { get; set; }
+    }
 }
