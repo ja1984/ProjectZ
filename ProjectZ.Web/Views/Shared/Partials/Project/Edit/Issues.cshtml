@@ -1,16 +1,31 @@
 ﻿@model IEnumerable<ProjectZ.Web.Models.Issue>
-    
-    <div class="panel panel-default">
+
+<div class="panel panel-default">
     <div class="panel-body">
-            @foreach(var issue in Model)
+
+
+        <ul class="list-unstyled">
+            @foreach (var issue in Model)
             {
-                <div class="row">
-                    <div class="col-lg-7">@issue.Title</div>
-                    <div class="col-lg-1">@issue.Version</div>
-                    <div class="col-lg-2 text-right"><button class="button button-error button-small"><span>Delete</span></button></div>
-                    <div class="col-lg-2 text-right"><button class="button button-success button-small"><span>Solved</span></button></div>
-                </div>   
+                <li class="list-item">
+                    <div class="clearfix">
+                        <div class="pull-left wrapper">
+                            <h6 style="margin: 0;">@issue.Title
+                                @if (issue.Solved)
+                                {
+                                    <span class="label label-success" style="vertical-align: top;font-size: 50%;margin-top:2px;">Solved</span>
+                                }
+
+                            </h6>
+                            <p class="text-muted" style="margin: 0; font-size: .9em; line-height: 100%;"><span style="text-overflow: ellipsis">@issue.Version</span></p>
+                        </div>
+                        <button class="pull-right button button-error delete"><span>Delete</span></button>
+                    </div>
+                </li>
             }
+        </ul>
+
+
     </div>
     <div class="panel-footer text-right">
         <button class="button button-success"><span>Create release</span></button>

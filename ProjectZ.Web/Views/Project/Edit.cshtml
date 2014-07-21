@@ -3,13 +3,14 @@
 @{
     ViewBag.Title = "Edit";
 }
+
 <div id="edit-project-wrapper">
 
 
     <div class="row">
         <div class="col-lg-12 margin margin-bottom-15">
             <h2>
-                <div class="project-logo" data-toggle="modal" data-target="#logo-upload">
+                <div class="project-logo dropzone" data-toggle="modal" data-target="#logo-upload" id="dropzone-logo">
                     <img src="@Model.Project.GetLogo()" alt="@Model.Project.Name" title="@Model.Project.Name" class="user-image" data-bind="attr: { 'src': logoUrl }">
                     <i class="fa fa-upload fa-1x"></i>
                 </div>
@@ -43,6 +44,9 @@
             <div class="edit-questions" data-bind="visible: selectedPage() == 'questions'" style="display: none;">
                 @Html.Partial("Partials/Project/Edit/Questions", Model.Project.Questions)
             </div>
+            <div class="edit-questions" data-bind="visible: selectedPage() == 'images'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Images", Model.Project.Questions)
+            </div>
 
 
         </div>
@@ -68,6 +72,9 @@
                         </a>
                         <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'questions' }, click: changePage" data-page="questions">
                             <li>Questions</li>
+                        </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'images' }, click: changePage" data-page="images">
+                            <li>Images</li>
                         </a>
                     </ul>
                 </div>
@@ -118,6 +125,13 @@
     <script src="~/Scripts/jquery.fileupload.js"></script>
     <script src="~/Scripts/jquery.iframe-transport.js"></script>
     <script src="~/Scripts/knockout-jqAutocomplete.min.js"></script>
+    
+    <script src="~/Scripts/Project/base.js"></script>
+    <script src="~/Scripts/Project/Questions.js"></script>
+    <script src="~/Scripts/Project/Overview.js"></script>
+    <script src="~/Scripts/Project/Releases.js"></script>
+    <script src="~/Scripts/Project/Team.js"></script>
+    <script src="~/Scripts/Project/Images.js"></script>
     <script type="text/javascript">
 
 
@@ -131,7 +145,9 @@
             projectId: '@Model.Project.Id',
             startPage: '@Model.StartPage',
             url: 'http://@(HttpContext.Current.Request.Url.Authority)/@(Model.Project.Id)/@(Model.Project.Slug)/edit',
-            data: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Project))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"))
+            data: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Project))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t")),
+            releases: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Releases))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"))
+            
         };
 
         var EditModel = function () {
@@ -144,18 +160,8 @@
                 viewModel.initFileUpload();
                 viewModel.InitHistory();
                 viewModel.initDeleteMethods();
+                viewModel.initEvents();
                 return viewModel;
-            };
-
-            priv.base = function() {
-                var inner = {};
-                inner.isInEditMode = ko.observable(false);
-                inner.toggleEditMode = function() {
-                    inner.isInEditMode(!inner.isInEditMode());
-                };
-
-
-                return inner;
             };
 
             priv.updateLogo = function (data) {
@@ -164,217 +170,6 @@
                     url: '/Project/SaveLogo',
                     data: { projectId: data.projectId, logo: data.logo, icon: data.icon }
                 });
-            };
-
-            priv.saveRelease = function(data) {
-                return $.ajax({
-                    method: 'post',
-                    contentType: 'application/json',
-                    url: '/Release/Create',
-                    data: data
-                });
-            };
-
-            priv.previewMarkdown = function(data) {
-                return $.ajax({
-                    method: 'post',
-                    url: '/Home/PreviewMarkdown',
-                    data: {text: data}
-                });
-            };
-
-            priv.saveDescription = function(data) {
-                return $.ajax({
-                    method: 'post',
-                    contentType: 'application/json',
-                    url: '/Project/SaveDescription',
-                    data: JSON.stringify({ projectId: priv.config.projectId, text: data })
-                });
-            };
-
-            priv.overview = function(data) {
-                var inner = { };
-                inner.description = ko.observable(data.Description);
-                inner.markdown = ko.observable();
-                inner.viewMarkdown = ko.observable(false);
-                inner.hideMarkdown = function() {
-                    inner.viewMarkdown(false);
-                };
-
-                inner.previewMarkdown = function () {
-                    if (inner.viewMarkdown()) {
-                        inner.viewMarkdown(false);
-                        return;
-                    }
-
-                    priv.previewMarkdown(inner.description()).done(function (response) {
-                        inner.viewMarkdown(true);
-                        inner.markdown(response.Code);
-                    });
-                };
-
-                inner.save = function() {
-                    priv.saveDescription(inner.description()).done(function(response) {
-                        console.log(response);
-                    });
-                };
-
-                return inner;
-            };
-
-            priv.questionModel = function(data) {
-                var inner = new priv.base();
-                inner.title = ko.observable();
-                inner.answer = ko.observable();
-                inner.questions = ko.observableArray([]);
-
-                inner.newQuestion = function() {
-                    inner.title();
-                    inner.answer();
-                };
-
-                inner.save = function() {
-                    inner.saveQuestion().done(function(response) {
-                        if (response.Success)
-                            inner.questions.push(new priv.question(response.Question));
-                        inner.toggleEditMode();
-                        inner.newQuestion();
-                    });
-                };
-
-                inner.saveQuestion = function() {
-                    return $.ajax({
-                        method: 'post',
-                        url: '/Question/Create',
-                        contentType: 'application/json',
-                        data: ko.toJSON({question: {projectId: priv.config.projectId, title: inner.title(), answer: inner.answer()}})
-                    });
-                };
-
-                $.each(data.Questions, function() {
-                    inner.questions.push(new priv.question(this));
-                });
-
-                return inner;
-            };
-
-            priv.question = function (data) {
-                var inner = {};
-                inner.title = data.Title;
-                inner.answer = data.Answer;
-                return inner;
-            };
-
-            priv.release = function (data) {
-                var inner = {};
-                inner.version = ko.observable();
-                inner.title = ko.observable();
-                inner.description = ko.observable();
-                inner.solvedIssues = ko.observableArray([]);
-                inner.issues = ko.observableArray([]);
-                inner.projectId = priv.config.projectId;
-                inner.markdown = ko.observable();
-                inner.viewMarkdown = ko.observable(false);
-
-                inner.previewMarkdown = function () {
-                    
-                    if (inner.viewMarkdown()) {
-                        inner.viewMarkdown(false);
-                        return;
-                    }
-
-                    priv.previewMarkdown(inner.description()).done(function (response) {
-                        inner.viewMarkdown(true);
-                        inner.markdown(response.Code);
-                    });
-                };
-
-                inner.saveRelease = function () {
-                    priv.saveRelease(ko.toJSON(inner)).done(function(response) {
-                        if (response.Success)
-                            location.reload();
-                    });
-                };
-
-                $.each(data.Issues, function () {
-                    inner.issues.push(this);
-                });
-
-                inner.initFileUpload = function() {
-                    priv.config.releaseImages.fileupload({
-                        dropZone: priv.config.dropzone,
-                        // Only submit the file if it is jpg file
-                        add: function (e, data) {
-                            var goUpload = true;
-                            var uploadFile = data.files[0];
-                            // Only allow JPG files
-                            if (!(/\.(jpg|png)$/i).test(uploadFile.name)) {
-                                alert("Incorrect file format. Please try again.");
-                                goUpload = false;
-                            }
-                            if (goUpload == true) {
-                                data.submit();
-                            }
-                        },
-                        type: 'post',
-                        // Handles the server side validation on file type
-                        done: function (e, data) {
-                            var response = JSON.parse(data.result);
-                            console.log(response);
-                            var icon = response.icon;
-                            var logo = response.logo;
-
-                            if (response.statusCode == 200) {
-                                var logoUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + logo;
-                                var iconUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + icon;
-                                inner.logoUrl(logoUrl);
-                                inner.updateLogo(logoUrl, iconUrl);
-                            }
-                        },
-                        progressall: function (e, data) {
-                            // Handle the progress bar
-                            var progress = parseInt(data.loaded / data.total * 100, 10);
-                            $('#progress .bar').css(
-                                'width',
-                                progress + '%'
-                            );
-                        }
-                    });
-                }();
-
-                inner.initDropZone = function() {
-                    $(document).bind('dragover', function (e) {
-                        var dropZone = priv.config.dropZone,
-                            timeout = window.dropZoneTimeout;
-
-                        console.log(dropZone);
-                        if (!timeout) {
-                            dropZone.addClass('in');
-                        } else {
-                            clearTimeout(timeout);
-                        }
-                        var found = false,
-                            node = e.target;
-                        do {
-                            if (node === dropZone[0]) {
-                                found = true;
-                                break;
-                            }
-                            node = node.parentNode;
-                        } while (node != null);
-                        if (found) {
-                            dropZone.addClass('hover');
-                        } else {
-                            dropZone.removeClass('hover');
-                        }
-                        window.dropZoneTimeout = setTimeout(function () {
-                            window.dropZoneTimeout = null;
-                            dropZone.removeClass('in hover');
-                        }, 100);
-                    });
-                }();
-
-                return inner;
             };
 
             priv.removeLogo = function (data) {
@@ -440,24 +235,7 @@
                 });
             };
 
-
-            priv.addMember = function (userId, admin, role) {
-                return $.ajax({
-                    url: '/Project/AddTeamMember',
-                    method: 'post',
-                    contentType: 'application/json',
-                    data: ko.toJSON({ projectId: priv.config.projectId, userId: userId, isAdmin: admin, role: role })
-                });
-            };
-
-            priv.deleteMember = function (userId) {
-                return $.ajax({
-                    url: '/Project/DeleteTeamMember',
-                    method: 'post',
-                    contentType: 'application/json',
-                    data: ko.toJSON({ projectId: priv.config.projectId, userId: userId })
-                });
-            };
+            
 
             priv.viewModel = function () {
                 var inner = {};
@@ -470,11 +248,12 @@
                     inner.selectedPage(newPage);
                 };
 
-                inner.questionModel = new priv.questionModel(priv.config.data);
-
-                inner.overview = new priv.overview(priv.config.data);
+                inner.questionModel = new questionModel().Init(priv.config.data, inner, priv.config);
+                inner.overviewModel = new overviewModel().Init(priv.config.data, inner, priv.config);
+                inner.releaseModel = new releaseModel().Init({releases: priv.config.releases, issues: priv.config.data.Issues}, inner, priv.config);
+                inner.teamModel = new teamModel().Init(priv.config.data.Admins, inner, priv.config);
+                inner.imageModel = new imageModel().Init(priv.config.data.Images, inner, priv.config);
                 
-                inner.release = ko.observable(new priv.release(priv.config.data));
                 inner.showNewRelease = ko.observable(false);
                 inner.newRelease = function() {
                     inner.showNewRelease(true);
@@ -495,15 +274,7 @@
                         });
                 };
 
-                inner.getOptions = function (searchTerm, callback) {
-                    $.ajax({
-                        dataType: "json",
-                        url: "/User/Search",
-                        data: {
-                            query: searchTerm
-                        },
-                    }).done(callback);
-                };
+                
 
 
 
@@ -532,21 +303,14 @@
 
                 inner.selectedPoll = ko.observable();
 
-                inner.selectedUser = ko.observable('');
-                inner.isPageAdmin = ko.observable(false);
+                
+                
 
                 inner.newPoll = function () {
                     inner.selectedPoll(priv.poll());
                 };
 
-                inner.addUser = function () {
-                    if (!inner.selectedUser()) return false;
-
-                    priv.addMember(inner.selectedUser().UserId, inner.isPageAdmin(), inner.role().id).done(function (response) {
-                        if (response.success)
-                            location.reload();
-                    });
-                };
+                
 
                 inner.removeLogo = function () {
                     if (confirm("Are you sure?"))
@@ -555,34 +319,51 @@
                         });
                 };
 
-                inner.role = ko.observable('');
 
-                inner.roles = ko.observableArray([
-                    {
-                        role: 'Developer',
-                        id: 0
-                    },
-                    {
-                        role: 'Designer',
-                        id: 1
-                    },
-                    {
-                        role: 'Administrative',
-                        id: 2
-                    },
-            {
-                role: 'Support',
-                id: 3
-            },
-            {
-                role: 'Other',
-                id: 4
-            }
-                ]);
+                inner.initEvents = function() {
+                    $(document).bind('dragover', function (e) {
+                        var dropZone = $('.dropzone'),
+                            foundDropzone,
+                            timeout = window.dropZoneTimeout;
+                        if (!timeout) {
+                            dropZone.addClass('in');
+                        }
+                        else {
+                            clearTimeout(timeout);
+                        }
+                        var found = false,
+                        node = e.target;
+
+                        do {
+
+                            if ($(node).hasClass('dropzone')) {
+                                found = true;
+                                foundDropzone = $(node);
+                                break;
+                            }
+
+                            node = node.parentNode;
+
+                        } while (node != null);
+
+                        dropZone.removeClass('in hover');
+
+                        if (found) {
+                            foundDropzone.addClass('hover');
+                        }
+
+                        window.dropZoneTimeout = setTimeout(function () {
+                            window.dropZoneTimeout = null;
+                            dropZone.removeClass('in hover');
+                        }, 100);
+                    });
+                };
+                
 
                 inner.initFileUpload = function () {
                     priv.config.fileUpload.fileupload({
                         // Only submit the file if it is jpg file
+                        dropZone: $("#dropzone-logo"),
                         add: function (e, data) {
                             var goUpload = true;
                             var uploadFile = data.files[0];

@@ -141,6 +141,24 @@ ul.unstyled {
 ul.unstyled.inline li {
   display: inline-block;
 }
+.row .list-item {
+  padding: 5px 0;
+  border-top: 1px solid #ddd;
+}
+.row .list-item:first-child {
+  border-top: none;
+}
+.row .list-item .wrapper {
+  width: 80%;
+  cursor: pointer;
+}
+.row .list-item a:hover {
+  text-decoration: none;
+}
+.project-images .list-item {
+  border: none;
+  vertical-align: text-top;
+}
 h1 {
   font-family: 'RobotoLight', Arial, sans-serif;
   margin: 5px 0 10px 0;
@@ -207,7 +225,7 @@ label {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid #f3f3f3;
   transition: all ease 0.5s;
   /*&:hover {
         background: darken(@containerBackground,2%);
@@ -262,6 +280,9 @@ ul.parsley-error-list {
 .margin.margin-top-30 {
   margin-top: 30px !important;
 }
+.margin.margin-right-10 {
+  margin-right: 10px;
+}
 .margin.margin-bottom-15 {
   margin-bottom: 15px !important;
 }
@@ -284,6 +305,17 @@ ul.parsley-error-list {
   background: #fff;
   z-index: 100;
   min-height: 172px;
+}
+.markdown-container .markdown .placeholder {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 1px 3px;
+  font-size: .8em;
+  cursor: default;
+  border-radius: 3px;
 }
 label {
   font-weight: normal;
@@ -380,9 +412,9 @@ section.slideout-menu {
   z-index: 10;
   overflow-y: auto;
   transition: all ease 0.25s;
-}
-section.slideout-menu.open {
-  left: 0;
+  /*&.open {
+            left: 0;
+        }*/
 }
 section.slideout-menu nav {
   padding: 10px;
@@ -545,6 +577,18 @@ section.slideout-menu .user:hover {
 section.slideout-menu .user:hover i {
   opacity: 1;
 }
+body {
+  transition: all ease 0.25s;
+}
+body.open {
+  padding-left: 200px;
+}
+body.open .slideout-menu {
+  left: 0;
+}
+body.open .slideout-toggler {
+  background: rgba(255, 255, 255, 0.4);
+}
 .release {
   border-top: 1px solid #ccc;
   padding: 8px 0;
@@ -626,9 +670,9 @@ nav.top-nav .primary p:active {
 nav.top-nav .primary p.slideout-toggler {
   padding: 3px 5px 3px 6px;
   border-radius: 25px;
-}
-nav.top-nav .primary p.slideout-toggler.open {
-  background: rgba(255, 255, 255, 0.4);
+  /*&.open {
+                    background: rgba(255,255,255, .4);
+                }*/
 }
 nav.top-nav .primary p.logo {
   padding: 10px;
@@ -733,10 +777,21 @@ nav.top-nav ul li a img {
   border-radius: 15px;
   height: 26px;
 }
+#project-wrapper.has-promo {
+  margin-top: -115px;
+  position: relative;
+  z-index: 50;
+}
+#project-wrapper.has-promo .project-name {
+  color: #fff;
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
 .jumbo {
   max-height: 600px;
   overflow: hidden;
   text-align: center;
+  margin-right: -50px;
+  margin-left: -50px;
 }
 .jumbo img {
   max-width: 100%;
@@ -1534,18 +1589,21 @@ nav.top-nav ul li a img {
   margin: 0;
 }
 .member,
-.poll {
+.poll,
+.list-item {
   margin-bottom: 5px;
 }
 .member .delete,
-.poll .delete {
-  opacity: .1;
+.poll .delete,
+.list-item .delete {
+  opacity: .3;
   color: #900;
   cursor: pointer;
   transition: all ease 0.2s;
 }
 .member:hover .delete,
-.poll:hover .delete {
+.poll:hover .delete,
+.list-item:hover .delete {
   opacity: 1;
 }
 .team-member {
@@ -1855,30 +1913,22 @@ a.issue div.type .icon {
   background-color: #f0f7fd;
   border-color: #d0e3f0;
 }
-#dropzone {
-  background: palegreen;
-  width: 150px;
-  height: 50px;
-  line-height: 50px;
+.dropzone h5 {
+  padding: 25px 0;
   text-align: center;
-  font-weight: bold;
+  border-radius: 10px;
 }
-#dropzone.in {
+.dropzone.in {
   width: 600px;
   height: 200px;
   line-height: 200px;
   font-size: larger;
 }
-#dropzone.hover {
-  background: lawngreen;
+.dropzone.hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
-#dropzone.fade {
-  -webkit-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -ms-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
-  opacity: 1;
+.image-item {
+  width: 250px;
 }
 .timeline {
   position: relative;

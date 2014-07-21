@@ -16,6 +16,14 @@ namespace ProjectZ.Web.Controllers
         public JsonResult Create(CreateReleaseModel release)
         {
             var project = RavenSession.Load<Project>(release.ProjectId);
+
+            if (!string.IsNullOrEmpty(release.Id))
+            {
+                Update(release);
+
+                return Json(new { Success = true, Release = release });
+            }
+
             var issues = new List<Issue>();
             if (release.SolvedIssues != null)
             {
@@ -52,8 +60,37 @@ namespace ProjectZ.Web.Controllers
             RavenSession.Store(newRelease);
             RavenSession.SaveChanges();
 
-            return Json(new { Success = true });
+            return Json(new { Success = true, Release = newRelease });
         }
 
+        private void Update(CreateReleaseModel release)
+        {
+            var oldRelease = RavenSession.Load<Release>(release.Id);
+            var project = RavenSession.Load<Project>(release.ProjectId);
+
+
+            oldRelease.Description = release.Description;
+            oldRelease.Title = release.Title;
+            oldRelease.Version = release.Version;
+
+            oldRelease.Issues.Clear();
+
+
+            var issues = new List<Issue>();
+            if (release.SolvedIssues != null)
+            {
+                issues.AddRange(project.Issues.Where(x => release.SolvedIssues.Contains(x.Id)).ToList());
+
+                foreach (var issue in issues)
+                {
+                    issue.Solved = true;
+                }
+
+                oldRelease.Issues = issues;
+            }
+
+
+            RavenSession.SaveChanges();
+        }
     }
 }

@@ -1,65 +1,80 @@
 ﻿@model ProjectZ.Web.Models.ViewModels.EditProjectViewModel
-
-<div class="panel panel-default" data-bind="visible: !showNewRelease()">
-    <div class="panel-body">
-        @foreach(var release in Model.Releases)
-        {
-            <div class="row release">
-                <div class="col-lg-9">
-                    @release.Version
-                </div>
-                <div class="col-lg-3 text-right">
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </div>
-            </div>
-        }
-    </div>
-    <div class="panel-footer text-right">
-        <a href="/@Model.Project.Id/@Model.Project.Slug/edit/releases/new" data-bind="click: newRelease" class="button button-success"><span>New release</span></a>
-    </div>
-
-</div>
-
-
-
-<div data-bind="with: release, visible: showNewRelease()">
-    <div class="panel panel-default">
+<div data-bind="with: releaseModel">
+    <div class="panel panel-default" data-bind="visible: !isInEditMode()">
         <div class="panel-body">
-            <input type="text" data-bind="value: title" placeholder="Title (optional)" id="version" name="version" class="fill" />
-            <input type="text" data-bind="value: version" placeholder="Version" id="version" name="version" class="fill" />
-
-            <div style="position: relative;">
-                <textarea class="fill" id="description" rows="10" data-bind="value: description" name="description" placeholder="Changelog"></textarea>
-                <div class="markdown" data-bind="visible: viewMarkdown, html: markdown" style="display: none;"></div>
-                <button class="markdown-toggler" data-bind="click: previewMarkdown">--</button>
-            </div>
-            <h6 style="border-bottom: 1px solid #f3f3f3;" class="margin margin-top-15">Fixed issues</h6>
-            <div data-bind="foreach: issues">
-                <label class="fill no-padding">
-                    <input type="checkbox" data-bind="checked: $parent.solvedIssues, attr: { 'value': Id }"><span data-bind="text: Title"></span>
-                </label>
-            </div>
-
+            <ul class="list-unstyled" data-bind="foreach: releases">
+                <li class="list-item">
+                    <div class="clearfix">
+                        <div class="pull-left wrapper" data-bind="click: $parent.edit">
+                            <h6 data-bind="text: title" style="margin: 0;"></h6>
+                            <p class="text-muted" style="margin: 0; font-size: .9em; line-height: 100%;">Version <span data-bind="text: version"></span></p>
+                        </div>
+                        <button class="pull-right button button-error delete" data-bind="click: remove"><span>Delete</span></button>
+                        @*<i class="fa fa-fw fa-times delete pull-right" data-bind="click: remove"></i>*@
+                    </div>
+                </li>
+            </ul>
         </div>
         <div class="panel-footer text-right">
-            <button class="button button-success" data-bind="click: saveRelease"><span>Create release</span></button>
+            <a href="/@Model.Project.Id/@Model.Project.Slug/edit/releases/new" data-bind="click: newRelease" class="button button-success"><span>New release</span></a>
         </div>
-        
-        
-        @using (Html.BeginForm(new { enctype = "multipart/form-data", action = "/Upload" }))
-                    {
-                        @Html.AntiForgeryToken(); 
-                        <input type="file" name="uploadedFile" id="releaseImages" /> 
-            <div id="dropzone" class="fade well">Drop files here</div>
-                        <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
-                    }
 
-                    <div id="progress">
-                        <div class="bar" style="width: 0%;"></div>
+    </div>
+
+
+
+    <div data-bind="with: selectedRelease, visible: isInEditMode()">
+        <div class="panel panel-default">
+            <div class="panel-body  markdown-container">
+                <input type="text" data-bind="value: title" placeholder="Title (optional)" id="version" name="version" class="fill" />
+                <input type="text" data-bind="value: version" placeholder="Version" id="version" name="version" class="fill" />
+
+                <div style="position: relative;">
+
+                    <textarea data-bind="value: description, visible: !$parent.isInMarkdownMode()" class="fill" rows="10" placeholder="Changelog"></textarea>
+                    <div class="markdown" data-bind="visible: $parent.isInMarkdownMode()" style="display: none;">
+                        <div data-bind="html: $parent.markdown"></div>
+                        <span class="placeholder">Markdown</span>
                     </div>
-        
-        
+                </div>
+                <h6 style="border-bottom: 1px solid #f3f3f3;" class="margin margin-top-15">Fixed issues</h6>
+                <div data-bind="foreach: $parent.issues">
+                    <label class="fill no-padding">
+                        <input type="checkbox" data-bind="attr: { 'value': Id }, checkedValue: Id, checked: $parent.solvedIssues"><span data-bind="    text: Title"></span>
+                    </label>
+                </div>
 
+
+            </div>
+            <div class="panel-footer text-right">
+
+                <div class="pull-left">
+                    <button class="button" data-bind="click: $parent.toggleMarkdown, css: { 'button-filled': $parent.isInMarkdownMode() }"><span>Preview markdown</span></button>
+                    @*<button class="button button-filled" data-bind="click: hideMarkdown, visible: viewMarkdown()" style="display: none;"><span>Preview markdown</span></button>*@
+                    <a href="#" data-toggle="modal" data-target="#what-is-markdown">What is markdown?</a>
+                </div>
+
+                <div>
+                    <button class="button " data-bind="click: $parent.toggleEditMode"><span>Cancel</span></button>
+                    <button class="button button-success" data-bind="click: $parent.save"><span>Save</span></button>
+                </div>
+            </div>
+
+
+            @using (Html.BeginForm(new { enctype = "multipart/form-data", action = "/Upload" }))
+            {
+                @Html.AntiForgeryToken(); 
+                <input type="file" name="uploadedFile" id="releaseImages" /> 
+                <div id="dropzone" class="fade well">Drop files here</div>
+                <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
+            }
+
+            <div id="progress">
+                <div class="bar" style="width: 0%;"></div>
+            </div>
+
+
+
+        </div>
     </div>
 </div>

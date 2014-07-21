@@ -14,6 +14,7 @@ namespace ProjectZ.Web.Models
             Issues = new List<Issue>();
             Polls = new List<Poll>();
             Questions = new List<Question>();
+            Images = new List<ProjectImage>();
         }
 
         public string GetShortDescription()
@@ -38,7 +39,7 @@ namespace ProjectZ.Web.Models
         public DateTime Created { get; set; }
         public string Description { get; set; }
         public string Slug { get; set; }
-        public ProjectImage Image { get; set; }
+        public ProjectLogo Image { get; set; }
         public string Header { get; set; }
         public List<TeamMember> Admins { get; set; }
         public List<String> Followers { get; set; }
@@ -46,6 +47,7 @@ namespace ProjectZ.Web.Models
         public List<Poll> Polls { get; set; }
         public bool IsPrivate { get; set; }
         public List<Question> Questions { get; set; }
+        public List<ProjectImage> Images { get; set; }
 
         public enum LogoSize
         {
@@ -53,11 +55,16 @@ namespace ProjectZ.Web.Models
         }
 
 
-        public class ProjectImage
+        public class ProjectLogo
         {
             public string Logo { get; set; }
             public string Icon { get; set; }
             public string Banner { get; set; }
+        }
+        public class ProjectImage
+        {
+            public string Url { get; set; }
+            public string Thumbnail { get; set; }
         }
     }
 }

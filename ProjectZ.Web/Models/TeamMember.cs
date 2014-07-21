@@ -26,7 +26,7 @@ namespace ProjectZ.Web.Models
             IsPageAdmin = isPageAdmin;
             UserId = user.Id;
             Image = GetImage();
-            IsCreator = IsCreator;
+            IsCreator = isCreator;
         }
 
         public object SmallInfo()

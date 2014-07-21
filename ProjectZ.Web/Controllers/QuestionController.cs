@@ -13,16 +13,25 @@ namespace ProjectZ.Web.Controllers
         {
             var project = RavenSession.Load<Project>(question.ProjectId);
 
-            var _question = new Question()
-                                {
-                                    Answer = question.Answer,
-                                    Id = project.Questions.Count() + 1,
-                                    Title = question.Title
-                                };
+            var _question = new Question();
 
+            if (question.Id > 0)
+            {
+                _question = project.Questions.FirstOrDefault(x => x.Id == question.Id);
+                _question.Title = question.Title;
+                _question.Answer = question.Answer;
+            }
+            else
+            {
 
-            project.Questions.Add(_question);
-
+                _question = new Question()
+                                    {
+                                        Answer = question.Answer,
+                                        Id = project.Questions.Count() + 1,
+                                        Title = question.Title
+                                    };
+                project.Questions.Add(_question);
+            }
             RavenSession.SaveChanges();
 
             return Json(new { Success = true, Question = _question });

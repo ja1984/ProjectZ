@@ -1,16 +1,24 @@
 ﻿@model ProjectZ.Web.Models.Project
 
-<div class="panel panel-default" data-bind="with: overview">
+<div class="panel panel-default" data-bind="with: overviewModel">
     <div class="panel-body markdown-container">
-        <textarea data-bind="value: description, visible: !viewMarkdown()" class="fill no-padding" rows="7"></textarea>
-        <div class="markdown" data-bind="visible: viewMarkdown, html: markdown" style="display: none;"></div>
+        <textarea data-bind="value: description, visible: !isInMarkdownMode()" class="fill no-padding" rows="7"></textarea>
+        <div class="markdown" data-bind="visible: isInMarkdownMode()" style="display: none;">
+            <div data-bind="html: markdown"></div>
+            <span class="placeholder">Markdown</span>
+        </div>
     </div>
     <div class="panel-footer text-right">
         <div class="pull-left">
-        <button class="button" data-bind="click: previewMarkdown, visible: !viewMarkdown()"><span>Preview markdown</span></button>
-        <button class="button button-filled" data-bind="click: hideMarkdown, visible: viewMarkdown()" style="display: none;"><span>Preview markdown</span></button>
+        <button class="button" data-bind="click: toggleMarkdown"><span>Preview markdown</span></button>
+        @*<button class="button button-filled" data-bind="click: hideMarkdown, visible: viewMarkdown()" style="display: none;"><span>Preview markdown</span></button>*@
             <a href="#" data-toggle="modal" data-target="#what-is-markdown">What is markdown?</a>
             </div>
-        <button class="button button-success" data-bind="click: save"><span>Save changes</span></button>
+        <button class="button button-success" data-bind="click: save">
+            <span>
+                <i class="fa fa-circle-o-notch fa-spin" data-bind="visible: loading" style="display: none;"></i>
+                Save changes
+            </span>
+        </button>
     </div>
 </div>

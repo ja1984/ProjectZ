@@ -198,7 +198,7 @@ namespace ProjectZ.Web.Controllers
             _user.Projects.Remove(_project);
 
 
-            if (user.IsCreator)
+            if (user.IsCreator || project.Admins.Count() == 1)
                 return Json(new { success = false });
 
             project.Admins.Remove(user);
@@ -263,6 +263,9 @@ namespace ProjectZ.Web.Controllers
             if (project == null)
                 return Json(new { success = false, message = "Couldn´t find project" });
 
+            if (project.Admins.Select(x => x.UserId).Contains(userId))
+                return Json(new { success = false, message = "This user is already part of team" });
+
             var user = RavenSession.Load<User>(userId);
 
             if (user == null)
@@ -275,7 +278,8 @@ namespace ProjectZ.Web.Controllers
                 return Json(new { success = false, message = "You are not admin of this project" });
 
             user.Projects.Add(new UserProject(project));
-            project.Admins.Add(new TeamMember(user, role, isAdmin));
+            var teamMember = new TeamMember(user, role, isAdmin);
+            project.Admins.Add(teamMember);
 
             var eventAction = new EventAction()
             {
@@ -298,7 +302,7 @@ namespace ProjectZ.Web.Controllers
             RavenSession.SaveChanges();
 
 
-            return Json(new { success = true, message = "User added" });
+            return Json(new { success = true, message = "User added", User = teamMember });
 
         }
 
@@ -346,7 +350,7 @@ namespace ProjectZ.Web.Controllers
                     DeleteOldImage(projectId, project.Image.Icon);
             }
 
-            project.Image = new Project.ProjectImage()
+            project.Image = new Project.ProjectLogo
                                 {
                                     Logo = logo,
                                     Icon = icon
@@ -429,8 +433,8 @@ namespace ProjectZ.Web.Controllers
             var icon = Guid.NewGuid() + fileExtension;
 
 
-            ResizeImage(completePath, path, logo);
-            ResizeImage(completePath, path, icon, 24, 24, completePath);
+            Resize(completePath, path, logo);
+            Resize(completePath, path, icon, 24, 24, completePath);
 
             // Return success code
             return Json(new
@@ -442,7 +446,69 @@ namespace ProjectZ.Web.Controllers
             }, "text/html");
         }
 
-        private void ResizeImage(String image, string location, string fileName, int height = 104, int width = 104, string original = null)
+
+        [HttpPost]
+        public JsonResult UploadProjectImage(HttpPostedFileBase uploadedFile, string projectId)
+        {
+            //Validate the uploaded file
+            if (uploadedFile == null || (uploadedFile.ContentType != "image/jpeg" && uploadedFile.ContentType != "image/png"))
+            {
+                // Return bad request error code
+                return Json(new
+                {
+                    statusCode = 400,
+                    status = "Bad Request! Upload Failed",
+                    file = string.Empty
+                }, "text/html");
+            }
+
+            // Save the file to the server
+
+
+
+            var path = Server.MapPath("/Uploads") + "\\" + projectId.Replace("/", "");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = path + "\\";
+
+            var completePath = path + uploadedFile.FileName;
+            var fileExtension = Path.GetExtension(completePath);
+            var newFileName = Guid.NewGuid() + fileExtension;
+            completePath = path + newFileName;
+            uploadedFile.SaveAs(completePath);
+
+            var image = newFileName;
+            var thumb = "thumb_" + image;
+
+
+            var projectImage = new Project.ProjectImage
+                            {
+                                Thumbnail = string.Format("/Uploads/{0}/{1}", projectId.Replace("/", ""), thumb),
+                                Url = string.Format("/Uploads/{0}/{1}", projectId.Replace("/", ""), Url)
+                            };
+
+            ResizeImage(completePath, path, thumb);
+
+            var project = RavenSession.Load<Project>(projectId);
+
+            project.Images.Add(projectImage);
+            RavenSession.SaveChanges();
+
+            // Return success code
+            return Json(new
+            {
+                success = true,
+                statusCode = 200,
+                image = projectImage,
+                status = "Image uploaded.",
+
+            }, "text/html");
+        }
+
+
+        private void Resize(String image, string location, string fileName, int height = 104, int width = 104, string original = null)
         {
             var srcImage = Image.FromFile(image);
             var imageJob = new ImageJob(srcImage, string.Format("{0}{1}", location, fileName), new ResizeSettings(width, height, FitMode.Max, null));
@@ -460,6 +526,24 @@ namespace ProjectZ.Web.Controllers
             {
                 throw ex;
             }
+
+        }
+
+        private void ResizeImage(String image, string location, string fileName)
+        {
+            var width = 250;
+            var height = 150;
+            var srcImage = Image.FromFile(image);
+
+            if (srcImage.Height > srcImage.Width)
+            {
+                width = 150;
+                height = 250;
+            }
+
+            srcImage.Dispose();
+
+            Resize(image, location, fileName, height, width);
 
         }
     }

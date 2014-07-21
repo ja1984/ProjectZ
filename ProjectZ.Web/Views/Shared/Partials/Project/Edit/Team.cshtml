@@ -1,34 +1,39 @@
-﻿@model IEnumerable<ProjectZ.Web.Models.TeamMember>
-
-<div class="panel panel-default">
+﻿<div class="panel panel-default" data-bind="with: teamModel">
     <div class="panel-body">
-        <ul class="projects unstyled">
-            @foreach (var user in Model)
-            {
-                <li>
-                    <div class="row member">
-                        <div class="col-lg-1">
-                            <img src="@user.GetImage(42)" class="user-image small"/>
-                        </div>
-                        <div class="col-lg-8"><strong>@user.UserName</strong>&nbsp;@user.FirstName&nbsp;@user.LastName</div>
-                        <div class="col-lg-1">
-                            <input type="checkbox" checked="checked" />
-                        </div>
-                        <div class="col-lg-2 text-right">
-                            <i class="fa fa-times delete" data-user-id="@user.UserId"></i>
-                        </div>
+        <ul class="projects unstyled" data-bind="foreach: teamMembers">
+
+            <li class="list-item">
+
+                <div class="clearfix">
+                    <div class="pull-left wrapper">
+                        <a href="#" data-bind="attr: { 'href': '/user/' + slug() }">
+                            <img src="" data-bind="attr: { 'src': image }" class="user-image small pull-left margin margin-right-10" />
+                            <h6 style="margin: 0;" data-bind="text: userName"></h6>
+                            <p class="text-muted" style="margin: 0; font-size: .9em; line-height: 100%;"><span data-bind="text: firstName"></span><span data-bind="    text: lastName"></span></p>
+                        </a>
                     </div>
-                </li>
-            }
+                    <!-- ko ifnot: isCreator -->
+                    <button class="pull-right button button-error delete" data-bind="click: remove"><span>Delete</span></button>
+                    <!-- /ko -->
+                    <!-- ko if: isCreator -->
+                    <span class="badge pull-right">Creator</span>
+                    <!-- /ko -->
+                </div>
+            </li>
+
         </ul>
     </div>
     <div class="panel-footer">
         <input type="text" id="txtUsername" placeholder="Username/Email" data-bind="jqAuto: { value: selectedUser, source: getOptions, labelProp: 'UserName', template: 'rowTmpl' }" />
         <!-- ko if: selectedUser() != '' -->
         <select class="inline" data-bind="options: roles, optionsText: 'role', value: role"></select>
-        <label class="inline" style="background: transparent;"><input type="checkbox" data-bind="checked: isPageAdmin">Page admin</input></label>
+        <label class="inline" style="background: transparent;">
+            <input type="checkbox" data-bind="checked: isPageAdmin">Page admin</input></label>
         <!-- /ko-->
-        <button class="button button-success pull-right" data-bind="css: { 'button-disabled': selectedUser() == '' }, click: addUser"><span>Add member</span></button>
+        <button class="button button-success pull-right" data-bind="css: { 'button-disabled': selectedUser() == '' }, click: addUser"><span><i class="fa fa-circle-o-notch fa-spin" data-bind="    visible: loading"></i>Add member</span></button>
+        <div class="bs-callout bs-callout-danger" data-bind="visible: hasError()" style="display: none;">
+            <p data-bind="text: errorText"></p>
+        </div>
     </div>
 </div>
 

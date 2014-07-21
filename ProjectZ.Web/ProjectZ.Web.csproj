@@ -321,6 +321,7 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.fileupload.js" />
     <Content Include="Scripts\jquery.iframe-transport.js" />
+    <Content Include="Scripts\jquery.isotope.min.js" />
     <Content Include="Scripts\jquery.password_strength.js" />
     <Content Include="Scripts\jquery.ui.widget.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -338,6 +339,12 @@
     <Content Include="Scripts\pager.js" />
     <Content Include="Scripts\parsley.js" />
     <Content Include="Scripts\project.js" />
+    <Content Include="Scripts\Project\base.js" />
+    <Content Include="Scripts\Project\Images.js" />
+    <Content Include="Scripts\Project\Overview.js" />
+    <Content Include="Scripts\Project\Questions.js" />
+    <Content Include="Scripts\Project\Releases.js" />
+    <Content Include="Scripts\Project\Team.js" />
     <Content Include="Scripts\team.js" />
     <Content Include="Scripts\typeahead.js" />
     <Content Include="Scripts\_references.js" />
@@ -377,6 +384,8 @@
     <Content Include="Views\Project\Release.cshtml" />
     <Content Include="Views\Shared\Partials\Project\Questions.cshtml" />
     <Content Include="Views\Shared\Partials\Project\Edit\Questions.cshtml" />
+    <Content Include="Views\Shared\Partials\Project\Edit\Images.cshtml" />
+    <Content Include="Scripts\ko.bindinghandlers.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
