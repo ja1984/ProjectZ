@@ -116,8 +116,8 @@ ul {
     }
 }
 
-.project-images{
-    .list-item{
+.project-images {
+    .list-item {
         border: none;
         vertical-align: text-top;
     }
@@ -145,6 +145,10 @@ h5 {
 
 h6 {
     .header(30px)
+}
+
+.no-padding{
+    padding: 0 !important;
 }
 
 input, textarea, select, label {
@@ -521,7 +525,10 @@ body {
 }
 
 
-
+.project-image {
+    width: 104px;
+    height: 104px;
+}
 
 img.user-image, .project-image {
     border-radius: 70px;
@@ -544,6 +551,8 @@ img.user-image, .project-image {
         border-width: 2px;
     }
 }
+
+
 
 
 
@@ -1571,7 +1580,33 @@ a {
     }
 }
 
-.image-item{
+.promo-image {
+    position: relative;
+    background: #f5f5f5;
+    min-height: 150px;
+
+    h5 {
+        padding: 0;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        margin: 0;
+        margin-top: -14px;
+    }
+
+    .dp {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+    }
+}
+
+.image-item {
     width: 250px;
 }
 

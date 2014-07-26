@@ -1,40 +1,53 @@
-﻿@model IEnumerable<ProjectZ.Web.Models.Project>
-
+﻿@using ProjectZ.Web.Helpers
+@model IEnumerable<ProjectZ.Web.Models.Project>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="projects" id="projects">
 
-@foreach (var project in Model)
+    @foreach (var project in Model)
     {
         <div class="project">
 
             <div class="panel panel-default">
-            <div class="panel-body">
-                <h6><a href="/@(project.Id)/@(project.Slug)">@(project.Name)</a></h6>
-                <p class="description">
-                @project.GetShortDescription()
-                    @if(project.LongText()){
-                        <div class="text-overlay"></div>
-                    }
 
-                </p>
+                <div class="panel-body" style="padding: 2px;">
+
+                        <a href="/@(project.Id)/@(project.Slug)">
+                            <div style="position: relative;">
+                                <img src="@(project.Image == null ? ImageUtils.GetNoImage(ImageUtils.ImageSize.BannerThumb) : ImageUtils.GetProjectImage(project.Id,ImageUtils.ImageSize.BannerThumb))" class="img-responsive" style="height: 143px;"/>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.5);">
+                                    <h6 style="margin: 0; padding: 5px;">@(project.Name)</h6>
+                                </div>
+                            </div>
+                        </a>
+                    <div style="padding: 15px;">
+
+                        <p class="description">
+                            @project.GetShortDescription()
+                            @if (project.LongText())
+                            {
+                                <div class="text-overlay"></div>
+                            }
+
+                        </p>
+                    </div>
                 </div>
                 <div class="panel-footer">
-                <span class="left"><i class="fa fa-heart"></i>&nbsp;@(project.Followers.Count())</span>
-                <span class="right"><i class="fa fa-users"></i>&nbsp;@(project.Admins.Count())</span>
-            </div>
+                    <span class="left"><i class="fa fa-heart"></i>&nbsp;@(project.Followers.Count())</span>
+                    <span class="right"><i class="fa fa-users"></i>&nbsp;@(project.Admins.Count())</span>
+                </div>
             </div>
         </div>
     }
-    </div>
-    
-    
+</div>
+
+
 @section scripts
 {
     <script type="text/javascript">
-        $(function() {
+        $(function () {
             var $container = $('#projects');
             // initialize
             $container.masonry({

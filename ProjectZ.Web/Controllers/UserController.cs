@@ -118,9 +118,10 @@ namespace ProjectZ.Web.Controllers
 
             
             RavenSession.Store(user);
+            RavenSession.SaveChanges();
             LoginUser(user.Id);
 
-            return Redirect("/user/" + user.Slug + "/edit");
+            return RedirectToAction("Index","Home");
 
             return View();
         }

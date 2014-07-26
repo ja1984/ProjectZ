@@ -60,6 +60,8 @@ namespace ProjectZ.Web.Models
             public string Logo { get; set; }
             public string Icon { get; set; }
             public string Banner { get; set; }
+            public string Thumbnail { get; set; }
+
         }
         public class ProjectImage
         {

@@ -10,7 +10,7 @@
 @if (Model.Project.Image != null && !string.IsNullOrEmpty(Model.Project.Image.Banner))
 {
     <div class="jumbo">
-        <img src="/Content/images/dexter.jpg" class="header-image">
+        <img src="@Model.Project.Image.Banner" class="header-image">
     </div>
 }
 
@@ -54,7 +54,7 @@
             </div>
             <div class="sidebar">
                 <div class="text-center">
-                    <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="user-image" />
+                    <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="project-image" />
                 </div>
 
                 <h3>Team</h3>

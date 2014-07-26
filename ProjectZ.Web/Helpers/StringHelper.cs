@@ -33,6 +33,11 @@ namespace ProjectZ.Web.Helpers
             var id = projectId.Split('/');
             return id[1];
         }
+
+        public static string GetProjectFolderName(string projectId)
+        {
+            return projectId.Replace("/", "");
+        }
     }
 
 

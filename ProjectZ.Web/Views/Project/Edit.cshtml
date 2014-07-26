@@ -47,7 +47,9 @@
             <div class="edit-questions" data-bind="visible: selectedPage() == 'images'" style="display: none;">
                 @Html.Partial("Partials/Project/Edit/Images", Model.Project.Questions)
             </div>
-
+            <div class="edit-questions" data-bind="visible: selectedPage() == 'settings'" style="display: none;">
+                @Html.Partial("Partials/Project/Edit/Images", Model.Project.Questions)
+            </div>
 
         </div>
         <div class="col-lg-3 side-bar">
@@ -76,6 +78,9 @@
                         <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'images' }, click: changePage" data-page="images">
                             <li>Images</li>
                         </a>
+                        <a href="/projects/65/test" data-bind="css: { 'active': selectedPage() == 'settings' }, click: changePage" data-page="settings">
+                            <li>Settings</li>
+                        </a>
                     </ul>
                 </div>
             </div>
@@ -99,20 +104,20 @@
                     <h3>Upload logo</h3>
                 </div>
                 <div class="modal-body">
-                    @using (Html.BeginForm(new { enctype = "multipart/form-data", action = "/Upload" }))
-                    {
-                        @Html.AntiForgeryToken(); 
-                        <input type="file" name="uploadedFile" id="fileupload" /> 
-                        <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
-                    }
 
+                    <form id="projectImages" action="/Image/UploadLogo?enctype=multipart%2Fform-data" method="POST" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="file" name="uploadedFile" id="fileupload" />
+                        <input type="hidden" name="projectId" id="projectId" value="@Model.Project.Id"/>
+                    </form>
+                    <p class="text-muted">Recommended size: 104 x 104px</p>
                     <div id="progress">
                         <div class="bar" style="width: 0%;"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="button" class="btn btn-danger pull-left" style="width: auto;" value="Remove logo" data-bind="click: removeLogo" />
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="button button-error pull-left" style="width: auto;" data-bind="click: removeLogo"><span>Remove logo</span></button>
+                    <button type="button" class="button" data-dismiss="modal"><span>Close</span></button>
                 </div>
             </div>
         </div>
@@ -125,7 +130,7 @@
     <script src="~/Scripts/jquery.fileupload.js"></script>
     <script src="~/Scripts/jquery.iframe-transport.js"></script>
     <script src="~/Scripts/knockout-jqAutocomplete.min.js"></script>
-    
+
     <script src="~/Scripts/Project/base.js"></script>
     <script src="~/Scripts/Project/Questions.js"></script>
     <script src="~/Scripts/Project/Overview.js"></script>
@@ -145,10 +150,10 @@
             projectId: '@Model.Project.Id',
             startPage: '@Model.StartPage',
             url: 'http://@(HttpContext.Current.Request.Url.Authority)/@(Model.Project.Id)/@(Model.Project.Slug)/edit',
-            data: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Project))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t")),
-            releases: JSON.parse('@Html.Raw(new JavaScriptSerializer().Serialize(Model.Releases))'.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"))
+            data: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Project)),
+            releases: @Html.Raw(new JavaScriptSerializer().Serialize(Model.Releases))
             
-        };
+            };
 
         var EditModel = function () {
             var priv = {};
@@ -164,18 +169,10 @@
                 return viewModel;
             };
 
-            priv.updateLogo = function (data) {
-                return $.ajax({
-                    method: 'post',
-                    url: '/Project/SaveLogo',
-                    data: { projectId: data.projectId, logo: data.logo, icon: data.icon }
-                });
-            };
-
             priv.removeLogo = function (data) {
                 return $.ajax({
                     method: 'post',
-                    url: '/Project/RemoveLogo',
+                    url: '/Image/RemoveLogo',
                     data: { projectId: data.projectId }
                 });
             };
@@ -252,7 +249,7 @@
                 inner.overviewModel = new overviewModel().Init(priv.config.data, inner, priv.config);
                 inner.releaseModel = new releaseModel().Init({releases: priv.config.releases, issues: priv.config.data.Issues}, inner, priv.config);
                 inner.teamModel = new teamModel().Init(priv.config.data.Admins, inner, priv.config);
-                inner.imageModel = new imageModel().Init(priv.config.data.Images, inner, priv.config);
+                inner.imageModel = new imageModel().Init(priv.config.data, inner, priv.config);
                 
                 inner.showNewRelease = ko.observable(false);
                 inner.newRelease = function() {
@@ -266,17 +263,7 @@
                 };
 
                 inner.logoUrl = ko.observable(priv.config.imageUrl);
-                inner.projectId = priv.config.projectId;
-                inner.updateLogo = function (logo, icon) {
-                    priv.updateLogo({ projectId: inner.projectId, logo: logo, icon: icon })
-                        .done(function (response) {
-                            console.log(response);
-                        });
-                };
-
-                
-
-
+                inner.projectId = priv.config.projectId;             
 
                 inner.initDeleteMethods = function () {
                     $(".poll .delete").on('click', function () {
@@ -380,15 +367,10 @@
                         // Handles the server side validation on file type
                         done: function (e, data) {
                             var response = JSON.parse(data.result);
-                            console.log(response);
-                            var icon = response.icon;
                             var logo = response.logo;
                                 
-                            if (response.statusCode == 200) {
-                                var logoUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + logo;
-                                var iconUrl = '/Uploads/' + priv.config.projectId.replace('/', '') + '/' + icon;
-                                inner.logoUrl(logoUrl);
-                                inner.updateLogo(logoUrl, iconUrl);
+                            if (response.success) {
+                                inner.logoUrl(logo);
                             }
                         },
                         progressall: function (e, data) {

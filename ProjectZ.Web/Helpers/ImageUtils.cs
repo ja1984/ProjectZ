@@ -13,6 +13,12 @@ namespace ProjectZ.Web.Helpers
     public static class ImageUtils
     {
         private const string NOIMAGE_URL = "/Content/Images/nologo.png";
+        private const string NOIMAGE_BANNER = "/Content/Images/noimage_thumbnail.png";
+
+        public static string GetNoImage(ImageSize imageType = ImageSize.Normal)
+        {
+            return imageType == ImageSize.Normal ? NOIMAGE_URL : NOIMAGE_BANNER;
+        }
 
         public static string GetProjectImage(string projectId, ImageSize imageType = ImageSize.Normal)
         {
@@ -32,26 +38,29 @@ namespace ProjectZ.Web.Helpers
                     switch (imageType)
                     {
                         case ImageSize.Normal:
-                            return project.Image.Logo;
+                            return string.IsNullOrEmpty(project.Image.Logo) ? NOIMAGE_URL : project.Image.Logo;
                         case ImageSize.Icon:
-                            return project.Image.Icon;
+                            return string.IsNullOrEmpty(project.Image.Icon) ? NOIMAGE_URL : project.Image.Icon;
                         case ImageSize.Banner:
                             return string.IsNullOrEmpty(project.Image.Banner) ? NOIMAGE_URL : project.Image.Banner;
+                        case ImageSize.BannerThumb:
+                            return string.IsNullOrEmpty(project.Image.Banner) ? NOIMAGE_BANNER : project.Image.Thumbnail;
                     }
-
-
-
                 }
             }
 
             return NOIMAGE_URL;
         }
 
+        private static string GetUploadFolder(string projectId, string image)
+        {
+            return string.Format("/Uploads/{0}/{1}", StringHelper.GetProjectFolderName(projectId), image);
+        }
 
 
         public enum ImageSize
         {
-            Normal, Icon, Banner
+            Normal, Icon, Banner, BannerThumb
         }
 
 

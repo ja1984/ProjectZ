@@ -9,6 +9,14 @@
         return viewModel;
     };
 
+    priv.projectImage = function(data) {
+        var inner = {};
+        inner.logo = ko.observable(data ? data.Logo : '');
+        inner.icon = ko.observable(data ? data.Icon : '');
+        inner.promo = ko.observable(data ? data.Banner : '');
+        return inner;
+    };
+
     priv.image = function(data, viewModel) {
         var inner = {};
 
@@ -22,23 +30,17 @@
 
         return inner;
     };
-
-    priv.saveImage = function (data) {
-        return $.ajax({
-            method: 'post',
-            url: '/Project/SaveLogo',
-            data: { projectId: data.projectId, logo: data.logo, icon: data.icon }
-        });
-    };
-
+    
     priv.viewModel = function(data, viewModel) {
         var inner = base();
         inner.viewModel = viewModel;
         inner.images = ko.observableArray([]);
         inner.projectId = priv.config.projectId;
+        inner.image = ko.observable(new priv.projectImage(data.Image));
 
+        console.log(ko.toJSON(inner.image));
 
-        $.each(data, function() {
+        $.each(data.Images, function() {
             inner.images.push(new priv.image(this, inner));
         });
         
@@ -51,6 +53,17 @@
                         inner.images.push(new priv.image(data.result.image,inner));
                 }
             });
+            
+
+            $('#projectPromo').fileupload({
+                dropZone: $("#dropzone-promo .dp"),
+                dataType: 'json',
+                done: function (e, data) {
+                    if (data.result.success)
+                        inner.image(new priv.projectImage(data.result.image));
+                }
+            });
+
         }();
 
         inner.initMasonry = function() {

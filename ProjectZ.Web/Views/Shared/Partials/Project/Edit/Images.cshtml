@@ -1,26 +1,31 @@
 ﻿<div class="panel panel-default" data-bind="with: imageModel">
     <div class="panel-body">
-        <ul class="projects unstyled list-inline project-images" data-bind="foreach: images">
+        <h4>Promotion image <span class="text-muted" style="font-size: .7em;">(recommended size: 1240 x 600px)</span></h4>
+        <div class="promo-image dropzone" id="dropzone-promo">
+            <h5>Drop image here to upload new promo image</h5>
+            <!--ko ifnot: image().promo() === '' -->
+            <img src="" class="img-responsive thumbnail" data-bind="attr: {'src': image().promo }" />
+            <!-- /ko-->
+            <form id="projectPromo" action="/Image/UploadPromoImage?enctype=multipart%2Fform-data" method="POST" enctype="multipart/form-data">
+                <input type="file" name="uploadedFile" multiple style="display: none;">
+                <input type="hidden" name="projectId" id="projectId" data-bind="value: projectId" />
+            </form>
+            <div class="dp"></div>
+        </div>
 
+        <h4>Project Images</h4>
+        <ul class="projects unstyled list-inline project-images" data-bind="foreach: images">
             <li class="list-item">
                 <img src="" class="thumbnail" data-bind="attr: { 'src': thumbnail }" />
             </li>
-
         </ul>
     </div>
     <div class="panel-footer">
 
-        <form id="projectImages" action="/Project/UploadProjectImage?enctype=multipart%2Fform-data" method="POST" enctype="multipart/form-data">
+        <form id="projectImages" action="/Image/UploadProjectImage?enctype=multipart%2Fform-data" method="POST" enctype="multipart/form-data">
             <input type="file" name="uploadedFile" multiple style="display: none;">
             <input type="hidden" name="projectId" id="projectId" data-bind="value: projectId" />
         </form>
-
-        @*        <form action="/Project/Upload?enctype=multipart%2Fform-data" method="post">
-            <input name="__RequestVerificationToken" type="hidden" value="Y4hDaSaJ7NUYziS6rEhX05GoYnGp0k0-_a58QUC4g2WZ-KXySgy8WUtjONNr82XYCZn55yybcf6L8iSv6UvxOlqVD7_qRUnminGNoE3ZO7Y1" />
-            <input type="file" name="uploadedFile" id="fileupload" /> 
-            <input type="hidden" name="projectId" id="projectId" value="projects/481"/>
-        </form>*@
-
 
         <div id="dropzone-project" class="dropzone">
             <h5>Drop images here to upload to project</h5>
