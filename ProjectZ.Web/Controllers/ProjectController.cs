@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Mvc;
 using AttributeRouting.Web.Mvc;
-using ImageResizer;
 using ProjectZ.Web.Helpers;
 using ProjectZ.Web.Models;
 using ProjectZ.Web.Models.ViewModels;
 using ProjectZ.Web.ViewModels;
 using Action = ProjectZ.Web.Models.Action;
+using Raven.Client.Linq;
 
 namespace ProjectZ.Web.Controllers
 {
@@ -83,12 +80,14 @@ namespace ProjectZ.Web.Controllers
             var pageAdmins = project.Admins.Where(x => x.IsPageAdmin).ToList();
             var events = RavenSession.Query<EventAction>().Where(x => x.ProjectId == string.Format("projects/{0}", id)).ToList();
 
+            var followers = RavenSession.Query<User>().Where(x => x.Id.In(project.Followers)).ToList();
+
             var projectDescription = new MarkdownSharp.Markdown().Transform(project.Description);
 
             if (string.IsNullOrEmpty(startPage))
                 startPage = "overview";
 
-            return View(new ProjectViewModel { Project = project, Events = events, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), Releases = releases, Followers = project.Followers.Count(), Following = CurrentUser == null || project.Followers.Contains(CurrentUser.Id), StartPage = startPage.ToLower(), ProjectDescription = projectDescription });
+            return View(new ProjectViewModel { Project = project, Events = events, IsPageAdmin = CurrentUser != null && pageAdmins.Select(x => x.UserId).Contains(CurrentUser.Id), Releases = releases, NumberOfFollowers = project.Followers.Count(), Following = CurrentUser == null || project.Followers.Contains(CurrentUser.Id), StartPage = startPage.ToLower(), ProjectDescription = projectDescription, Followers = followers});
         }
 
         //[POST("Project/CreateRelease")]

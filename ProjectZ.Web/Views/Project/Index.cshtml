@@ -57,7 +57,7 @@
                     <img src="@Model.Project.GetLogo(imageType: Project.LogoSize.Normal)" class="project-image" />
                 </div>
 
-                <h3>Team</h3>
+                <h5>Team</h5>
 
                 <div class="menu">
                     <ul class="unstyled">
@@ -80,7 +80,16 @@
                     </div>
                 }
                 <div class="follow-wrapper">
-                    <p><span data-bind="text: followers"></span>&nbsp;people are following this project</p>
+                    <h5 class="margin margin-top-30">Followers</h5>
+
+
+                    <ul class="list-unstyled">
+                        @foreach (var user in Model.Followers.Take(10))
+                        {
+                            <li><a href="/user/@user.Slug"><img src="@user.GetImage(24)" class="user-image"/> @user.UserName</a></li>
+                        }
+                        <p data-bind="visible: followers() > 0" style="display: none;">+<span data-bind="text: followers"></span> more</p>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -121,7 +130,7 @@
     <script type="text/javascript">
         var projectConfig = {
             projectId: '@(Model.Project.Id)',
-            followers: @Model.Followers,
+            followers: @(Model.NumberOfFollowers - 10),
             following: @Model.Following.ToString().ToLower(),
             startPage: '@Model.StartPage',
             url: 'http://@(HttpContext.Current.Request.Url.Authority)/@(Model.Project.Id)/@(Model.Project.Slug)',
